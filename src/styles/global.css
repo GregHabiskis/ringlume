@@ -5,7 +5,7 @@
   --color-navy-light: #111827;
   --color-blue-primary: #0066FF;
   --color-blue-electric: #00A3FF;
-  --color-slate-bg: #F8FAFC;
+  --color-slate-bg: #1E1F21;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
@@ -15,8 +15,8 @@
   }
   body {
     font-family: var(--font-sans);
-    color: #1e293b;
-    background-color: #ffffff;
+    color: #e2e8f0;
+    background-color: #111213;
   }
 }
 
@@ -38,7 +38,7 @@
 
   .gradient-border {
     position: relative;
-    background: #ffffff;
+    background: #1E1F21;
   }
 
   .gradient-border::before {

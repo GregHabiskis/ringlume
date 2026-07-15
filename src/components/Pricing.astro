@@ -1,106 +1,185 @@
 ---
-const includedFeatures = [
-  'Full Voice AI Agent Deployment (Inbound + Outbound)',
-  'Custom Feature Integrations',
-  'Continuous AI Optimizations',
-  '24/7 Intelligent Call Handling',
-  'Automated Appointment Booking',
-  'Knowledge Base Training',
-  'Live Transfer & Escalation',
-  'Post-Call Analytics & Transcripts',
-  'Multilingual Support',
-  'Workflow-Triggered Outbound Campaigns',
-  'Complimentary Professional Custom Web Design ($0 Setup)',
+const plans = [
+  {
+    name: 'Starter Line',
+    monthlyPrice: 300,
+    annualPrice: 3000,
+    annualMonthly: 250,
+    period: '/mo',
+    annualPeriod: '/yr',
+    description: 'Perfect for small businesses getting started with Voice AI',
+    features: [
+      '500 Voice Calling Minutes/mo',
+      '24/7 Intelligent Call Handling',
+      'Knowledge Base Training',
+      'Automated Booking (1 Calendar)',
+      'Post-Call Analytics & Transcripts',
+      '7-Day Money Back Guarantee',
+    ],
+    cta: 'Get Started',
+    popular: false,
+  },
+  {
+    name: 'Pro Assistant',
+    monthlyPrice: 499,
+    annualPrice: 4990,
+    annualMonthly: 416,
+    period: '/mo',
+    annualPeriod: '/yr',
+    description: 'Most popular for growing businesses that need more power',
+    features: [
+      '1,500 Voice Calling Minutes/mo',
+      'Everything in Starter',
+      'Live Transfer & Human Escalation',
+      'Custom CRM Integrations',
+      'Multilingual Support',
+      'FREE Custom Booking Landing Page ($0 Setup)',
+    ],
+    cta: 'Get Started',
+    popular: true,
+  },
+  {
+    name: 'Enterprise Suite',
+    monthlyPrice: 899,
+    annualPrice: 8990,
+    annualMonthly: 749,
+    period: '/mo',
+    annualPeriod: '/yr',
+    description: 'For businesses that need maximum capacity and customization',
+    features: [
+      '4,000 Voice Calling Minutes/mo',
+      'Everything in Pro',
+      'Workflow-Triggered Outbound Campaigns',
+      'Continuous AI Performance Optimizations',
+      'Custom Feature Integrations',
+      'Dedicated Priority Support',
+    ],
+    cta: 'Contact Sales',
+    popular: false,
+  },
 ]
 ---
 
 <section id="pricing" class="py-20 lg:py-32 bg-navy relative overflow-hidden">
   <!-- Background Elements -->
   <div class="absolute inset-0 overflow-hidden">
-    <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-primary/20 rounded-full blur-3xl"></div>
-    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-electric/20 rounded-full blur-3xl"></div>
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-primary/20 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-primary/15 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-primary/5 rounded-full blur-3xl"></div>
   </div>
 
   <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Section Header -->
     <div class="text-center max-w-3xl mx-auto mb-16">
       <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-        Simple, Transparent <span class="gradient-text">Pricing</span>
+        Simple, Transparent <span class="gradient-purple-text">Pricing</span>
       </h2>
       <p class="text-lg text-slate-300">
-        One plan. Everything included. No hidden fees. Your professional website is on us.
+        Choose the plan that fits your business. Upgrade or downgrade anytime.
       </p>
     </div>
 
-    <!-- Pricing Card -->
-    <div class="max-w-2xl mx-auto">
-      <div class="bg-slate-bg rounded-3xl p-8 sm:p-12 card-shadow-lg relative">
-        <!-- Pricing Toggle -->
-        <div class="flex justify-center mb-8">
-          <div class="bg-[#111213] rounded-full p-1 inline-flex">
-            <button id="monthly-btn" class="pricing-toggle px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200 gradient-bg text-white">
-              Monthly
-            </button>
-            <button id="annual-btn" class="pricing-toggle px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white relative">
-              Annual
-              <span class="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                $600 OFF
-              </span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Price -->
-        <div class="text-center mb-8 pt-4">
-          <div class="flex items-baseline justify-center gap-1 mb-2">
-            <span id="price-amount" class="text-6xl sm:text-7xl font-bold gradient-text" data-monthly="300" data-annual="3000">$300</span>
-            <span id="price-period" class="text-xl text-slate-400 font-medium">/month</span>
-          </div>
-          <p id="price-description" class="text-slate-300">Everything your business needs to dominate</p>
-        </div>
-
-        <!-- Features List -->
-        <div class="space-y-4 mb-8">
-          {includedFeatures.map((feature) => (
-            <div class="flex items-start gap-3">
-              <div class="w-6 h-6 gradient-bg rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span class="text-slate-200">{feature}</span>
-            </div>
-          ))}
-        </div>
-
-        <!-- Free Website Highlight -->
-        <div class="bg-[#111213] rounded-2xl p-6 mb-8 border border-white/10">
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 gradient-bg rounded-xl flex items-center justify-center flex-shrink-0">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-              </svg>
-            </div>
-            <div>
-              <div class="font-bold text-white">FREE Professional Website</div>
-              <div class="text-sm text-slate-400">Custom design & development included with subscription</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- CTA Button -->
-        <a
-          href="https://wa.me/8801951284128"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="block w-full gradient-bg text-white text-center py-4 rounded-2xl text-lg font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-blue-primary/30"
+    <!-- Billing Toggle -->
+    <div class="flex justify-center mb-12">
+      <div class="bg-[#1E1F21] rounded-full p-1.5 inline-flex items-center border border-white/10">
+        <button
+          id="monthly-btn"
+          class="pricing-toggle px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 toggle-active"
         >
-          Get Started Today
-        </a>
-        <p class="text-center text-sm text-slate-400 mt-4">
-          7 days money back guarantee. Cancel anytime. Setup takes 24 hours.
-        </p>
+          Monthly
+        </button>
+        <button
+          id="annual-btn"
+          class="pricing-toggle px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 toggle-inactive relative"
+        >
+          Billed Annually
+          <span class="ml-1.5 text-[11px] font-bold text-purple-400">Save ~17%</span>
+        </button>
       </div>
+    </div>
+
+    <!-- Pricing Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      {plans.map((plan) => (
+        <div class={`pricing-card bg-slate-bg rounded-3xl p-8 relative ${plan.popular ? 'pricing-card-popular glow-purple' : 'border border-white/10 hover:border-white/20'}`}>
+          {/* Popular Badge */}
+          {plan.popular && (
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+              <span class="gradient-purple text-white px-5 py-1.5 rounded-full text-xs font-bold shadow-lg glow-purple">
+                Most Popular
+              </span>
+            </div>
+          )}
+
+          {/* Plan Name */}
+          <div class="mb-6">
+            <h3 class="text-xl font-bold text-white mb-2">{plan.name}</h3>
+            <p class="text-sm text-slate-400">{plan.description}</p>
+          </div>
+
+          {/* Price */}
+          <div class="mb-8">
+            <div class="flex items-baseline gap-1">
+              <span
+                class="pricing-amount text-5xl font-bold text-white transition-all duration-300"
+                data-monthly={`$${plan.monthlyPrice}`}
+                data-annual={`$${plan.annualPrice}`}
+              >
+                ${plan.monthlyPrice}
+              </span>
+              <span
+                class="pricing-period text-slate-400 font-medium transition-all duration-300"
+                data-monthly="/mo"
+                data-annual="/yr"
+              >
+                /mo
+              </span>
+            </div>
+            <p
+              class="pricing-billing text-sm text-slate-500 mt-1 transition-all duration-300"
+              data-monthly="Billed monthly"
+              data-annual={`Billed $${plan.annualPrice.toLocaleString()}/year`}
+            >
+              Billed monthly
+            </p>
+          </div>
+
+          {/* Features */}
+          <div class="space-y-3.5 mb-8">
+            {plan.features.map((feature) => (
+              <div class="flex items-start gap-3">
+                <div class={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${plan.popular ? 'gradient-purple' : 'gradient-bg'}`}>
+                  <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span class="text-sm text-slate-300">{feature}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA Button */}
+          <a
+            href="https://wa.me/8801951284128"
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`block w-full text-center py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
+              plan.popular
+                ? 'gradient-purple text-white hover:opacity-90 hover:scale-[1.02] shadow-lg glow-purple'
+                : 'bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-white/20 hover:scale-[1.02]'
+            }`}
+          >
+            {plan.cta}
+          </a>
+        </div>
+      ))}
+    </div>
+
+    <!-- Trust Text -->
+    <div class="mt-12 text-center">
+      <p class="text-sm text-slate-400">
+        No hidden fees. Cancel anytime. Setup takes 24-48 hours. Included calling minutes reset monthly.
+      </p>
     </div>
   </div>
 </section>
@@ -108,29 +187,38 @@ const includedFeatures = [
 <script>
   const monthlyBtn = document.getElementById('monthly-btn');
   const annualBtn = document.getElementById('annual-btn');
-  const priceAmount = document.getElementById('price-amount');
-  const pricePeriod = document.getElementById('price-period');
-  const priceDescription = document.getElementById('price-description');
+  const amounts = document.querySelectorAll('.pricing-amount');
+  const periods = document.querySelectorAll('.pricing-period');
+  const billings = document.querySelectorAll('.pricing-billing');
 
   let isAnnual = false;
 
   function updatePricing() {
+    amounts.forEach((el) => {
+      const amount = el.getAttribute(`data-${isAnnual ? 'annual' : 'monthly'}`);
+      if (amount) el.textContent = amount;
+    });
+
+    periods.forEach((el) => {
+      const period = el.getAttribute(`data-${isAnnual ? 'annual' : 'monthly'}`);
+      if (period) el.textContent = period;
+    });
+
+    billings.forEach((el) => {
+      const billing = el.getAttribute(`data-${isAnnual ? 'annual' : 'monthly'}`);
+      if (billing) el.textContent = billing;
+    });
+
     if (isAnnual) {
-      priceAmount.textContent = '$3000';
-      pricePeriod.textContent = '/year';
-      priceDescription.textContent = 'Billed annually — save $600!';
-      monthlyBtn.classList.remove('gradient-bg', 'text-white');
-      monthlyBtn.classList.add('text-slate-400', 'hover:text-white');
-      annualBtn.classList.remove('text-slate-400', 'hover:text-white');
-      annualBtn.classList.add('gradient-bg', 'text-white');
+      monthlyBtn.classList.remove('toggle-active');
+      monthlyBtn.classList.add('toggle-inactive');
+      annualBtn.classList.remove('toggle-inactive');
+      annualBtn.classList.add('toggle-active');
     } else {
-      priceAmount.textContent = '$300';
-      pricePeriod.textContent = '/month';
-      priceDescription.textContent = 'Everything your business needs to dominate';
-      annualBtn.classList.remove('gradient-bg', 'text-white');
-      annualBtn.classList.add('text-slate-400', 'hover:text-white');
-      monthlyBtn.classList.remove('text-slate-400', 'hover:text-white');
-      monthlyBtn.classList.add('gradient-bg', 'text-white');
+      annualBtn.classList.remove('toggle-active');
+      annualBtn.classList.add('toggle-inactive');
+      monthlyBtn.classList.remove('toggle-inactive');
+      monthlyBtn.classList.add('toggle-active');
     }
   }
 

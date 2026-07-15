@@ -5,6 +5,7 @@
   --color-navy-light: #111827;
   --color-blue-primary: #0066FF;
   --color-blue-electric: #00A3FF;
+  --color-purple-primary: #8B5CF6;
   --color-slate-bg: #1E1F21;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
@@ -65,5 +66,55 @@
 
   .card-shadow-lg {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  }
+
+  .gradient-purple {
+    background: linear-gradient(135deg, #8B5CF6, #3B82F6);
+  }
+
+  .gradient-purple-text {
+    background: linear-gradient(135deg, #A78BFA, #60A5FA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.2);
+  }
+
+  .glow-purple-lg {
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.5), 0 0 60px rgba(139, 92, 246, 0.25);
+  }
+
+  .pricing-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .pricing-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .pricing-card-popular {
+    border: 2px solid rgba(139, 92, 246, 0.5);
+  }
+
+  .pricing-card-popular:hover {
+    border-color: rgba(139, 92, 246, 0.8);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.3), 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .toggle-active {
+    background: linear-gradient(135deg, #8B5CF6, #3B82F6);
+    color: white;
+  }
+
+  .toggle-inactive {
+    background: transparent;
+    color: #94a3b8;
+  }
+
+  .toggle-inactive:hover {
+    color: white;
   }
 }

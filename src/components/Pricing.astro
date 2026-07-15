@@ -2,11 +2,11 @@
 const plans = [
   {
     name: 'Starter Line',
-    monthlyPrice: 300,
-    annualPrice: 3000,
-    annualMonthly: 250,
+    monthlyPrice: 299,
+    annualPrice: 2990,
+    annualMonthly: 249,
     period: '/mo',
-    annualPeriod: '/yr',
+    annualPeriod: '/mo',
     description: 'Perfect for small businesses getting started with Voice AI',
     features: [
       '500 Voice Calling Minutes/mo',
@@ -25,7 +25,7 @@ const plans = [
     annualPrice: 4990,
     annualMonthly: 416,
     period: '/mo',
-    annualPeriod: '/yr',
+    annualPeriod: '/mo',
     description: 'Most popular for growing businesses that need more power',
     features: [
       '1,500 Voice Calling Minutes/mo',
@@ -44,7 +44,7 @@ const plans = [
     annualPrice: 8990,
     annualMonthly: 749,
     period: '/mo',
-    annualPeriod: '/yr',
+    annualPeriod: '/mo',
     description: 'For businesses that need maximum capacity and customization',
     features: [
       '4,000 Voice Calling Minutes/mo',
@@ -123,14 +123,14 @@ const plans = [
               <span
                 class="pricing-amount text-5xl font-bold text-white transition-all duration-300"
                 data-monthly={`$${plan.monthlyPrice}`}
-                data-annual={`$${plan.annualPrice}`}
+                data-annual={`$${plan.annualMonthly}`}
               >
                 ${plan.monthlyPrice}
               </span>
               <span
                 class="pricing-period text-slate-400 font-medium transition-all duration-300"
                 data-monthly="/mo"
-                data-annual="/yr"
+                data-annual="/mo"
               >
                 /mo
               </span>

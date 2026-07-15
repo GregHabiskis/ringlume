@@ -10,13 +10,12 @@
 		"astro": "astro"
 	},
 	"devDependencies": {
-		"@storyblok/astro": "^9.0.0",
-		"astro": "^6.0.8",
+		"@storyblok/astro": "^10.2.0",
+		"astro": "^7.0.9",
 		"vite": "^7.1.7",
 		"vite-plugin-mkcert": "^1.17.10"
 	},
 	"dependencies": {
-		"@astrojs/netlify": "^7.0.4",
-		"@astrojs/vercel": "^10.0.2"
+		"@astrojs/vercel": "^11.0.3"
 	}
 }

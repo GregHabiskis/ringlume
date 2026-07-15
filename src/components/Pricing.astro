@@ -35,20 +35,28 @@ const includedFeatures = [
     <!-- Pricing Card -->
     <div class="max-w-2xl mx-auto">
       <div class="bg-slate-bg rounded-3xl p-8 sm:p-12 card-shadow-lg relative">
-        <!-- Popular Badge -->
-        <div class="absolute -top-4 left-1/2 -translate-x-1/2">
-          <span class="gradient-bg text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
-            Most Popular
-          </span>
+        <!-- Pricing Toggle -->
+        <div class="flex justify-center mb-8">
+          <div class="bg-[#111213] rounded-full p-1 inline-flex">
+            <button id="monthly-btn" class="pricing-toggle px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200 gradient-bg text-white">
+              Monthly
+            </button>
+            <button id="annual-btn" class="pricing-toggle px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white relative">
+              Annual
+              <span class="absolute -top-2 -right-2 gradient-bg text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                20% OFF
+              </span>
+            </button>
+          </div>
         </div>
 
         <!-- Price -->
         <div class="text-center mb-8 pt-4">
           <div class="flex items-baseline justify-center gap-1 mb-2">
-            <span class="text-6xl sm:text-7xl font-bold gradient-text">$300</span>
-            <span class="text-xl text-slate-400 font-medium">/month</span>
+            <span id="price-amount" class="text-6xl sm:text-7xl font-bold gradient-text" data-monthly="300" data-annual="2880">$300</span>
+            <span id="price-period" class="text-xl text-slate-400 font-medium">/month</span>
           </div>
-          <p class="text-slate-300">Everything your business needs to dominate</p>
+          <p id="price-description" class="text-slate-300">Everything your business needs to dominate</p>
         </div>
 
         <!-- Features List -->
@@ -96,3 +104,43 @@ const includedFeatures = [
     </div>
   </div>
 </section>
+
+<script>
+  const monthlyBtn = document.getElementById('monthly-btn');
+  const annualBtn = document.getElementById('annual-btn');
+  const priceAmount = document.getElementById('price-amount');
+  const pricePeriod = document.getElementById('price-period');
+  const priceDescription = document.getElementById('price-description');
+
+  let isAnnual = false;
+
+  function updatePricing() {
+    if (isAnnual) {
+      priceAmount.textContent = '$2880';
+      pricePeriod.textContent = '/year';
+      priceDescription.textContent = 'Billed annually — save $720!';
+      monthlyBtn.classList.remove('gradient-bg', 'text-white');
+      monthlyBtn.classList.add('text-slate-400', 'hover:text-white');
+      annualBtn.classList.remove('text-slate-400', 'hover:text-white');
+      annualBtn.classList.add('gradient-bg', 'text-white');
+    } else {
+      priceAmount.textContent = '$300';
+      pricePeriod.textContent = '/month';
+      priceDescription.textContent = 'Everything your business needs to dominate';
+      annualBtn.classList.remove('gradient-bg', 'text-white');
+      annualBtn.classList.add('text-slate-400', 'hover:text-white');
+      monthlyBtn.classList.remove('text-slate-400', 'hover:text-white');
+      monthlyBtn.classList.add('gradient-bg', 'text-white');
+    }
+  }
+
+  monthlyBtn.addEventListener('click', () => {
+    isAnnual = false;
+    updatePricing();
+  });
+
+  annualBtn.addEventListener('click', () => {
+    isAnnual = true;
+    updatePricing();
+  });
+</script>

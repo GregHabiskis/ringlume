@@ -1,0 +1,83 @@
+---
+const navLinks = [
+  { label: 'Home', href: '/' },
+  { label: 'Voice AI', href: '/#capabilities' },
+  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Contact', href: '/#contact' },
+]
+---
+
+<header class="fixed top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100">
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 lg:h-20">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-3 group">
+        <img
+          src="/Allinonesystem-Logo.png"
+          alt="All In One System"
+          class="h-10 lg:h-12 w-auto transition-transform group-hover:scale-105"
+        />
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center gap-8">
+        {navLinks.map((link) => (
+          <a
+            href={link.href}
+            class="text-sm font-medium text-slate-600 hover:text-[#0066FF] transition-colors"
+          >
+            {link.label}
+          </a>
+        ))}
+        <a
+          href="/#pricing"
+          class="gradient-bg text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity"
+        >
+          Get Started
+        </a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button
+        id="mobile-menu-toggle"
+        class="md:hidden p-2 text-slate-600 hover:text-slate-900"
+        aria-label="Toggle menu"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden pb-4">
+      <div class="flex flex-col gap-3">
+        {navLinks.map((link) => (
+          <a
+            href={link.href}
+            class="text-sm font-medium text-slate-600 hover:text-[#0066FF] py-2 transition-colors"
+          >
+            {link.label}
+          </a>
+        ))}
+        <a
+          href="/#pricing"
+          class="gradient-bg text-white px-6 py-2.5 rounded-full text-sm font-semibold text-center hover:opacity-90 transition-opacity"
+        >
+          Get Started
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.getElementById('mobile-menu-toggle')
+  const menu = document.getElementById('mobile-menu')
+
+  if (toggle && menu) {
+    toggle.addEventListener('click', () => {
+      menu.classList.toggle('hidden')
+    })
+  }
+</script>

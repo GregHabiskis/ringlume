@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import Header from '../components/Header.astro'
+import Hero from '../components/Hero.astro'
+import FomoSection from '../components/FomoSection.astro'
+import Capabilities from '../components/Capabilities.astro'
+import Pricing from '../components/Pricing.astro'
+import CtaSection from '../components/CtaSection.astro'
+import Footer from '../components/Footer.astro'
+import ContactWidget from '../components/ContactWidget.astro'
+import { getPage, getSiteSettings } from '../lib/payload'
+
+const PAYLOAD_API_URL = import.meta.env.PAYLOAD_API_URL
+
+let pageData = null
+let settings = null
+
+if (PAYLOAD_API_URL) {
+  try {
+    pageData = await getPage('home')
+    settings = await getSiteSettings()
+  } catch {
+    // Payload CMS not available - using built-in defaults
+  }
+}
+---
+
+<BaseLayout
+  title={pageData?.metaTitle || 'All In One System | Web Design & Voice AI Agents'}
+  description={pageData?.metaDescription || 'Professional Web Design and Voice AI Receptionists. Your 24/7 digital storefront with intelligent Voice AI infrastructure for forward-thinking businesses.'}
+>
+  <Header />
+
+  <main>
+    <Hero />
+    <FomoSection />
+    <Capabilities />
+    <Pricing />
+    <CtaSection />
+  </main>
+
+  <Footer />
+  <ContactWidget />
+</BaseLayout>

@@ -93,7 +93,9 @@ const plans = [
           class="pricing-toggle px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 toggle-inactive relative"
         >
           Billed Annually
-          <span class="ml-1.5 text-[11px] font-bold text-purple-400">Save ~17%</span>
+          <span class="absolute -top-2.5 -right-3 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-lg">
+            Save ~17%
+          </span>
         </button>
       </div>
     </div>
@@ -120,6 +122,11 @@ const plans = [
           {/* Price */}
           <div class="mb-8">
             <div class="flex items-baseline gap-1">
+              <span
+                class="pricing-tilde text-5xl font-bold text-white transition-all duration-300 opacity-0"
+              >
+                ~
+              </span>
               <span
                 class="pricing-amount text-5xl font-bold text-white transition-all duration-300"
                 data-monthly={`$${plan.monthlyPrice}`}
@@ -190,6 +197,7 @@ const plans = [
   const amounts = document.querySelectorAll('.pricing-amount');
   const periods = document.querySelectorAll('.pricing-period');
   const billings = document.querySelectorAll('.pricing-billing');
+  const tildes = document.querySelectorAll('.pricing-tilde');
 
   let isAnnual = false;
 
@@ -207,6 +215,10 @@ const plans = [
     billings.forEach((el) => {
       const billing = el.getAttribute(`data-${isAnnual ? 'annual' : 'monthly'}`);
       if (billing) el.textContent = billing;
+    });
+
+    tildes.forEach((el) => {
+      el.style.opacity = isAnnual ? '1' : '0';
     });
 
     if (isAnnual) {

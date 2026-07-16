@@ -14,9 +14,10 @@ const plans = [
       'Knowledge Base Training',
       'Automated Booking (1 Calendar)',
       'Custom CRM Integrations',
-      'Post-Call Analytics',
+      'Daily Post-Call Analytics Reports',
     ],
     cta: 'Get Started',
+    checkoutUrl: 'https://allinonesystem.lemonsqueezy.com/checkout/buy/bfc50783-9671-47be-9406-29ba4e9bced4?embed=1',
     popular: false,
   },
   {
@@ -32,10 +33,11 @@ const plans = [
       'Everything in Starter',
       'Live Transfer & Human Escalation',
       'Multilingual Support',
-      'Post-Call Recordings & Transcripts',
+      'Daily Post-Call Recordings & Transcripts',
       'Custom Booking Landing Page',
     ],
     cta: 'Get Started',
+    checkoutUrl: 'https://allinonesystem.lemonsqueezy.com/checkout/buy/73eb83a2-4edf-4ee2-9353-f3e38cfb51eb?embed=1',
     popular: true,
   },
   {
@@ -54,7 +56,8 @@ const plans = [
       'Custom Feature Integrations',
       'Dedicated Priority Support',
     ],
-    cta: 'Contact Sales',
+    cta: 'Buy Enterprise',
+    checkoutUrl: 'https://allinonesystem.lemonsqueezy.com/checkout/buy/f69ef3a9-f5e1-4ff3-9e70-06f8def88410?embed=1',
     popular: false,
   },
 ]
@@ -103,12 +106,21 @@ const plans = [
     <!-- Pricing Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
       {plans.map((plan) => (
-        <div class={`pricing-card bg-slate-bg rounded-3xl p-8 relative ${plan.popular ? 'pricing-card-popular glow-purple' : 'border border-white/10 hover:border-white/20'}`}>
+        <div class={`pricing-card bg-slate-bg rounded-3xl p-8 relative ${plan.popular ? 'pricing-card-popular glow-purple' : plan.name === 'Enterprise' ? 'border-2 border-amber-500/30 hover:border-amber-500/50 shadow-lg shadow-amber-500/10' : 'border border-white/10 hover:border-white/20'}`}>
           {/* Popular Badge */}
           {plan.popular && (
             <div class="absolute -top-4 left-1/2 -translate-x-1/2">
               <span class="gradient-purple text-white px-5 py-1.5 rounded-full text-xs font-bold shadow-lg glow-purple">
                 Most Popular
+              </span>
+            </div>
+          )}
+
+          {/* Premium Badge */}
+          {plan.name === 'Enterprise' && (
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+              <span class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-5 py-1.5 rounded-full text-xs font-bold shadow-lg shadow-amber-500/30">
+                Premium
               </span>
             </div>
           )}
@@ -167,10 +179,8 @@ const plans = [
 
           {/* CTA Button */}
           <a
-            href="https://wa.me/8801951284128"
-            target="_blank"
-            rel="noopener noreferrer"
-            class={`block w-full text-center py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
+            href={plan.checkoutUrl}
+            class={`lemonsqueezy-button block w-full text-center py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
               plan.popular
                 ? 'gradient-purple text-white hover:opacity-90 hover:scale-[1.02] shadow-lg glow-purple'
                 : 'bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-white/20 hover:scale-[1.02]'

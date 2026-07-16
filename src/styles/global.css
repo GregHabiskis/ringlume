@@ -118,3 +118,18 @@
     color: white;
   }
 }
+
+/* Lemon Squeezy Checkout Overlay Overrides */
+.lemonsqueezy-overlay {
+  align-items: flex-start !important;
+  padding-top: 40px !important;
+  background: linear-gradient(135deg, rgba(10, 17, 32, 0.95), rgba(30, 31, 33, 0.98)) !important;
+}
+
+.lemonsqueezy-modal {
+  margin-top: 0 !important;
+}
+
+.lemonsqueezy-backdrop {
+  background: linear-gradient(180deg, rgba(10, 17, 32, 0.9) 0%, rgba(30, 31, 33, 0.95) 100%) !important;
+}

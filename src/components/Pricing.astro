@@ -95,7 +95,7 @@ const plans = [
           id="annual-btn"
           class="pricing-toggle px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 toggle-inactive relative"
         >
-          Billed Annually
+          Annually
           <span class="absolute -top-2.5 -right-3 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-lg">
             Save ~17%
           </span>
@@ -142,14 +142,14 @@ const plans = [
               <span
                 class="pricing-amount text-5xl font-bold text-white transition-all duration-300"
                 data-monthly={`$${plan.monthlyPrice}`}
-                data-annual={`$${plan.annualMonthly}`}
+                data-annual={plan.name === 'Enterprise' ? 'Contact Us' : `$${plan.annualMonthly}`}
               >
                 ${plan.monthlyPrice}
               </span>
               <span
                 class="pricing-period text-slate-400 font-medium transition-all duration-300"
                 data-monthly="/mo"
-                data-annual="/mo"
+                data-annual={plan.name === 'Enterprise' ? '' : '/mo'}
               >
                 /mo
               </span>
@@ -157,7 +157,7 @@ const plans = [
             <p
               class="pricing-billing text-sm text-slate-500 mt-1 transition-all duration-300"
               data-monthly="Billed monthly"
-              data-annual={`Billed $${plan.annualPrice.toLocaleString()}/year`}
+              data-annual={plan.name === 'Enterprise' ? '' : `Billed $${plan.annualPrice.toLocaleString()}/year`}
             >
               Billed monthly
             </p>

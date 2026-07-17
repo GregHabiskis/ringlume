@@ -221,12 +221,14 @@ const plans = [
 
     periods.forEach((el) => {
       const period = el.getAttribute(`data-${isAnnual ? 'annual' : 'monthly'}`);
-      if (period) el.textContent = period;
+      el.textContent = period || '';
+      el.style.display = period ? '' : 'none';
     });
 
     billings.forEach((el) => {
       const billing = el.getAttribute(`data-${isAnnual ? 'annual' : 'monthly'}`);
-      if (billing) el.textContent = billing;
+      el.textContent = billing || '';
+      el.style.display = billing ? '' : 'none';
     });
 
     tildes.forEach((el) => {

@@ -267,6 +267,7 @@ const plans = [
 
 <script>
 (function() {
+  /* ── SDK lazy loader ── */
   var lsLoaded = false;
   var lsLoading = false;
   var lsCallbacks = [];
@@ -286,8 +287,9 @@ const plans = [
     };
     s.onerror = function () {
       lsLoading = false;
-      lsCallbacks.forEach(function (fn) { fn(null); });
+      var err = lsCallbacks.slice();
       lsCallbacks = [];
+      err.forEach(function (fn) { fn(null); });
     };
     document.body.appendChild(s);
   }
@@ -305,6 +307,51 @@ const plans = [
     if (!lsLoading) loadLS();
   }
 
+  /* ── Checkout state machine ── */
+  var checkoutState = 'idle';  // 'idle' | 'loading' | 'open' | 'error'
+  var activeBtn = null;
+
+  function resetButton(btn) {
+    if (!btn) return;
+    delete btn.dataset.processing;
+    btn.style.pointerEvents = '';
+    var textEl = btn.querySelector('.pricing-cta-text');
+    var spinnerEl = btn.querySelector('.pricing-cta-spinner');
+    if (textEl) textEl.classList.remove('hidden');
+    if (spinnerEl) spinnerEl.classList.add('hidden');
+    checkoutState = 'idle';
+    activeBtn = null;
+  }
+
+  /* ── Lemon Squeezy lifecycle events (postMessage) ── */
+  window.addEventListener('message', function (e) {
+    if (e.origin !== 'https://app.lemonsqueezy.com' &&
+        e.origin !== 'https://allinonesystem.lemonsqueezy.com' &&
+        e.origin !== 'https://checkout.lemonsqueezy.com') return;
+
+    var data;
+    try {
+      data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+    } catch (_) {
+      return;
+    }
+    if (!data || !data.event) return;
+
+    if (data.event === 'CheckoutReady' && checkoutState === 'loading') {
+      checkoutState = 'open';
+      resetButton(activeBtn);
+    }
+    if (data.event === 'CheckoutClosed' || data.event === 'CheckoutSuccess') {
+      resetButton(activeBtn);
+    }
+  });
+
+  /* ── bfcache: reset on back/forward restore ── */
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) resetButton(activeBtn);
+  });
+
+  /* ── Click handler ── */
   document.addEventListener('click', function (e) {
     var btn = e.target.closest('.pricing-cta');
     if (!btn) return;
@@ -315,25 +362,32 @@ const plans = [
     e.preventDefault();
 
     if (btn.dataset.processing === 'true') return;
+    if (checkoutState !== 'idle') return;
+
     btn.dataset.processing = 'true';
+    checkoutState = 'loading';
+    activeBtn = btn;
 
     var textEl = btn.querySelector('.pricing-cta-text');
     var spinnerEl = btn.querySelector('.pricing-cta-spinner');
     if (textEl) textEl.classList.add('hidden');
-    if (spinnerEl) {
-      spinnerEl.classList.remove('hidden');
-    }
+    if (spinnerEl) spinnerEl.classList.remove('hidden');
     btn.style.pointerEvents = 'none';
 
     onLSReady(function (LS) {
+      if (checkoutState !== 'loading') return;
+
       if (LS && LS.Url && LS.Url.Open) {
         LS.Url.Open(url);
       } else {
+        checkoutState = 'error';
+        resetButton(btn);
         window.location.href = url;
       }
     });
   });
 
+  /* ── Lazy preloading triggers ── */
   document.addEventListener('mouseover', function (e) {
     var btn = e.target.closest('.pricing-cta');
     if (btn) loadLS();
@@ -359,19 +413,4 @@ const plans = [
 })();
 </script>
 
-<style is:global>
-  /* Lemon Squeezy Checkout Overlay - Position & Backdrop Styling */
-  .lemonsqueezy-overlay {
-    align-items: flex-start !important;
-    padding-top: 40px !important;
-    background: linear-gradient(135deg, rgba(10, 17, 32, 0.95), rgba(30, 31, 33, 0.98)) !important;
-  }
 
-  .lemonsqueezy-modal {
-    margin-top: 0 !important;
-  }
-
-  .lemonsqueezy-backdrop {
-    background: linear-gradient(180deg, rgba(10, 17, 32, 0.9) 0%, rgba(30, 31, 33, 0.95) 100%) !important;
-  }
-</style>

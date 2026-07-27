@@ -81,5 +81,11 @@ const navLinks = [
     toggle.addEventListener('click', () => {
       menu.classList.toggle('hidden')
     })
+
+    document.addEventListener('click', (e) => {
+      if (!menu.classList.contains('hidden') && !menu.contains(e.target) && !toggle.contains(e.target)) {
+        menu.classList.add('hidden')
+      }
+    })
   }
 </script>

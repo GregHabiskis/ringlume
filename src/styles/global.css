@@ -8,6 +8,8 @@
   --color-green-dark: #34C759;
   --color-green-light: #A8F5B2;
   --color-green-pale: #EAFCEF;
+  --color-green-muted: #2A8C3E;
+  --color-green-deep: #1C6B30;
   --color-slate-bg: #1E1F21;
   --font-sans: 'Comfortaa', system-ui, -apple-system, sans-serif;
 }
@@ -33,6 +35,10 @@
 
   .gradient-bg {
     background: linear-gradient(135deg, #6EEB83, #34C759);
+  }
+
+  .gradient-bg-muted {
+    background: linear-gradient(135deg, var(--color-green-muted), var(--color-green-deep));
   }
 
   .gradient-bg-hover {

@@ -182,13 +182,19 @@ const plans = [
           {/* CTA Button */}
           <a
             href={plan.checkoutUrl}
-            class={`lemonsqueezy-button block w-full text-center py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
+            class={`pricing-cta block w-full text-center py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
               plan.popular
                 ? 'gradient-green text-white hover:opacity-90 hover:scale-[1.02] shadow-lg glow-green'
                 : 'bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-white/20 hover:scale-[1.02]'
             }`}
           >
-            {plan.cta}
+            <span class="pricing-cta-text">{plan.cta}</span>
+            <span class="pricing-cta-spinner hidden flex items-center justify-center">
+              <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+            </span>
           </a>
         </div>
       ))}
@@ -257,6 +263,100 @@ const plans = [
     isAnnual = true;
     updatePricing();
   });
+</script>
+
+<script>
+(function() {
+  var lsLoaded = false;
+  var lsLoading = false;
+  var lsCallbacks = [];
+
+  function loadLS() {
+    if (lsLoaded || lsLoading) return;
+    lsLoading = true;
+
+    var s = document.createElement('script');
+    s.src = 'https://assets.lemonsqueezy.com/lemon.js';
+    s.async = true;
+    s.onload = function () {
+      lsLoaded = true;
+      lsLoading = false;
+      lsCallbacks.forEach(function (fn) { fn(window.LemonSqueezy); });
+      lsCallbacks = [];
+    };
+    s.onerror = function () {
+      lsLoading = false;
+      lsCallbacks.forEach(function (fn) { fn(null); });
+      lsCallbacks = [];
+    };
+    document.body.appendChild(s);
+  }
+
+  function onLSReady(callback) {
+    if (window.LemonSqueezy && window.LemonSqueezy.Url) {
+      callback(window.LemonSqueezy);
+      return;
+    }
+    if (lsLoaded) {
+      callback(window.LemonSqueezy || null);
+      return;
+    }
+    lsCallbacks.push(callback);
+    if (!lsLoading) loadLS();
+  }
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.pricing-cta');
+    if (!btn) return;
+
+    var url = btn.getAttribute('href');
+    if (!url) return;
+
+    e.preventDefault();
+
+    if (btn.dataset.processing === 'true') return;
+    btn.dataset.processing = 'true';
+
+    var textEl = btn.querySelector('.pricing-cta-text');
+    var spinnerEl = btn.querySelector('.pricing-cta-spinner');
+    if (textEl) textEl.classList.add('hidden');
+    if (spinnerEl) {
+      spinnerEl.classList.remove('hidden');
+    }
+    btn.style.pointerEvents = 'none';
+
+    onLSReady(function (LS) {
+      if (LS && LS.Url && LS.Url.Open) {
+        LS.Url.Open(url);
+      } else {
+        window.location.href = url;
+      }
+    });
+  });
+
+  document.addEventListener('mouseover', function (e) {
+    var btn = e.target.closest('.pricing-cta');
+    if (btn) loadLS();
+  });
+
+  document.addEventListener('focusin', function (e) {
+    var btn = e.target.closest('.pricing-cta');
+    if (btn) loadLS();
+  });
+
+  var pricingSection = document.getElementById('pricing');
+  if (pricingSection && 'IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          loadLS();
+          observer.disconnect();
+        }
+      });
+    }, { rootMargin: '300px' });
+    observer.observe(pricingSection);
+  }
+})();
 </script>
 
 <style is:global>

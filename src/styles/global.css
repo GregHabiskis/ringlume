@@ -3,9 +3,11 @@
 @theme {
   --color-navy: #0A1120;
   --color-navy-light: #111827;
-  --color-blue-primary: #0066FF;
-  --color-blue-electric: #00A3FF;
-  --color-purple-primary: #8B5CF6;
+  --color-green-primary: #4CD964;
+  --color-green-accent: #6EEB83;
+  --color-green-dark: #34C759;
+  --color-green-light: #A8F5B2;
+  --color-green-pale: #EAFCEF;
   --color-slate-bg: #1E1F21;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
@@ -23,18 +25,18 @@
 
 @layer utilities {
   .gradient-text {
-    background: linear-gradient(135deg, #0066FF, #00A3FF);
+    background: linear-gradient(135deg, #6EEB83, #34C759);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .gradient-bg {
-    background: linear-gradient(135deg, #0066FF, #00A3FF);
+    background: linear-gradient(135deg, #6EEB83, #34C759);
   }
 
   .gradient-bg-hover {
-    background: linear-gradient(135deg, #0052CC, #0088DD);
+    background: linear-gradient(135deg, #3CB34D, #2E9F3E);
   }
 
   .gradient-border {
@@ -48,7 +50,7 @@
     inset: 0;
     border-radius: inherit;
     padding: 2px;
-    background: linear-gradient(135deg, #0066FF, #00A3FF);
+    background: linear-gradient(135deg, #6EEB83, #34C759);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -68,23 +70,23 @@
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   }
 
-  .gradient-purple {
-    background: linear-gradient(135deg, #8B5CF6, #3B82F6);
+  .gradient-green {
+    background: linear-gradient(135deg, #34C759, #4CD964);
   }
 
-  .gradient-purple-text {
-    background: linear-gradient(135deg, #A78BFA, #60A5FA);
+  .gradient-green-text {
+    background: linear-gradient(135deg, #6EEB83, #4CD964);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .glow-purple {
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.2);
+  .glow-green {
+    box-shadow: 0 0 20px rgba(76, 217, 100, 0.4), 0 0 40px rgba(76, 217, 100, 0.2);
   }
 
-  .glow-purple-lg {
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.5), 0 0 60px rgba(139, 92, 246, 0.25);
+  .glow-green-lg {
+    box-shadow: 0 0 30px rgba(76, 217, 100, 0.5), 0 0 60px rgba(76, 217, 100, 0.25);
   }
 
   .pricing-card {
@@ -96,16 +98,16 @@
   }
 
   .pricing-card-popular {
-    border: 2px solid rgba(139, 92, 246, 0.5);
+    border: 2px solid rgba(76, 217, 100, 0.4);
   }
 
   .pricing-card-popular:hover {
-    border-color: rgba(139, 92, 246, 0.8);
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.3), 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: rgba(76, 217, 100, 0.7);
+    box-shadow: 0 0 30px rgba(76, 217, 100, 0.25), 0 20px 40px rgba(0, 0, 0, 0.3);
   }
 
   .toggle-active {
-    background: linear-gradient(135deg, #8B5CF6, #3B82F6);
+    background: linear-gradient(135deg, #6EEB83, #34C759);
     color: white;
   }
 

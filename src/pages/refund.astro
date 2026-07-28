@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+import ContactWidget from '../components/ContactWidget.astro'
+---
+
+<BaseLayout
+  title="Return & Refund Policy | Ringlume"
+  description="Ringlume 7-day money back guarantee and refund policy for Voice AI agent subscriptions."
+>
+  <Header />
+
+  <main class="pt-24 pb-20 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">Return & Refund Policy</h1>
+      <p class="text-slate-400 mb-12">Last Updated: July 15, 2026</p>
+
+      <div class="prose prose-slate max-w-none space-y-10">
+
+        <section>
+          <h2 class="text-2xl font-bold text-white mb-4">7-Day Money Back Guarantee</h2>
+          <p class="text-slate-300 leading-relaxed font-medium">
+            We offer a 7-day money back guarantee for new subscriptions.
+          </p>
+          <p class="text-slate-300 leading-relaxed mt-4">
+            If you are not satisfied with the Services within the first 7 days of your initial
+            subscription activation, you may request a full refund by contacting our support team.
+            To be eligible for a refund under this guarantee:
+          </p>
+          <ul class="list-disc list-inside text-slate-300 space-y-2 mt-4 ml-4">
+            <li>The refund request must be submitted within 7 calendar days of the original subscription start date</li>
+            <li>The request must be submitted in writing via email to support@ringlume.com</li>
+            <li>Only the first subscription activation is eligible; renewal periods are non-refundable</li>
+            <li>The refund will be processed to the original payment method within 10 business days</li>
+          </ul>
+          <p class="text-slate-300 leading-relaxed mt-4">
+            <strong class="text-white">After the 7-day period:</strong> All subscription fees paid are
+            non-refundable. This includes, but is not limited to:
+          </p>
+          <ul class="list-disc list-inside text-slate-300 space-y-2 mt-4 ml-4">
+            <li>Partial month usage or early cancellation after the 7-day window</li>
+            <li>Unused AI agent minutes, call capacity, or feature access</li>
+            <li>Changes in business requirements, staffing, or operational needs</li>
+            <li>Technical issues arising from client-side configuration or third-party integrations</li>
+          </ul>
+          <p class="text-slate-300 leading-relaxed mt-4">
+            By subscribing to the Services, you acknowledge and agree to this refund policy. The
+            7-day money back guarantee applies only to your initial subscription and does not
+            extend to any subsequent billing periods or reactivations.
+          </p>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+  <ContactWidget />
+</BaseLayout>

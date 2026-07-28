@@ -2,11 +2,11 @@
 ---
 
 <section class="relative pt-32 lg:pt-40 pb-20 lg:pb-32 overflow-hidden bg-navy">
-  <!-- Background Elements -->
-  <div class="absolute inset-0 overflow-hidden">
-    <div class="absolute -top-40 -right-40 w-80 h-80 bg-green-primary/20 rounded-full blur-3xl"></div>
-    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-green-accent/20 rounded-full blur-3xl"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-primary/5 rounded-full blur-3xl"></div>
+  <!-- Background Elements: lighter paint on mobile -->
+  <div class="absolute inset-0 overflow-hidden" aria-hidden="true">
+    <div class="orb orb-sm absolute -top-32 -right-24 w-64 h-64 md:w-80 md:h-80 bg-green-primary/25"></div>
+    <div class="orb orb-sm absolute -bottom-32 -left-24 w-64 h-64 md:w-80 md:h-80 bg-green-accent/20 hidden sm:block"></div>
+    <div class="orb orb-sm absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] md:w-[600px] md:h-[600px] bg-green-primary/5 hidden md:block"></div>
   </div>
 
   <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -126,7 +126,12 @@
         currentIndex = nextIndex;
       }
 
-      setInterval(rotateWord, DISPLAY_MS);
+      const start = () => setInterval(rotateWord, DISPLAY_MS);
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(start, { timeout: 2000 });
+      } else {
+        setTimeout(start, 1);
+      }
     }
   })();
 </script>

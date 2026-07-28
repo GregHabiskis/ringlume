@@ -17,7 +17,7 @@ const plans = [
       'Daily Post-Call Analytics Reports',
     ],
     cta: 'Get Started',
-    checkoutUrl: 'https://allinonesystem.lemonsqueezy.com/checkout/buy/bfc50783-9671-47be-9406-29ba4e9bced4?embed=1',
+    checkoutUrl: 'https://ringlume.lemonsqueezy.com/checkout/buy/bfc50783-9671-47be-9406-29ba4e9bced4?media=0',
     popular: false,
   },
   {
@@ -37,7 +37,7 @@ const plans = [
       'Custom Booking Landing Page',
     ],
     cta: 'Get Started',
-    checkoutUrl: 'https://allinonesystem.lemonsqueezy.com/checkout/buy/73eb83a2-4edf-4ee2-9353-f3e38cfb51eb?embed=1',
+    checkoutUrl: 'https://ringlume.lemonsqueezy.com/checkout/buy/73eb83a2-4edf-4ee2-9353-f3e38cfb51eb?media=0',
     popular: true,
   },
   {
@@ -57,18 +57,17 @@ const plans = [
       'Dedicated Priority Support',
     ],
     cta: 'Buy Max',
-    checkoutUrl: 'https://allinonesystem.lemonsqueezy.com/checkout/buy/f69ef3a9-f5e1-4ff3-9e70-06f8def88410?embed=1',
+    checkoutUrl: 'https://ringlume.lemonsqueezy.com/checkout/buy/f69ef3a9-f5e1-4ff3-9e70-06f8def88410?media=0',
     popular: false,
   },
 ]
 ---
 
-<section id="pricing" class="py-20 lg:py-32 bg-navy relative overflow-hidden">
-  <!-- Background Elements -->
-  <div class="absolute inset-0 overflow-hidden">
-    <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-primary/20 rounded-full blur-3xl"></div>
-    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-primary/15 rounded-full blur-3xl"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-primary/5 rounded-full blur-3xl"></div>
+<section id="pricing" class="py-20 lg:py-32 bg-navy relative overflow-hidden content-auto">
+  <!-- Background Elements: skip heavy blurs on small screens -->
+  <div class="absolute inset-0 overflow-hidden hidden md:block" aria-hidden="true">
+    <div class="orb orb-sm absolute -top-40 -right-40 w-80 h-80 bg-green-primary/15"></div>
+    <div class="orb orb-sm absolute -bottom-40 -left-40 w-80 h-80 bg-green-accent/10"></div>
   </div>
 
   <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -182,19 +181,13 @@ const plans = [
           {/* CTA Button */}
           <a
             href={plan.checkoutUrl}
-            class={`pricing-cta block w-full text-center py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
+            class={`block w-full text-center py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
               plan.popular
                 ? 'gradient-green text-white hover:opacity-90 hover:scale-[1.02] shadow-lg glow-green'
                 : 'bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-white/20 hover:scale-[1.02]'
             }`}
           >
-            <span class="pricing-cta-text">{plan.cta}</span>
-            <span class="pricing-cta-spinner hidden flex items-center justify-center">
-              <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-            </span>
+            {plan.cta}
           </a>
         </div>
       ))}
@@ -265,152 +258,6 @@ const plans = [
   });
 </script>
 
-<script>
-(function() {
-  /* ── SDK lazy loader ── */
-  var lsLoaded = false;
-  var lsLoading = false;
-  var lsCallbacks = [];
 
-  function loadLS() {
-    if (lsLoaded || lsLoading) return;
-    lsLoading = true;
-
-    var s = document.createElement('script');
-    s.src = 'https://assets.lemonsqueezy.com/lemon.js';
-    s.async = true;
-    s.onload = function () {
-      lsLoaded = true;
-      lsLoading = false;
-      lsCallbacks.forEach(function (fn) { fn(window.LemonSqueezy); });
-      lsCallbacks = [];
-    };
-    s.onerror = function () {
-      lsLoading = false;
-      var err = lsCallbacks.slice();
-      lsCallbacks = [];
-      err.forEach(function (fn) { fn(null); });
-    };
-    document.body.appendChild(s);
-  }
-
-  function onLSReady(callback) {
-    if (window.LemonSqueezy && window.LemonSqueezy.Url) {
-      callback(window.LemonSqueezy);
-      return;
-    }
-    if (lsLoaded) {
-      callback(window.LemonSqueezy || null);
-      return;
-    }
-    lsCallbacks.push(callback);
-    if (!lsLoading) loadLS();
-  }
-
-  /* ── Checkout state machine ── */
-  var checkoutState = 'idle';  // 'idle' | 'loading' | 'open' | 'error'
-  var activeBtn = null;
-
-  function resetButton(btn) {
-    if (!btn) return;
-    delete btn.dataset.processing;
-    btn.style.pointerEvents = '';
-    var textEl = btn.querySelector('.pricing-cta-text');
-    var spinnerEl = btn.querySelector('.pricing-cta-spinner');
-    if (textEl) textEl.classList.remove('hidden');
-    if (spinnerEl) spinnerEl.classList.add('hidden');
-    checkoutState = 'idle';
-    activeBtn = null;
-  }
-
-  /* ── Lemon Squeezy lifecycle events (postMessage) ── */
-  window.addEventListener('message', function (e) {
-    if (e.origin !== 'https://app.lemonsqueezy.com' &&
-        e.origin !== 'https://allinonesystem.lemonsqueezy.com' &&
-        e.origin !== 'https://checkout.lemonsqueezy.com') return;
-
-    var data;
-    try {
-      data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
-    } catch (_) {
-      return;
-    }
-    if (!data || !data.event) return;
-
-    if (data.event === 'CheckoutReady' && checkoutState === 'loading') {
-      checkoutState = 'open';
-      resetButton(activeBtn);
-    }
-    if (data.event === 'CheckoutClosed' || data.event === 'CheckoutSuccess') {
-      resetButton(activeBtn);
-    }
-  });
-
-  /* ── bfcache: reset on back/forward restore ── */
-  window.addEventListener('pageshow', function (e) {
-    if (e.persisted) resetButton(activeBtn);
-  });
-
-  /* ── Click handler ── */
-  document.addEventListener('click', function (e) {
-    var btn = e.target.closest('.pricing-cta');
-    if (!btn) return;
-
-    var url = btn.getAttribute('href');
-    if (!url) return;
-
-    e.preventDefault();
-
-    if (btn.dataset.processing === 'true') return;
-    if (checkoutState !== 'idle') return;
-
-    btn.dataset.processing = 'true';
-    checkoutState = 'loading';
-    activeBtn = btn;
-
-    var textEl = btn.querySelector('.pricing-cta-text');
-    var spinnerEl = btn.querySelector('.pricing-cta-spinner');
-    if (textEl) textEl.classList.add('hidden');
-    if (spinnerEl) spinnerEl.classList.remove('hidden');
-    btn.style.pointerEvents = 'none';
-
-    onLSReady(function (LS) {
-      if (checkoutState !== 'loading') return;
-
-      if (LS && LS.Url && LS.Url.Open) {
-        LS.Url.Open(url);
-      } else {
-        checkoutState = 'error';
-        resetButton(btn);
-        window.location.href = url;
-      }
-    });
-  });
-
-  /* ── Lazy preloading triggers ── */
-  document.addEventListener('mouseover', function (e) {
-    var btn = e.target.closest('.pricing-cta');
-    if (btn) loadLS();
-  });
-
-  document.addEventListener('focusin', function (e) {
-    var btn = e.target.closest('.pricing-cta');
-    if (btn) loadLS();
-  });
-
-  var pricingSection = document.getElementById('pricing');
-  if (pricingSection && 'IntersectionObserver' in window) {
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          loadLS();
-          observer.disconnect();
-        }
-      });
-    }, { rootMargin: '300px' });
-    observer.observe(pricingSection);
-  }
-})();
-</script>
 
 

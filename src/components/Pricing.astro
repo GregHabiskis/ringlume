@@ -5,8 +5,8 @@ const plans = [
     monthlyPrice: 299,
     annualPrice: 2990,
     annualMonthly: 249,
-    period: '/mo',
-    annualPeriod: '/mo',
+    monthlyPriceId: import.meta.env.PUBLIC_PADDLE_BASIC_MONTHLY_PRICE_ID || '',
+    annualPriceId: import.meta.env.PUBLIC_PADDLE_BASIC_ANNUAL_PRICE_ID || '',
     description: 'Perfect for small businesses getting started with Voice AI',
     features: [
       '200 Voice Calling Minutes',
@@ -17,7 +17,6 @@ const plans = [
       'Daily Post-Call Analytics Reports',
     ],
     cta: 'Get Started',
-    checkoutUrl: 'https://ringlume.lemonsqueezy.com/checkout/buy/bfc50783-9671-47be-9406-29ba4e9bced4?media=0',
     popular: false,
   },
   {
@@ -25,8 +24,8 @@ const plans = [
     monthlyPrice: 499,
     annualPrice: 4990,
     annualMonthly: 416,
-    period: '/mo',
-    annualPeriod: '/mo',
+    monthlyPriceId: import.meta.env.PUBLIC_PADDLE_PRO_MONTHLY_PRICE_ID || '',
+    annualPriceId: import.meta.env.PUBLIC_PADDLE_PRO_ANNUAL_PRICE_ID || '',
     description: 'Most popular for growing businesses that need more power',
     features: [
       '500 Voice Calling Minutes',
@@ -34,10 +33,8 @@ const plans = [
       'Live Transfer & Human Escalation',
       'Multilingual Support',
       'Daily Post-Call Recordings & Transcripts',
-      'Custom Booking Landing Page',
     ],
     cta: 'Get Started',
-    checkoutUrl: 'https://ringlume.lemonsqueezy.com/checkout/buy/73eb83a2-4edf-4ee2-9353-f3e38cfb51eb?media=0',
     popular: true,
   },
   {
@@ -45,8 +42,8 @@ const plans = [
     monthlyPrice: 999,
     annualPrice: 9990,
     annualMonthly: 832,
-    period: '/mo',
-    annualPeriod: '/mo',
+    monthlyPriceId: import.meta.env.PUBLIC_PADDLE_MAX_MONTHLY_PRICE_ID || '',
+    annualPriceId: import.meta.env.PUBLIC_PADDLE_MAX_ANNUAL_PRICE_ID || '',
     description: 'For businesses that need maximum capacity and customization',
     features: [
       '1,200 Voice Calling Minutes/mo',
@@ -56,8 +53,7 @@ const plans = [
       'Custom Feature Integrations',
       'Dedicated Priority Support',
     ],
-    cta: 'Buy Max',
-    checkoutUrl: 'https://ringlume.lemonsqueezy.com/checkout/buy/f69ef3a9-f5e1-4ff3-9e70-06f8def88410?media=0',
+    cta: 'Get Started',
     popular: false,
   },
 ]
@@ -106,7 +102,7 @@ const plans = [
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
       {plans.map((plan) => (
         <div class={`pricing-card bg-slate-bg rounded-3xl p-8 relative ${plan.popular ? 'pricing-card-popular glow-green' : plan.name === 'Max' ? 'border-2 border-amber-500/30 hover:border-amber-500/50 shadow-lg shadow-amber-500/10' : 'border border-white/10 hover:border-white/20'}`}>
-          {/* Popular Badge */}
+          <!-- Popular Badge -->
           {plan.popular && (
             <div class="absolute -top-4 left-1/2 -translate-x-1/2">
               <span class="gradient-green text-white px-5 py-1.5 rounded-full text-xs font-bold shadow-lg glow-green">
@@ -115,7 +111,7 @@ const plans = [
             </div>
           )}
 
-          {/* Premium Badge */}
+          <!-- Premium Badge -->
           {plan.name === 'Max' && (
             <div class="absolute -top-4 left-1/2 -translate-x-1/2">
               <span class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-5 py-1.5 rounded-full text-xs font-bold shadow-lg shadow-amber-500/30">
@@ -124,33 +120,31 @@ const plans = [
             </div>
           )}
 
-          {/* Plan Name */}
+          <!-- Plan Name -->
           <div class="mb-6 text-center">
             <h3 class="text-xl font-bold text-white mb-2">{plan.name}</h3>
             <p class="text-sm text-slate-400">{plan.description}</p>
           </div>
 
-          {/* Price */}
+          <!-- Price -->
           <div class="mb-8 text-center">
             <div class="flex items-baseline justify-center gap-1">
-              {plan.name !== 'Max' && (
-                <span
-                  class="pricing-tilde text-5xl font-bold text-white transition-all duration-300 opacity-0"
-                >
-                  ~
-                </span>
-              )}
+              <span
+                class="pricing-tilde text-5xl font-bold text-white transition-all duration-300 opacity-0"
+              >
+                ~
+              </span>
               <span
                 class="pricing-amount text-5xl font-bold text-white transition-all duration-300"
                 data-monthly={`$${plan.monthlyPrice}`}
-                data-annual={plan.name === 'Max' ? 'Contact Us' : `$${plan.annualMonthly}`}
+                data-annual={`$${plan.annualMonthly}`}
               >
                 ${plan.monthlyPrice}
               </span>
               <span
                 class="pricing-period text-slate-400 font-medium transition-all duration-300"
                 data-monthly="/mo"
-                data-annual={plan.name === 'Max' ? '' : '/mo'}
+                data-annual="/mo"
               >
                 /mo
               </span>
@@ -158,13 +152,13 @@ const plans = [
             <p
               class="pricing-billing text-sm text-slate-500 mt-1 transition-all duration-300"
               data-monthly="Billed monthly"
-              data-annual={plan.name === 'Max' ? '' : `Billed $${plan.annualPrice.toLocaleString()}/year`}
+              data-annual={`Billed $${plan.annualPrice.toLocaleString()}/year`}
             >
               Billed monthly
             </p>
           </div>
 
-          {/* Features */}
+          <!-- Features -->
           <div class="space-y-3.5 mb-8">
             {plan.features.map((feature) => (
               <div class="flex items-start gap-3">
@@ -178,17 +172,20 @@ const plans = [
             ))}
           </div>
 
-          {/* CTA Button */}
-          <a
-            href={plan.checkoutUrl}
-            class={`block w-full text-center py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
+          <!-- CTA Button -->
+          <button
+            type="button"
+            data-plan={plan.name.toLowerCase()}
+            data-monthly-price-id={plan.monthlyPriceId}
+            data-annual-price-id={plan.annualPriceId}
+            class={`block w-full text-center py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 cursor-pointer ${
               plan.popular
                 ? 'gradient-green text-white hover:opacity-90 hover:scale-[1.02] shadow-lg glow-green'
                 : 'bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-white/20 hover:scale-[1.02]'
             }`}
           >
             {plan.cta}
-          </a>
+          </button>
         </div>
       ))}
     </div>
@@ -202,62 +199,101 @@ const plans = [
   </div>
 </section>
 
+<script is:inline src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+
 <script>
-  const monthlyBtn = document.getElementById('monthly-btn');
-  const annualBtn = document.getElementById('annual-btn');
-  const amounts = document.querySelectorAll('.pricing-amount');
-  const periods = document.querySelectorAll('.pricing-period');
-  const billings = document.querySelectorAll('.pricing-billing');
-  const tildes = document.querySelectorAll('.pricing-tilde');
+  document.addEventListener('DOMContentLoaded', () => {
+    const paddleToken = import.meta.env.PUBLIC_PADDLE_CLIENT_TOKEN;
+    const paddleEnv = import.meta.env.PUBLIC_PADDLE_ENVIRONMENT || 'sandbox';
+    const setupFeePriceId = import.meta.env.PUBLIC_PADDLE_SETUP_FEE_PRICE_ID;
 
-  let isAnnual = false;
-
-  function updatePricing() {
-    amounts.forEach((el) => {
-      const amount = el.getAttribute(`data-${isAnnual ? 'annual' : 'monthly'}`);
-      if (amount) el.textContent = amount;
-    });
-
-    periods.forEach((el) => {
-      const period = el.getAttribute(`data-${isAnnual ? 'annual' : 'monthly'}`);
-      el.textContent = period || '';
-      el.style.display = period ? '' : 'none';
-    });
-
-    billings.forEach((el) => {
-      const billing = el.getAttribute(`data-${isAnnual ? 'annual' : 'monthly'}`);
-      el.textContent = billing || '';
-      el.style.display = billing ? '' : 'none';
-    });
-
-    tildes.forEach((el) => {
-      el.style.opacity = isAnnual ? '1' : '0';
-    });
-
-    if (isAnnual) {
-      monthlyBtn.classList.remove('toggle-active');
-      monthlyBtn.classList.add('toggle-inactive');
-      annualBtn.classList.remove('toggle-inactive');
-      annualBtn.classList.add('toggle-active');
-    } else {
-      annualBtn.classList.remove('toggle-active');
-      annualBtn.classList.add('toggle-inactive');
-      monthlyBtn.classList.remove('toggle-inactive');
-      monthlyBtn.classList.add('toggle-active');
+    if (window.Paddle && paddleToken) {
+      Paddle.Environment.set(paddleEnv);
+      Paddle.Initialize({ token: paddleToken });
     }
-  }
 
-  monthlyBtn.addEventListener('click', () => {
-    isAnnual = false;
-    updatePricing();
-  });
+    const monthlyBtn = document.getElementById('monthly-btn');
+    const annualBtn = document.getElementById('annual-btn');
+    const amounts = document.querySelectorAll('.pricing-amount');
+    const periods = document.querySelectorAll('.pricing-period');
+    const billings = document.querySelectorAll('.pricing-billing');
+    const tildes = document.querySelectorAll('.pricing-tilde');
 
-  annualBtn.addEventListener('click', () => {
-    isAnnual = true;
-    updatePricing();
+    let isAnnual = false;
+
+    function updatePricing() {
+      amounts.forEach((el) => {
+        const amount = el.getAttribute(`data-${isAnnual ? 'annual' : 'monthly'}`);
+        if (amount) el.textContent = amount;
+      });
+
+      periods.forEach((el) => {
+        const period = el.getAttribute(`data-${isAnnual ? 'annual' : 'monthly'}`);
+        el.textContent = period || '';
+        el.style.display = period ? '' : 'none';
+      });
+
+      billings.forEach((el) => {
+        const billing = el.getAttribute(`data-${isAnnual ? 'annual' : 'monthly'}`);
+        el.textContent = billing || '';
+        el.style.display = billing ? '' : 'none';
+      });
+
+      tildes.forEach((el) => {
+        el.style.opacity = isAnnual ? '1' : '0';
+      });
+
+      if (isAnnual) {
+        monthlyBtn.classList.remove('toggle-active');
+        monthlyBtn.classList.add('toggle-inactive');
+        annualBtn.classList.remove('toggle-inactive');
+        annualBtn.classList.add('toggle-active');
+      } else {
+        annualBtn.classList.remove('toggle-active');
+        annualBtn.classList.add('toggle-inactive');
+        monthlyBtn.classList.remove('toggle-inactive');
+        monthlyBtn.classList.add('toggle-active');
+      }
+    }
+
+    monthlyBtn.addEventListener('click', () => {
+      isAnnual = false;
+      updatePricing();
+    });
+
+    annualBtn.addEventListener('click', () => {
+      isAnnual = true;
+      updatePricing();
+    });
+
+    document.querySelectorAll('[data-plan]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        if (!window.Paddle || !paddleToken) {
+          console.error('Paddle.js is not available or client token is missing.');
+          return;
+        }
+
+        const priceId = isAnnual ? btn.dataset.annualPriceId : btn.dataset.monthlyPriceId;
+
+        if (!priceId) {
+          console.error('Missing Paddle price ID for plan:', btn.dataset.plan);
+          return;
+        }
+
+        if (!setupFeePriceId) {
+          console.error('Missing Paddle setup fee price ID.');
+          return;
+        }
+
+        Paddle.Checkout.open({
+          items: [
+            { priceId, quantity: 1 },
+            { priceId: setupFeePriceId, quantity: 1 },
+          ],
+        });
+      });
+    });
   });
 </script>
-
-
-
-

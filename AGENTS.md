@@ -199,9 +199,11 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 
 ### Pricing / checkout
 
-- Plans and Lemon Squeezy checkout URLs live in `Pricing.astro` frontmatter.  
-- CTAs are normal `<a href="https://ringlume.lemonsqueezy.com/...">` links.  
-- Do not embed Lemon Squeezy JS checkout without an explicit product decision.  
+- Plans and Paddle price IDs live in `Pricing.astro` frontmatter.
+- CTAs are `<button>` elements with `data-plan`, `data-monthly-price-id`, and `data-annual-price-id` attributes. Paddle checkout overlay opens on click.
+- Paddle.js is loaded from CDN and initialized with the client-side token.
+- A shared setup-fee price ID (`PUBLIC_PADDLE_SETUP_FEE_PRICE_ID`) is added to every checkout.
+- Provisioning script: `scripts/provision-paddle.mjs` (idempotent — run with `PADDLE_API_KEY`).
 
 ### Contact
 
@@ -261,7 +263,8 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 | Task | Where / how |
 |------|-------------|
 | Change hero copy | `src/components/Hero.astro` |
-| Change pricing / checkout URLs | `src/components/Pricing.astro` |
+| Change pricing / price IDs | `src/components/Pricing.astro` + `.env` |
+| Provision Paddle catalog | `node scripts/provision-paddle.mjs` (set `PADDLE_API_KEY`) |
 | Nav links | `src/components/Header.astro` |
 | Footer / legal links | `src/components/Footer.astro` |
 | Brand colors / fonts | `src/styles/global.css` `@theme` + `@font-face` |
@@ -323,4 +326,5 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 - Be concise and direct.  
 - Prefer implementing over long plans once direction is clear.  
 - Do not commit unless the user asks.  
-- Do not invent URLs; use existing checkout/contact links from the codebase.  
+- Do not invent Paddle IDs; run `scripts/provision-paddle.mjs` or use IDs from `.env`.
+- Do not expose `PADDLE_API_KEY` in client code. The `PUBLIC_PADDLE_*` env vars are safe for client-side use.

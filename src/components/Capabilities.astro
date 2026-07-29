@@ -1,77 +1,118 @@
 ---
-const features = [
-  {
-    title: '24/7 Intelligent Inbound Receptionist',
-    description: 'Naturally answers inbound calls instantly during business hours, over-capacity peaks, holidays, and weekends using context-aware natural language processing instead of robotic, frustrating IVR menu button presses.',
-    icon: 'phone',
-  },
-  {
-    title: 'Automated Appointment Booking',
-    description: 'Directly maps call parameters into real-time business schedules. Supports intent-based calendar routing across single or multiple eligible calendars depending on whether the caller wants consultations, service availability, or pricing inquiries.',
-    icon: 'calendar',
-  },
-  {
-    title: 'Workflow-Triggered Outbound Campaigns',
-    description: 'Automatically schedules and executes up to 1,000 automated domestic outbound calls per location daily. Triggers instant call sequences based on form entries, abandoned checkouts, stale leads, or appointment reminders.',
-    icon: 'send',
-  },
-  {
-    title: 'Knowledge Base Deep Training',
-    description: "The agent's knowledge base is configured using the business website, custom documentation, pricing sheets, social media reviews, service areas, and FAQs to accurately answer complex questions during live calls.",
-    icon: 'brain',
-  },
-  {
-    title: 'Live Transfer & Escalation Logic',
-    description: 'Automatically detects high-priority scenarios or urgent emotional context via sentiment tracking and seamlessly executes an immediate live call transfer to a human team member.',
-    icon: 'transfer',
-  },
-  {
-    title: 'Post-Call Automations & Reporting',
-    description: 'Generates immediate post-call analytics, full call logs, text summaries, and word-for-word transcripts. Integrates with automatic cross-channel updates including confirmation SMS, emails, and CRM stage updates.',
-    icon: 'report',
-  },
-  {
-    title: 'Multilingual Support & Translation',
-    description: 'Seamlessly supports multi-language conversation handling alongside an automated post-call background translation system for written summaries and reporting.',
-    icon: 'globe',
-  },
-]
+import CapabilityCard from './CapabilityCard.astro'
 
-const iconSvgs: Record<string, string> = {
-  phone: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />',
-  calendar: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />',
-  send: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />',
-  brain: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />',
-  transfer: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />',
-  report: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />',
-  globe: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />',
-}
+const capabilities = [
+	{
+		kind: 'call' as const,
+		icon: 'call' as const,
+		title: 'Never miss a call',
+		description:
+			'A natural-sounding AI receptionist answers instantly on after hours, during busy periods, and whenever your team cannot.',
+		layoutClass: 'md:col-span-2 lg:col-span-3 lg:row-span-2',
+	},
+	{
+		kind: 'booking' as const,
+		icon: 'booking' as const,
+		title: 'Books appointments',
+		description:
+			'Finds the right time and adds it directly to your calendar.',
+		layoutClass: 'lg:col-span-3',
+	},
+	{
+		kind: 'follow-up' as const,
+		icon: 'follow-up' as const,
+		title: 'Follows up automatically',
+		description:
+			'Triggers reminders, lead callbacks, and customer updates at exactly the right moment.',
+		layoutClass: 'lg:col-span-3',
+	},
+	{
+		kind: 'knowledge' as const,
+		icon: 'knowledge' as const,
+		title: 'Knows your business',
+		description:
+			'Learns from your website, services, pricing, FAQs, and internal documents.',
+		layoutClass: 'lg:col-span-2',
+	},
+	{
+		kind: 'handoff' as const,
+		icon: 'handoff' as const,
+		title: 'Knows when to hand off',
+		description:
+			'Transfers urgent, sensitive, or high-value calls to the right person.',
+		layoutClass: 'lg:col-span-2',
+	},
+	{
+		kind: 'reporting' as const,
+		icon: 'reporting' as const,
+		title: 'Everything stays visible',
+		description:
+			'Get transcripts, summaries, CRM updates, and multilingual conversations automatically.',
+		layoutClass: 'md:col-span-2 lg:col-span-2',
+	},
+]
 ---
 
-<section id="capabilities" class="py-20 lg:py-32 bg-[#111213] content-auto">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Section Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-        Voice AI <span class="gradient-text">Capabilities</span>
-      </h2>
-      <p class="text-lg text-slate-300">
-        Our comprehensive Voice AI Receptionist handles every aspect of your business communication
-        with intelligent, human-like conversations.
-      </p>
-    </div>
+<section
+	id="capabilities"
+	class="content-auto overflow-hidden bg-[#0d0f10] py-20 lg:py-32"
+	data-capabilities-section
+>
+	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+		<header class="mb-14 max-w-3xl sm:mb-16 lg:mb-20">
+			<p class="mb-5 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-green-accent">
+				<span class="h-1.5 w-1.5 rounded-full bg-green-primary" aria-hidden="true"></span>
+				Every call, handled
+			</p>
+			<h2 class="text-balance text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl lg:text-6xl">
+				Your best receptionist.<br />
+				<span class="text-green-primary">Available 24/7.</span>
+			</h2>
+			<p class="mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+				Answers calls, books appointments, follows up, and keeps your team informed&mdash;without
+				putting customers on hold.
+			</p>
+		</header>
 
-    <!-- Features Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {features.map((feature) => (
-        <div class="group bg-slate-bg rounded-3xl p-8 hover:bg-[#111213] hover:card-shadow-lg transition-all duration-300 border border-transparent hover:border-white/10 text-center">
-          <div class="w-14 h-14 gradient-bg rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" set:html={iconSvgs[feature.icon]} />
-          </div>
-          <h3 class="text-xl font-bold text-white mb-3">{feature.title}</h3>
-          <p class="text-slate-300 leading-relaxed">{feature.description}</p>
-        </div>
-      ))}
-    </div>
-  </div>
+		<div class="grid grid-cols-1 gap-5 md:auto-rows-[minmax(220px,auto)] md:grid-cols-2 lg:grid-cols-6 lg:gap-6">
+			{capabilities.map((capability, index) => (
+				<CapabilityCard {...capability} index={index} />
+			))}
+		</div>
+	</div>
 </section>
+
+<script>
+	const section = document.querySelector('[data-capabilities-section]')
+	const cards = section?.querySelectorAll('[data-capability-card]') ?? []
+	const prefersReducedMotion = window.matchMedia(
+		'(prefers-reduced-motion: reduce)',
+	).matches
+
+	if (
+		section &&
+		!prefersReducedMotion &&
+		'IntersectionObserver' in window
+	) {
+		cards.forEach((card) => card.classList.add('reveal-pending'))
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (!entries.some((entry) => entry.isIntersecting)) return
+
+				cards.forEach((card, index) => {
+					card.classList.remove('reveal-pending')
+					card.classList.add('reveal-visible')
+					window.setTimeout(
+						() => card.classList.remove('reveal-visible'),
+						550 + index * 65,
+					)
+				})
+				observer.disconnect()
+			},
+			{ rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+		)
+
+		observer.observe(section)
+	}
+</script>

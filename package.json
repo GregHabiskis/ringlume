@@ -10,11 +10,19 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "test": "vitest run",
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/netlify": "^8.1.2",
+    "@paddle/paddle-js": "^1.6.4",
+    "@paddle/paddle-node-sdk": "^3.8.0",
+    "@supabase/supabase-js": "^2.110.9",
     "@tailwindcss/vite": "^4.3.2",
     "astro": "^7.0.9",
     "tailwindcss": "^4.3.2"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.10"
   }
 }

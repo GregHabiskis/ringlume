@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+---
+
+<BaseLayout
+  title="Welcome to Ringlume | Setup Your Voice AI"
+  description="Your Ringlume Voice AI receptionist is being set up."
+>
+  <Header />
+
+  <main class="min-h-[80vh] flex items-center justify-center px-4 py-20">
+    <div class="max-w-lg w-full text-center">
+      <div class="w-16 h-16 rounded-full gradient-green flex items-center justify-center mx-auto mb-6 shadow-lg glow-green">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+        Welcome to <span class="gradient-green-text">Ringlume</span>!
+      </h1>
+      <p class="text-lg text-slate-300 mb-8">
+        Your Voice AI receptionist is being provisioned. We will reach out
+        within 24–48 hours to complete your onboarding.
+      </p>
+
+      <div class="bg-slate-bg rounded-2xl p-6 border border-white/10 mb-8 text-left">
+        <h2 class="text-lg font-semibold text-white mb-4">Billing & Account</h2>
+        <p class="text-sm text-slate-400 mb-4">
+          Paddle will email you a link to access the billing portal, where you
+          can view invoices and manage your subscription.
+        </p>
+        <a
+          href="/portal"
+          class="block w-full text-center gradient-green text-white py-3 rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity glow-green"
+        >
+          Manage Billing
+        </a>
+      </div>
+
+      <div class="text-sm text-slate-500 space-y-1">
+        <p>Need help? <a href="/contact" class="text-green-primary hover:underline">Contact support</a></p>
+        <p>Check your email for onboarding instructions from our team.</p>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>

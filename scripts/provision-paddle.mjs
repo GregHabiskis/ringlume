@@ -25,6 +25,8 @@ const headers = {
 
 const CUSTOM_DATA = { app: 'ringlume', environment: 'sandbox' };
 
+const PRICE_VERSION = '2'
+
 const PRODUCT_DEFS = [
   {
     name: 'Basic',
@@ -48,41 +50,61 @@ const PRODUCT_DEFS = [
   },
   {
     name: 'Pro',
-    description: 'Most popular for growing businesses that need more power',
+    description: 'Built for growing businesses that need advanced capabilities',
     tax_category: 'saas',
     custom_data: { ...CUSTOM_DATA, plan: 'pro' },
     prices: [
       {
         description: 'Pro Monthly',
         billing_cycle: { interval: 'month', frequency: 1 },
-        unit_price: { amount: '49900', currency_code: 'USD' },
-        custom_data: { ...CUSTOM_DATA, plan: 'pro', billing_interval: 'month' },
+        unit_price: { amount: '59900', currency_code: 'USD' },
+        custom_data: { ...CUSTOM_DATA, plan: 'pro', billing_interval: 'month', price_version: PRICE_VERSION },
       },
       {
         description: 'Pro Annual',
         billing_cycle: { interval: 'year', frequency: 1 },
-        unit_price: { amount: '499000', currency_code: 'USD' },
-        custom_data: { ...CUSTOM_DATA, plan: 'pro', billing_interval: 'year' },
+        unit_price: { amount: '599000', currency_code: 'USD' },
+        custom_data: { ...CUSTOM_DATA, plan: 'pro', billing_interval: 'year', price_version: PRICE_VERSION },
+      },
+    ],
+  },
+  {
+    name: 'Plus',
+    description: 'Most popular for scaling teams that need more power',
+    tax_category: 'saas',
+    custom_data: { ...CUSTOM_DATA, plan: 'plus' },
+    prices: [
+      {
+        description: 'Plus Monthly',
+        billing_cycle: { interval: 'month', frequency: 1 },
+        unit_price: { amount: '99900', currency_code: 'USD' },
+        custom_data: { ...CUSTOM_DATA, plan: 'plus', billing_interval: 'month', price_version: PRICE_VERSION },
+      },
+      {
+        description: 'Plus Annual',
+        billing_cycle: { interval: 'year', frequency: 1 },
+        unit_price: { amount: '999000', currency_code: 'USD' },
+        custom_data: { ...CUSTOM_DATA, plan: 'plus', billing_interval: 'year', price_version: PRICE_VERSION },
       },
     ],
   },
   {
     name: 'Max',
-    description: 'For businesses that need maximum capacity and customization',
+    description: 'For enterprises that need maximum capacity and customization',
     tax_category: 'saas',
     custom_data: { ...CUSTOM_DATA, plan: 'max' },
     prices: [
       {
         description: 'Max Monthly',
         billing_cycle: { interval: 'month', frequency: 1 },
-        unit_price: { amount: '99900', currency_code: 'USD' },
-        custom_data: { ...CUSTOM_DATA, plan: 'max', billing_interval: 'month' },
+        unit_price: { amount: '199900', currency_code: 'USD' },
+        custom_data: { ...CUSTOM_DATA, plan: 'max', billing_interval: 'month', price_version: PRICE_VERSION },
       },
       {
         description: 'Max Annual',
         billing_cycle: { interval: 'year', frequency: 1 },
-        unit_price: { amount: '999000', currency_code: 'USD' },
-        custom_data: { ...CUSTOM_DATA, plan: 'max', billing_interval: 'year' },
+        unit_price: { amount: '1999000', currency_code: 'USD' },
+        custom_data: { ...CUSTOM_DATA, plan: 'max', billing_interval: 'year', price_version: PRICE_VERSION },
       },
     ],
   },
@@ -95,9 +117,9 @@ const PRODUCT_DEFS = [
       {
         description: 'Setup Fee - One Time',
         billing_cycle: null,
-        unit_price: { amount: '60000', currency_code: 'USD' },
+        unit_price: { amount: '120000', currency_code: 'USD' },
         quantity: { minimum: 1, maximum: 1 },
-        custom_data: { ...CUSTOM_DATA, type: 'setup_fee' },
+        custom_data: { ...CUSTOM_DATA, type: 'setup_fee', price_version: PRICE_VERSION },
       },
     ],
   },
@@ -142,6 +164,8 @@ function matchPrice(def, price) {
   if (def.custom_data.plan && cd.plan !== def.custom_data.plan) return false;
   if (def.custom_data.type && cd.type !== def.custom_data.type) return false;
   if (def.custom_data.billing_interval && cd.billing_interval !== def.custom_data.billing_interval) return false;
+  // Match price_version if present in the def (to distinguish updated prices)
+  if (def.custom_data.price_version && cd.price_version !== def.custom_data.price_version) return false;
   return true;
 }
 
@@ -236,6 +260,8 @@ async function main() {
   const basicAnnual = created.find((c) => c.product === 'Basic' && c.price.billing_cycle?.interval === 'year');
   const proMonthly = created.find((c) => c.product === 'Pro' && c.price.billing_cycle?.interval === 'month');
   const proAnnual = created.find((c) => c.product === 'Pro' && c.price.billing_cycle?.interval === 'year');
+  const plusMonthly = created.find((c) => c.product === 'Plus' && c.price.billing_cycle?.interval === 'month');
+  const plusAnnual = created.find((c) => c.product === 'Plus' && c.price.billing_cycle?.interval === 'year');
   const maxMonthly = created.find((c) => c.product === 'Max' && c.price.billing_cycle?.interval === 'month');
   const maxAnnual = created.find((c) => c.product === 'Max' && c.price.billing_cycle?.interval === 'year');
   const setupFee = created.find((c) => c.product === 'Voice AI Setup Fee');
@@ -250,6 +276,8 @@ async function main() {
     `PUBLIC_PADDLE_BASIC_ANNUAL_PRICE_ID=${basicAnnual?.price?.id || 'MISSING'}`,
     `PUBLIC_PADDLE_PRO_MONTHLY_PRICE_ID=${proMonthly?.price?.id || 'MISSING'}`,
     `PUBLIC_PADDLE_PRO_ANNUAL_PRICE_ID=${proAnnual?.price?.id || 'MISSING'}`,
+    `PUBLIC_PADDLE_PLUS_MONTHLY_PRICE_ID=${plusMonthly?.price?.id || 'MISSING'}`,
+    `PUBLIC_PADDLE_PLUS_ANNUAL_PRICE_ID=${plusAnnual?.price?.id || 'MISSING'}`,
     `PUBLIC_PADDLE_MAX_MONTHLY_PRICE_ID=${maxMonthly?.price?.id || 'MISSING'}`,
     `PUBLIC_PADDLE_MAX_ANNUAL_PRICE_ID=${maxAnnual?.price?.id || 'MISSING'}`,
     `PUBLIC_PADDLE_SETUP_FEE_PRICE_ID=${setupFee?.price?.id || 'MISSING'}`,

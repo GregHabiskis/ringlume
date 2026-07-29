@@ -1,0 +1,305 @@
+---
+type CapabilityKind =
+	| 'call'
+	| 'booking'
+	| 'follow-up'
+	| 'knowledge'
+	| 'handoff'
+	| 'reporting'
+
+interface Props {
+	kind: CapabilityKind
+	title: string
+	description: string
+	icon: CapabilityKind
+	layoutClass: string
+	index: number
+}
+
+const { kind, title, description, icon, layoutClass, index } = Astro.props
+
+const iconPaths: Record<CapabilityKind, string> = {
+	call: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.04 11.04 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />',
+	booking: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />',
+	'follow-up': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13 5l7 7-7 7M5 5l7 7-7 7" />',
+	knowledge: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 5.5A2.5 2.5 0 016.5 3H11v16H6.5A2.5 2.5 0 004 21.5v-16zM20 5.5A2.5 2.5 0 0017.5 3H13v16h4.5a2.5 2.5 0 012.5 2.5v-16z" />',
+	handoff: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />',
+	reporting: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 17v-5m3 5V7m3 10v-3M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />',
+}
+---
+
+<article
+	class:list={[
+		'capability-card group relative isolate flex h-full flex-col overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#151718] p-6 sm:p-8',
+		kind === 'call' && 'capability-card-primary',
+		kind === 'reporting' && 'bg-green-primary/[0.035]',
+		layoutClass,
+	]}
+	style={`--reveal-delay: ${index * 65}ms`}
+	data-capability-card
+>
+	{kind === 'call' && <div class="primary-glow" aria-hidden="true"></div>}
+
+	<div class="relative z-10 flex h-full flex-col">
+		<div class="mb-5 flex items-center justify-between">
+			<div class="capability-icon flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-green-accent">
+				<svg
+					class="h-5 w-5"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+					set:html={iconPaths[icon]}
+				/>
+			</div>
+
+			{kind === 'call' && (
+				<span class="inline-flex items-center gap-2 rounded-full border border-green-primary/20 bg-green-primary/10 px-3 py-1 text-[11px] font-semibold text-green-accent">
+					<span class="status-pulse h-1.5 w-1.5 rounded-full bg-green-primary"></span>
+					Always on
+				</span>
+			)}
+		</div>
+
+		<h3 class:list={['font-semibold tracking-tight text-white', kind === 'call' ? 'text-2xl sm:text-3xl' : 'text-xl']}>
+			{title}
+		</h3>
+		<p class:list={['mt-3 max-w-xl leading-relaxed text-slate-400', kind === 'call' ? 'text-base' : 'text-sm']}>
+			{description}
+		</p>
+
+		{kind === 'call' && (
+			<div
+				class="call-panel relative mt-8 rounded-2xl border border-white/10 bg-[#0d100f]/90 p-5 sm:mt-auto sm:p-6"
+				role="img"
+				aria-label="Incoming call from a new customer, answered by the AI receptionist in 1.2 seconds"
+			>
+				<div class="flex items-center justify-between gap-4">
+					<div class="flex min-w-0 items-center gap-3">
+						<div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-sm font-bold text-white">NC</div>
+						<div class="min-w-0">
+							<p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-green-accent">Incoming call</p>
+							<p class="mt-1 truncate text-sm font-semibold text-white">New customer</p>
+						</div>
+					</div>
+					<span class="shrink-0 rounded-full border border-green-primary/20 bg-green-primary/10 px-2.5 py-1 text-[10px] font-semibold text-green-accent">
+						Answered in 1.2s
+					</span>
+				</div>
+
+				<div class="mt-6 flex items-end justify-between gap-5">
+					<div class="waveform flex h-9 items-center gap-1" aria-hidden="true">
+						<span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+					</div>
+					<div class="inline-flex shrink-0 items-center gap-2 text-xs font-medium text-slate-300">
+						<span class="status-pulse h-2 w-2 rounded-full bg-green-primary"></span>
+						AI is speaking
+					</div>
+				</div>
+			</div>
+		)}
+
+		{kind === 'booking' && (
+			<div class="mt-auto pt-7" aria-label="Appointment booking confirmation">
+				<div class="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+					<div class="flex items-center gap-3">
+						<div class="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-green-primary/10 text-green-accent">
+							<span class="text-[9px] font-bold uppercase">Tue</span>
+							<span class="text-sm font-bold leading-none">18</span>
+						</div>
+						<div>
+							<p class="text-sm font-semibold text-white">Consultation booked</p>
+							<p class="mt-1 text-xs text-slate-400">Tue, 10:30 AM</p>
+						</div>
+						<svg class="ml-auto h-5 w-5 text-green-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+						</svg>
+					</div>
+				</div>
+			</div>
+		)}
+
+		{kind === 'follow-up' && (
+			<ol class="mt-auto flex flex-wrap items-center gap-2 pt-7 text-xs" aria-label="Automatic follow-up workflow">
+				<li class="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2 text-slate-200">Form submitted</li>
+				<li class="text-green-primary" aria-hidden="true">&rarr;</li>
+				<li class="rounded-lg border border-green-primary/20 bg-green-primary/10 px-3 py-2 text-green-accent">AI calls</li>
+				<li class="text-green-primary" aria-hidden="true">&rarr;</li>
+				<li class="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2 text-slate-200">Appointment confirmed</li>
+			</ol>
+		)}
+
+		{kind === 'knowledge' && (
+			<ul class="mt-auto flex flex-wrap gap-2 pt-7" aria-label="Business knowledge sources">
+				{['Website', 'Pricing', 'FAQs', 'Services'].map((source) => (
+					<li class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-slate-300">{source}</li>
+				))}
+			</ul>
+		)}
+
+		{kind === 'handoff' && (
+			<div class="mt-auto pt-7" aria-label="Call transfer in progress">
+				<div class="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-black/20 p-3.5">
+					<span class="status-pulse h-2 w-2 shrink-0 rounded-full bg-green-primary"></span>
+					<div class="min-w-0">
+						<p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">Live transfer</p>
+						<p class="mt-1 truncate text-sm font-medium text-white">Transferring to Sarah &middot; Sales</p>
+					</div>
+				</div>
+			</div>
+		)}
+
+		{kind === 'reporting' && (
+			<ul class="mt-auto space-y-2 pt-7" aria-label="Post-call automation status">
+				{['Transcript ready', 'CRM updated', '12 languages'].map((status) => (
+					<li class="flex items-center justify-between rounded-lg border border-white/[0.07] bg-black/15 px-3 py-2 text-xs text-slate-300">
+						<span>{status}</span>
+						<svg class="h-4 w-4 text-green-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+						</svg>
+					</li>
+				))}
+			</ul>
+		)}
+	</div>
+</article>
+
+<style>
+	.capability-card {
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.025),
+			0 16px 40px rgba(0, 0, 0, 0.08);
+		transition:
+			transform 300ms ease,
+			border-color 300ms ease,
+			background-color 300ms ease,
+			opacity 500ms ease;
+		transition-delay: 0ms;
+	}
+
+	.capability-card:hover {
+		transform: translateY(-3px);
+		border-color: rgba(255, 255, 255, 0.16);
+	}
+
+	.capability-icon {
+		transition:
+			transform 300ms ease,
+			background-color 300ms ease;
+	}
+
+	.capability-card:hover .capability-icon {
+		transform: translateY(-1px);
+		background-color: rgba(76, 217, 100, 0.08);
+	}
+
+	.capability-card.reveal-pending {
+		opacity: 0;
+		transform: translateY(14px);
+	}
+
+	.capability-card.reveal-visible {
+		opacity: 1;
+		transform: translateY(0);
+		transition-delay: var(--reveal-delay, 0ms);
+	}
+
+	.capability-card.reveal-visible:hover {
+		transform: translateY(-3px);
+	}
+
+	.primary-glow {
+		position: absolute;
+		right: -8rem;
+		bottom: -9rem;
+		width: 24rem;
+		height: 24rem;
+		border-radius: 9999px;
+		background: radial-gradient(circle, rgba(76, 217, 100, 0.13), transparent 68%);
+		pointer-events: none;
+	}
+
+	.call-panel {
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+	}
+
+	.waveform span {
+		display: block;
+		width: 3px;
+		height: 26px;
+		border-radius: 9999px;
+		background: linear-gradient(to top, #34c759, #6eeb83);
+		transform-origin: center;
+		animation: waveform 1.15s ease-in-out infinite;
+	}
+
+	.waveform span:nth-child(2),
+	.waveform span:nth-child(8) {
+		animation-delay: -0.85s;
+	}
+
+	.waveform span:nth-child(3),
+	.waveform span:nth-child(7) {
+		animation-delay: -0.6s;
+	}
+
+	.waveform span:nth-child(4),
+	.waveform span:nth-child(6) {
+		animation-delay: -0.35s;
+	}
+
+	.waveform span:nth-child(5) {
+		animation-delay: -0.1s;
+	}
+
+	.status-pulse {
+		animation: status-pulse 1.8s ease-out infinite;
+	}
+
+	@keyframes waveform {
+		0%,
+		100% {
+			transform: scaleY(0.28);
+			opacity: 0.55;
+		}
+		50% {
+			transform: scaleY(1);
+			opacity: 1;
+		}
+	}
+
+	@keyframes status-pulse {
+		0% {
+			box-shadow: 0 0 0 0 rgba(76, 217, 100, 0.35);
+		}
+		70%,
+		100% {
+			box-shadow: 0 0 0 6px rgba(76, 217, 100, 0);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.capability-card,
+		.capability-icon {
+			transition: none;
+		}
+
+		.capability-card,
+		.capability-card.reveal-pending,
+		.capability-card.reveal-visible,
+		.capability-card:hover,
+		.capability-card.reveal-visible:hover {
+			opacity: 1;
+			transform: none;
+		}
+
+		.capability-card:hover .capability-icon {
+			transform: none;
+		}
+
+		.waveform span,
+		.status-pulse {
+			animation: none;
+		}
+	}
+</style>

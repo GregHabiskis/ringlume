@@ -254,7 +254,7 @@ async function main() {
     console.log(`| ${item.product} | ${item.productId} | ${priceType} | ${interval} | $${amount} | ${p.unit_price.currency_code} | ${p.id} |`);
   }
 
-  console.log('\n=== Environment Variables ===\n');
+  console.log('\n=== Price ID Environment Variables ===\n');
   // Collect mappings
   const basicMonthly = created.find((c) => c.product === 'Basic' && c.price.billing_cycle?.interval === 'month');
   const basicAnnual = created.find((c) => c.product === 'Basic' && c.price.billing_cycle?.interval === 'year');
@@ -267,11 +267,7 @@ async function main() {
   const setupFee = created.find((c) => c.product === 'Voice AI Setup Fee');
 
   const lines = [
-    '# Paddle Sandbox Configuration',
-    `PUBLIC_PADDLE_ENVIRONMENT=sandbox`,
-    `PUBLIC_PADDLE_CLIENT_TOKEN=test_a9915665ce96454b42712c2edb9`,
-    '',
-    '# Price IDs',
+    '# Configure PUBLIC_PADDLE_ENVIRONMENT and PUBLIC_PADDLE_CLIENT_TOKEN separately.',
     `PUBLIC_PADDLE_BASIC_MONTHLY_PRICE_ID=${basicMonthly?.price?.id || 'MISSING'}`,
     `PUBLIC_PADDLE_BASIC_ANNUAL_PRICE_ID=${basicAnnual?.price?.id || 'MISSING'}`,
     `PUBLIC_PADDLE_PRO_MONTHLY_PRICE_ID=${proMonthly?.price?.id || 'MISSING'}`,

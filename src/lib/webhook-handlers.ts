@@ -24,14 +24,17 @@ function extractScheduledChange(sub: {
 	};
 }
 
-export async function handleCustomerCreated(
-	data: {
-		id: string;
-		email: string;
-		name: string | null;
-		status: string;
-		locale: string;
-	},
+interface CustomerEventData {
+	id: string;
+	email: string;
+	name: string | null;
+	status: string;
+	locale: string;
+}
+
+async function handleCustomer(
+	eventType: 'customer.created' | 'customer.updated',
+	data: CustomerEventData,
 	occurredAt: string,
 	signal?: AbortSignal,
 ): Promise<string> {
@@ -47,36 +50,26 @@ export async function handleCustomerCreated(
 		signal,
 	);
 
-	return `customer.created ${data.id}`;
+	return `${eventType} ${data.id}`;
+}
+
+export async function handleCustomerCreated(
+	data: CustomerEventData,
+	occurredAt: string,
+	signal?: AbortSignal,
+): Promise<string> {
+	return handleCustomer('customer.created', data, occurredAt, signal);
 }
 
 export async function handleCustomerUpdated(
-	data: {
-		id: string;
-		email: string;
-		name: string | null;
-		status: string;
-		locale: string;
-	},
+	data: CustomerEventData,
 	occurredAt: string,
 	signal?: AbortSignal,
 ): Promise<string> {
-	await upsertCustomer(
-		{
-			paddle_customer_id: data.id,
-			email: data.email,
-			name: data.name,
-			status: data.status,
-			locale: data.locale,
-			occurred_at: occurredAt,
-		},
-		signal,
-	);
-
-	return `customer.updated ${data.id}`;
+	return handleCustomer('customer.updated', data, occurredAt, signal);
 }
 
-export function buildSubscriptionPayload(
+function buildSubscriptionPayload(
 	data: {
 		id: string;
 		customerId: string;

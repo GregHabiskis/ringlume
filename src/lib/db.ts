@@ -51,21 +51,6 @@ export interface DbTransaction {
 	updated_at: string;
 }
 
-export interface DbEventProcessing {
-	id: string;
-	event_id: string;
-	notification_id: string | null;
-	event_type: string;
-	occurred_at: string | null;
-	status: 'processing' | 'completed' | 'failed';
-	attempt_count: number;
-	processed_at: string | null;
-	last_error: string | null;
-	processing_started_at: string;
-	processing_token: string | null;
-	created_at: string;
-}
-
 export interface EventClaim {
 	status: 'new' | 'retry';
 	token: string;
@@ -196,21 +181,6 @@ export async function upsertCustomer(
 	return result as unknown as DbCustomer;
 }
 
-export async function getCustomerByPaddleId(
-	paddleCustomerId: string,
-): Promise<DbCustomer | null> {
-	const supabase = getSupabaseAdmin();
-
-	const { data, error } = await supabase
-		.from('customers')
-		.select('*')
-		.eq('paddle_customer_id', paddleCustomerId)
-		.maybeSingle();
-
-	if (error) throw new Error(`Failed to get customer: ${error.message}`);
-	return data;
-}
-
 export async function upsertSubscription(
 	data: {
 		paddle_subscription_id: string;
@@ -283,36 +253,6 @@ export async function upsertSubscription(
 
 	if (error) throw new Error(`Failed to upsert subscription: ${error.message}`);
 	return result;
-}
-
-export async function getSubscriptionByPaddleId(
-	paddleSubscriptionId: string,
-): Promise<DbSubscription | null> {
-	const supabase = getSupabaseAdmin();
-
-	const { data, error } = await supabase
-		.from('subscriptions')
-		.select('*')
-		.eq('paddle_subscription_id', paddleSubscriptionId)
-		.maybeSingle();
-
-	if (error) throw new Error(`Failed to get subscription: ${error.message}`);
-	return data;
-}
-
-export async function getSubscriptionsByCustomerId(
-	paddleCustomerId: string,
-): Promise<DbSubscription[]> {
-	const supabase = getSupabaseAdmin();
-
-	const { data, error } = await supabase
-		.from('subscriptions')
-		.select('*')
-		.eq('paddle_customer_id', paddleCustomerId)
-		.order('created_at', { ascending: false });
-
-	if (error) throw new Error(`Failed to get subscriptions: ${error.message}`);
-	return data || [];
 }
 
 export async function ensureCustomerPlaceholder(

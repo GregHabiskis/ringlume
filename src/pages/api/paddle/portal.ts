@@ -7,7 +7,7 @@ const PADDLE_PORTAL_HOSTNAMES = new Set([
 	'sandbox-customer-portal.paddle.com',
 ]);
 
-export function getConfiguredPortalUrl(): URL | null {
+function getConfiguredPortalUrl(): URL | null {
 	const environment = import.meta.env.PADDLE_ENVIRONMENT;
 	const configuredUrl =
 		environment === 'sandbox'

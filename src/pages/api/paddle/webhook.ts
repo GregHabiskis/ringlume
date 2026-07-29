@@ -21,6 +21,57 @@ export const prerender = false;
 const PROCESSING_TIMEOUT_MS = 3500;
 const FAILURE_WRITE_TIMEOUT_MS = 750;
 
+type WebhookEvent = Awaited<
+	ReturnType<ReturnType<typeof getPaddleClient>['webhooks']['unmarshal']>
+>;
+
+async function dispatchWebhookEvent(
+	event: WebhookEvent,
+	occurredAt: string,
+	signal: AbortSignal,
+): Promise<string> {
+	switch (event.eventType) {
+		case 'customer.created':
+			return handleCustomerCreated(
+				event.data as Parameters<typeof handleCustomerCreated>[0],
+				occurredAt,
+				signal,
+			);
+		case 'customer.updated':
+			return handleCustomerUpdated(
+				event.data as Parameters<typeof handleCustomerUpdated>[0],
+				occurredAt,
+				signal,
+			);
+		case 'subscription.created':
+			return handleSubscriptionCreated(
+				event.data as Parameters<typeof handleSubscriptionCreated>[0],
+				occurredAt,
+				signal,
+			);
+		case 'subscription.updated':
+			return handleSubscriptionUpdated(
+				event.data as Parameters<typeof handleSubscriptionUpdated>[0],
+				occurredAt,
+				signal,
+			);
+		case 'subscription.canceled':
+			return handleSubscriptionCanceled(
+				event.data as Parameters<typeof handleSubscriptionCanceled>[0],
+				occurredAt,
+				signal,
+			);
+		case 'transaction.completed':
+			return handleTransactionCompleted(
+				event.data as Parameters<typeof handleTransactionCompleted>[0],
+				occurredAt,
+				signal,
+			);
+		default:
+			return `ignored unsupported event: ${event.eventType}`;
+	}
+}
+
 export const POST: APIRoute = async ({ request }) => {
 	const signature = request.headers.get('Paddle-Signature');
 	if (!signature) {
@@ -74,66 +125,11 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	try {
-		let log: string;
-
-		switch (event.eventType) {
-			case 'customer.created':
-				log = await handleCustomerCreated(
-					{
-						id: event.data.id,
-						email: event.data.email,
-						name: event.data.name ?? null,
-						status: event.data.status,
-						locale: event.data.locale,
-					},
-					occurredAt,
-					processingController.signal,
-				);
-				break;
-			case 'customer.updated':
-				log = await handleCustomerUpdated(
-					{
-						id: event.data.id,
-						email: event.data.email,
-						name: event.data.name ?? null,
-						status: event.data.status,
-						locale: event.data.locale,
-					},
-					occurredAt,
-					processingController.signal,
-				);
-				break;
-			case 'subscription.created':
-				log = await handleSubscriptionCreated(
-					event.data as Parameters<typeof handleSubscriptionCreated>[0],
-					occurredAt,
-					processingController.signal,
-				);
-				break;
-			case 'subscription.updated':
-				log = await handleSubscriptionUpdated(
-					event.data as Parameters<typeof handleSubscriptionUpdated>[0],
-					occurredAt,
-					processingController.signal,
-				);
-				break;
-			case 'subscription.canceled':
-				log = await handleSubscriptionCanceled(
-					event.data as Parameters<typeof handleSubscriptionCanceled>[0],
-					occurredAt,
-					processingController.signal,
-				);
-				break;
-			case 'transaction.completed':
-				log = await handleTransactionCompleted(
-					event.data as Parameters<typeof handleTransactionCompleted>[0],
-					occurredAt,
-					processingController.signal,
-				);
-				break;
-			default:
-				log = `ignored unsupported event: ${event.eventType}`;
-		}
+		const log = await dispatchWebhookEvent(
+			event,
+			occurredAt,
+			processingController.signal,
+		);
 
 		await completeEvent(eventId, processingToken, processingController.signal);
 		clearTimeout(processingTimeout);

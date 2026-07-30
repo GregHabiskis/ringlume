@@ -1,5 +1,4 @@
 import { getSupabaseAdmin } from './supabase';
-import type { TablesInsert } from './database.types';
 
 export interface DbCustomer {
 	id: string;
@@ -143,14 +142,6 @@ export class SkippedError extends Error {
 	}
 }
 
-function isStale(
-	incomingOccurredAt: string | null | undefined,
-	storedLastEventOccurredAt: string | null | undefined,
-): boolean {
-	if (!incomingOccurredAt || !storedLastEventOccurredAt) return false;
-	return new Date(incomingOccurredAt) <= new Date(storedLastEventOccurredAt);
-}
-
 export async function upsertCustomer(
 	data: {
 		paddle_customer_id: string;
@@ -199,60 +190,40 @@ export async function upsertSubscription(
 		first_billed_at?: string | null;
 		next_billed_at?: string | null;
 		paused_at?: string | null;
-		occurred_at?: string | null;
+		occurred_at: string;
 	},
 	signal?: AbortSignal,
 ): Promise<DbSubscription> {
 	const supabase = getSupabaseAdmin();
 
-	if (data.occurred_at) {
-		let query = supabase
-			.from('subscriptions')
-			.select('last_event_occurred_at')
-			.eq('paddle_subscription_id', data.paddle_subscription_id);
-		if (signal) query = query.abortSignal(signal);
-		const { data: existing } = await query.maybeSingle();
-
-		if (isStale(data.occurred_at, existing?.last_event_occurred_at)) {
-			throw new SkippedError('stale event');
-		}
-	}
-
 	await ensureCustomerPlaceholder(data.paddle_customer_id, signal);
 
-	const payload: TablesInsert<'subscriptions'> = {
-		paddle_subscription_id: data.paddle_subscription_id,
-		paddle_customer_id: data.paddle_customer_id,
-		status: data.status,
-		price_id: data.price_id,
-		product_id: data.product_id,
-		quantity: data.quantity ?? 1,
-		currency_code: data.currency_code ?? 'USD',
-		scheduled_change_action: data.scheduled_change_action ?? null,
-		scheduled_change_at: data.scheduled_change_at ?? null,
-		current_billing_period_start: data.current_billing_period_start ?? null,
-		current_billing_period_end: data.current_billing_period_end ?? null,
-		canceled_at: data.canceled_at ?? null,
-		started_at: data.started_at ?? null,
-		first_billed_at: data.first_billed_at ?? null,
-		next_billed_at: data.next_billed_at ?? null,
-		paused_at: data.paused_at ?? null,
-		updated_at: new Date().toISOString(),
-	};
-
-	if (data.occurred_at) {
-		payload.last_event_occurred_at = data.occurred_at;
-	}
-
-	let query = supabase
-		.from('subscriptions')
-		.upsert(payload, { onConflict: 'paddle_subscription_id' })
-		.select();
-	if (signal) query = query.abortSignal(signal);
-	const { data: result, error } = await query.single();
+	const query = supabase.rpc('upsert_paddle_subscription', {
+		p_paddle_subscription_id: data.paddle_subscription_id,
+		p_paddle_customer_id: data.paddle_customer_id,
+		p_status: data.status,
+		p_price_id: data.price_id,
+		p_product_id: data.product_id,
+		p_quantity: data.quantity ?? 1,
+		p_currency_code: data.currency_code ?? 'USD',
+		p_scheduled_change_action: data.scheduled_change_action ?? null,
+		p_scheduled_change_at: data.scheduled_change_at ?? null,
+		p_current_billing_period_start: data.current_billing_period_start ?? null,
+		p_current_billing_period_end: data.current_billing_period_end ?? null,
+		p_canceled_at: data.canceled_at ?? null,
+		p_started_at: data.started_at ?? null,
+		p_first_billed_at: data.first_billed_at ?? null,
+		p_next_billed_at: data.next_billed_at ?? null,
+		p_paused_at: data.paused_at ?? null,
+		p_occurred_at: data.occurred_at,
+	});
+	const { data: result, error } = await (signal
+		? query.abortSignal(signal)
+		: query);
 
 	if (error) throw new Error(`Failed to upsert subscription: ${error.message}`);
-	return result;
+	if (!result) throw new SkippedError('stale event');
+	return result as unknown as DbSubscription;
 }
 
 export async function ensureCustomerPlaceholder(

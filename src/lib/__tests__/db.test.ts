@@ -1,15 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const mockFrom = vi.fn();
-const mockSelect = vi.fn();
-const mockEq = vi.fn();
-const mockMaybeSingle = vi.fn();
-const mockSingle = vi.fn();
-const mockUpsert = vi.fn();
-const mockInsert = vi.fn();
-const mockUpdate = vi.fn();
-const mockGt = vi.fn();
-const mockOrder = vi.fn();
 const mockRpc = vi.fn();
 
 function buildChain(returnValue: unknown) {
@@ -162,7 +153,9 @@ describe('upsertSubscription', () => {
 	});
 
 	it('is idempotent for duplicate paddle_subscription_id', async () => {
-		const chain = buildChain({
+		const chain = buildChain({ data: null, error: null });
+		mockFrom.mockReturnValue(chain);
+		mockRpc.mockResolvedValue({
 			data: {
 				id: 'uuid-1',
 				paddle_subscription_id: 'sub_001',
@@ -174,7 +167,6 @@ describe('upsertSubscription', () => {
 			},
 			error: null,
 		});
-		mockFrom.mockReturnValue(chain);
 
 		const { upsertSubscription } = await importDb();
 		const result = await upsertSubscription({
@@ -183,17 +175,23 @@ describe('upsertSubscription', () => {
 			status: 'active',
 			price_id: 'pri_001',
 			product_id: 'pro_001',
+			occurred_at: '2026-01-01T00:00:00Z',
 		});
 
 		expect(result.status).toBe('active');
+		expect(mockRpc).toHaveBeenCalledWith(
+			'upsert_paddle_subscription',
+			expect.objectContaining({
+				p_paddle_subscription_id: 'sub_001',
+				p_occurred_at: '2026-01-01T00:00:00Z',
+			}),
+		);
 	});
 
 	it('rejects stale subscription event', async () => {
-		const chain = buildChain({
-			data: { last_event_occurred_at: '2026-06-01T00:00:00Z' },
-			error: null,
-		});
+		const chain = buildChain({ data: null, error: null });
 		mockFrom.mockReturnValue(chain);
+		mockRpc.mockResolvedValue({ data: null, error: null });
 
 		const { upsertSubscription, SkippedError } = await importDb();
 
@@ -210,33 +208,19 @@ describe('upsertSubscription', () => {
 	});
 
 	it('clears scheduled_change when newer payload has none', async () => {
-		let callIndex = 0;
-		mockFrom.mockImplementation(() => {
-			callIndex++;
-			if (callIndex === 1) {
-				const chain = buildChain({
-					data: {
-						last_event_occurred_at: '2026-01-01T00:00:00Z',
-						scheduled_change_action: 'cancel',
-						scheduled_change_at: '2026-07-01T00:00:00Z',
-					},
-					error: null,
-				});
-				return chain;
-			}
-			const chain = buildChain({
-				data: {
-					paddle_subscription_id: 'sub_001',
-					paddle_customer_id: 'ctm_001',
-					status: 'active',
-					price_id: 'pri_001',
-					product_id: 'pro_001',
-					scheduled_change_action: null,
-					scheduled_change_at: null,
-				},
-				error: null,
-			});
-			return chain;
+		const chain = buildChain({ data: null, error: null });
+		mockFrom.mockReturnValue(chain);
+		mockRpc.mockResolvedValue({
+			data: {
+				paddle_subscription_id: 'sub_001',
+				paddle_customer_id: 'ctm_001',
+				status: 'active',
+				price_id: 'pri_001',
+				product_id: 'pro_001',
+				scheduled_change_action: null,
+				scheduled_change_at: null,
+			},
+			error: null,
 		});
 
 		const { upsertSubscription } = await importDb();

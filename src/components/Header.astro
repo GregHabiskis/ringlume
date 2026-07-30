@@ -91,7 +91,8 @@ const navLinks = [
     })
 
     document.addEventListener('click', (e) => {
-      if (!menu.classList.contains('hidden') && !menu.contains(e.target) && !toggle.contains(e.target)) {
+      const target = e.target as Node | null
+      if (!menu.classList.contains('hidden') && !menu.contains(target) && !toggle.contains(target)) {
         menu.classList.add('hidden')
       }
     })

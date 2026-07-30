@@ -1,47 +1,29 @@
 import type { APIRoute } from 'astro';
+import { getGeneralPortalUrl } from '../../../lib/paddle-config';
 
 export const prerender = false;
 
-const PADDLE_PORTAL_HOSTNAMES = new Set([
-	'customer-portal.paddle.com',
-	'sandbox-customer-portal.paddle.com',
-]);
-
-function getConfiguredPortalUrl(): URL | null {
-	const environment = import.meta.env.PADDLE_ENVIRONMENT;
-	const configuredUrl =
-		environment === 'sandbox'
-			? import.meta.env.PADDLE_SANDBOX_CUSTOMER_PORTAL_URL
-			: import.meta.env.PADDLE_CUSTOMER_PORTAL_URL;
-
-	if (!configuredUrl) return null;
-
-	try {
-		const portalUrl = new URL(configuredUrl);
-		if (
-			portalUrl.protocol !== 'https:' ||
-			portalUrl.port !== '' ||
-			portalUrl.username !== '' ||
-			portalUrl.password !== '' ||
-			!PADDLE_PORTAL_HOSTNAMES.has(portalUrl.hostname)
-		) {
-			return null;
-		}
-
-		return portalUrl;
-	} catch {
-		return null;
-	}
-}
+const NO_STORE_HEADERS = {
+	'Cache-Control': 'no-store, max-age=0',
+	Pragma: 'no-cache',
+};
 
 export const GET: APIRoute = async () => {
-	const portalUrl = getConfiguredPortalUrl();
-	if (!portalUrl) {
-		return new Response('Customer portal is unavailable', { status: 500 });
+	try {
+		return new Response(null, {
+			status: 302,
+			headers: {
+				...NO_STORE_HEADERS,
+				Location: getGeneralPortalUrl().toString(),
+			},
+		});
+	} catch {
+		return new Response(null, {
+			status: 302,
+			headers: {
+				...NO_STORE_HEADERS,
+				Location: '/portal?error=portal_unavailable',
+			},
+		});
 	}
-
-	return new Response(null, {
-		status: 302,
-		headers: { Location: portalUrl.toString() },
-	});
 };

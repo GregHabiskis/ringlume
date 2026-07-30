@@ -6,6 +6,8 @@ const mockCompleteEvent = vi.fn();
 const mockFailEvent = vi.fn();
 const mockHandleCustomerCreated = vi.fn();
 const mockHandleSubscriptionCreated = vi.fn();
+const mockHandleSubscriptionUpdated = vi.fn();
+const mockHandleSubscriptionCanceled = vi.fn();
 
 vi.mock('../../../../lib/paddle', () => ({
 	getPaddleClient: () => ({
@@ -33,8 +35,8 @@ vi.mock('../../../../lib/webhook-handlers', () => ({
 	handleCustomerCreated: mockHandleCustomerCreated,
 	handleCustomerUpdated: vi.fn(),
 	handleSubscriptionCreated: mockHandleSubscriptionCreated,
-	handleSubscriptionUpdated: vi.fn(),
-	handleSubscriptionCanceled: vi.fn(),
+	handleSubscriptionUpdated: mockHandleSubscriptionUpdated,
+	handleSubscriptionCanceled: mockHandleSubscriptionCanceled,
 	handleTransactionCompleted: vi.fn(),
 }));
 
@@ -64,6 +66,8 @@ describe('webhook POST', () => {
 		mockFailEvent.mockReset();
 		mockHandleCustomerCreated.mockReset();
 		mockHandleSubscriptionCreated.mockReset();
+		mockHandleSubscriptionUpdated.mockReset();
+		mockHandleSubscriptionCanceled.mockReset();
 	});
 
 	it('returns 400 for missing signature', async () => {
@@ -132,6 +136,64 @@ describe('webhook POST', () => {
 			expect.any(AbortSignal),
 		);
 		expect(status).toBe(200);
+	});
+
+	it('processes a scheduled end-of-period cancellation update', async () => {
+		const scheduledChange = {
+			action: 'cancel',
+			effectiveAt: '2026-09-01T00:00:00Z',
+		};
+		mockUnmarshal.mockResolvedValue({
+			eventId: 'evt_cancel_scheduled',
+			notificationId: 'ntf_cancel_scheduled',
+			eventType: 'subscription.updated',
+			occurredAt: '2026-08-01T00:00:00Z',
+			data: {
+				id: 'sub_001',
+				status: 'active',
+				scheduledChange,
+			},
+		});
+		mockClaimEvent.mockResolvedValue({
+			status: 'new',
+			token: 'lock-cancel-scheduled',
+		});
+		mockHandleSubscriptionUpdated.mockResolvedValue(
+			'subscription.updated sub_001',
+		);
+		mockCompleteEvent.mockResolvedValue(undefined);
+
+		const { status } = await callPost('{}', 'valid-sig');
+
+		expect(status).toBe(200);
+		expect(mockHandleSubscriptionUpdated).toHaveBeenCalledWith(
+			expect.objectContaining({ status: 'active', scheduledChange }),
+			'2026-08-01T00:00:00Z',
+			expect.any(AbortSignal),
+		);
+	});
+
+	it('processes a completed cancellation event', async () => {
+		mockUnmarshal.mockResolvedValue({
+			eventId: 'evt_canceled',
+			notificationId: 'ntf_canceled',
+			eventType: 'subscription.canceled',
+			occurredAt: '2026-09-01T00:00:00Z',
+			data: { id: 'sub_001', status: 'canceled' },
+		});
+		mockClaimEvent.mockResolvedValue({
+			status: 'new',
+			token: 'lock-canceled',
+		});
+		mockHandleSubscriptionCanceled.mockResolvedValue(
+			'subscription.canceled sub_001',
+		);
+		mockCompleteEvent.mockResolvedValue(undefined);
+
+		const { status } = await callPost('{}', 'valid-sig');
+
+		expect(status).toBe(200);
+		expect(mockHandleSubscriptionCanceled).toHaveBeenCalledOnce();
 	});
 
 	it('returns 200 for unsupported verified event without calling handlers', async () => {

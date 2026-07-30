@@ -144,6 +144,28 @@ export type Database = {
 				};
 				Returns: Json;
 			};
+			upsert_paddle_subscription: {
+				Args: {
+					p_canceled_at: string | null;
+					p_currency_code: string;
+					p_current_billing_period_end: string | null;
+					p_current_billing_period_start: string | null;
+					p_first_billed_at: string | null;
+					p_next_billed_at: string | null;
+					p_occurred_at: string;
+					p_paddle_customer_id: string;
+					p_paddle_subscription_id: string;
+					p_paused_at: string | null;
+					p_price_id: string;
+					p_product_id: string;
+					p_quantity: number;
+					p_scheduled_change_action: string | null;
+					p_scheduled_change_at: string | null;
+					p_started_at: string | null;
+					p_status: string;
+				};
+				Returns: Json;
+			};
 		};
 		Enums: Record<never, never>;
 		CompositeTypes: Record<never, never>;

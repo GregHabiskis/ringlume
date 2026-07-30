@@ -1,4 +1,8 @@
 ---
+import { validatePublicPaddleConfig } from '../lib/paddle-config'
+
+validatePublicPaddleConfig()
+
 const plans = [
   {
     name: 'Basic',
@@ -80,7 +84,6 @@ const plans = [
     popular: false,
   },
 ]
-const setupFeePriceId = import.meta.env.PUBLIC_PADDLE_SETUP_FEE_PRICE_ID || ''
 ---
 
 
@@ -223,23 +226,23 @@ const setupFeePriceId = import.meta.env.PUBLIC_PADDLE_SETUP_FEE_PRICE_ID || ''
 </section>
 
 <script>
-  import { initializePaddle } from '@paddle/paddle-js'
+  import { initializePaddle, type Paddle } from '@paddle/paddle-js'
 
-  const env = import.meta.env.PUBLIC_PADDLE_ENVIRONMENT
-  const token = import.meta.env.PUBLIC_PADDLE_CLIENT_TOKEN
-  const setupFeePriceId = import.meta.env.PUBLIC_PADDLE_SETUP_FEE_PRICE_ID
+  const env: 'sandbox' | 'production' = import.meta.env.PUBLIC_PADDLE_ENVIRONMENT
+  const token: string = import.meta.env.PUBLIC_PADDLE_CLIENT_TOKEN
+  const setupFeePriceId: string = import.meta.env.PUBLIC_PADDLE_SETUP_FEE_PRICE_ID
 
   const monthlyBtn = document.getElementById('monthly-btn')
   const annualBtn = document.getElementById('annual-btn')
   const checkoutStatus = document.getElementById('checkout-status')
 
   let isAnnual = false
-  let paddlePromise
+  let paddlePromise: Promise<Paddle | undefined> | undefined
 
   monthlyBtn?.addEventListener('click', () => setBillingPeriod(false))
   annualBtn?.addEventListener('click', () => setBillingPeriod(true))
 
-  function setBillingPeriod(annual) {
+  function setBillingPeriod(annual: boolean) {
     isAnnual = annual
     updateDisplay(annual)
     monthlyBtn?.classList.toggle('toggle-active', !annual)
@@ -250,9 +253,9 @@ const setupFeePriceId = import.meta.env.PUBLIC_PADDLE_SETUP_FEE_PRICE_ID || ''
     annualBtn?.setAttribute('aria-pressed', String(annual))
   }
 
-  function updateDisplay(annual) {
+  function updateDisplay(annual: boolean) {
     const tildes = document.querySelectorAll('.pricing-tilde')
-    const amounts = document.querySelectorAll('.pricing-amount')
+    const amounts = document.querySelectorAll<HTMLElement>('.pricing-amount')
     amounts.forEach(el => {
       const attr = annual ? 'annualMonthlyDisplay' : 'monthlyDisplay'
       el.textContent = el.dataset[attr] || '--'
@@ -271,7 +274,7 @@ const setupFeePriceId = import.meta.env.PUBLIC_PADDLE_SETUP_FEE_PRICE_ID || ''
     })
   }
 
-  function showCheckoutError(message) {
+  function showCheckoutError(message: string) {
     console.error(message)
     if (checkoutStatus) {
       checkoutStatus.textContent = message
@@ -287,11 +290,7 @@ const setupFeePriceId = import.meta.env.PUBLIC_PADDLE_SETUP_FEE_PRICE_ID || ''
       return paddlePromise
     }
 
-    const options = env === 'sandbox'
-      ? { token, environment: 'sandbox' }
-      : { token }
-
-    paddlePromise = initializePaddle(options).catch(error => {
+    paddlePromise = initializePaddle({ token, environment: env }).catch(error => {
       console.error('Failed to initialize Paddle.', error)
       return undefined
     })
@@ -299,7 +298,7 @@ const setupFeePriceId = import.meta.env.PUBLIC_PADDLE_SETUP_FEE_PRICE_ID || ''
     return paddlePromise
   }
 
-  document.querySelectorAll('[data-checkout-button]').forEach(btn => {
+  document.querySelectorAll<HTMLButtonElement>('[data-checkout-button]').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       e.preventDefault()
 
@@ -349,9 +348,12 @@ const setupFeePriceId = import.meta.env.PUBLIC_PADDLE_SETUP_FEE_PRICE_ID || ''
   })
 
   const warmPaddle = () => void getPaddle()
-  if ('requestIdleCallback' in window) {
-    window.requestIdleCallback(warmPaddle, { timeout: 2000 })
+  const idleWindow = window as Window & {
+    requestIdleCallback?: (callback: () => void, options: { timeout: number }) => number
+  }
+  if (idleWindow.requestIdleCallback) {
+    idleWindow.requestIdleCallback(warmPaddle, { timeout: 2000 })
   } else {
-    window.setTimeout(warmPaddle, 1000)
+    setTimeout(warmPaddle, 1000)
   }
 </script>

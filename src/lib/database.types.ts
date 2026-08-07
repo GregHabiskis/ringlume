@@ -65,6 +65,7 @@ type EventProcessingRow = {
 	last_error: string | null;
 	notification_id: string | null;
 	occurred_at: string | null;
+	payload: Json | null;
 	processed_at: string | null;
 	processing_started_at: string;
 	processing_token: string | null;
@@ -123,6 +124,16 @@ export type Database = {
 		};
 		Views: Record<never, never>;
 		Functions: {
+			enqueue_paddle_event: {
+				Args: {
+					p_event_id: string;
+					p_event_type: string;
+					p_notification_id: string | null;
+					p_occurred_at: string;
+					p_payload: Json;
+				};
+				Returns: Json;
+			};
 			claim_paddle_event: {
 				Args: {
 					p_event_id: string;

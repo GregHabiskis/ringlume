@@ -4,10 +4,12 @@ const mockUnmarshal = vi.fn();
 const mockClaimEvent = vi.fn();
 const mockCompleteEvent = vi.fn();
 const mockFailEvent = vi.fn();
+const mockQueueEvent = vi.fn();
 const mockHandleCustomerCreated = vi.fn();
 const mockHandleSubscriptionCreated = vi.fn();
 const mockHandleSubscriptionUpdated = vi.fn();
 const mockHandleSubscriptionCanceled = vi.fn();
+const mockEnqueuePaddleWebhookEvent = vi.fn();
 
 vi.mock('../../../../lib/paddle', () => ({
 	getPaddleClient: () => ({
@@ -17,12 +19,18 @@ vi.mock('../../../../lib/paddle', () => ({
 
 vi.mock('../../../../lib/env', () => ({
 	getWebhookSecret: () => 'whsec_test',
+	getServerEnvironmentVariable: () => 'sandbox',
+}));
+
+vi.mock('../../../../lib/paddle-webhook-queue', () => ({
+	enqueuePaddleWebhookEvent: mockEnqueuePaddleWebhookEvent,
 }));
 
 vi.mock('../../../../lib/db', () => ({
 	claimEvent: mockClaimEvent,
 	completeEvent: mockCompleteEvent,
 	failEvent: mockFailEvent,
+	queueEvent: mockQueueEvent,
 	SkippedError: class extends Error {
 		constructor(msg: string) {
 			super(msg);
@@ -43,6 +51,7 @@ vi.mock('../../../../lib/webhook-handlers', () => ({
 async function callPost(
 	body: string,
 	signature: string | null,
+	locals?: unknown,
 ): Promise<{ status: number; body: string }> {
 	const { POST } = await import('../webhook');
 	const request = new Request('http://localhost/api/paddle/webhook', {
@@ -50,7 +59,7 @@ async function callPost(
 		headers: signature ? { 'Paddle-Signature': signature } : {},
 		body,
 	});
-	const response = await POST({ request } as any);
+	const response = await POST({ request, locals } as any);
 	return {
 		status: response.status,
 		body: await response.text(),
@@ -64,10 +73,12 @@ describe('webhook POST', () => {
 		mockClaimEvent.mockReset();
 		mockCompleteEvent.mockReset();
 		mockFailEvent.mockReset();
+		mockQueueEvent.mockReset();
 		mockHandleCustomerCreated.mockReset();
 		mockHandleSubscriptionCreated.mockReset();
 		mockHandleSubscriptionUpdated.mockReset();
 		mockHandleSubscriptionCanceled.mockReset();
+		mockEnqueuePaddleWebhookEvent.mockReset();
 	});
 
 	it('returns 400 for missing signature', async () => {
@@ -136,6 +147,89 @@ describe('webhook POST', () => {
 			expect.any(AbortSignal),
 		);
 		expect(status).toBe(200);
+	});
+
+	it('queues verified production events before acknowledging Paddle', async () => {
+		mockUnmarshal.mockResolvedValue({
+			eventId: 'evt_queued',
+			notificationId: 'ntf_queued',
+			eventType: 'customer.created',
+			occurredAt: '2026-01-01T00:00:00Z',
+			data: { id: 'ctm_queued' },
+		});
+		mockEnqueuePaddleWebhookEvent.mockResolvedValue(undefined);
+		mockQueueEvent.mockResolvedValue('queued');
+		const waitUntil = vi.fn();
+
+		const { status, body } = await callPost('{}', 'valid-sig', {
+			netlify: {
+				context: {
+					requestId: 'netlify-request-queued',
+					deploy: { context: 'production', published: true },
+					waitUntil,
+				},
+			},
+		});
+
+		expect(status).toBe(200);
+		expect(body).toBe('OK (queued)');
+		expect(mockEnqueuePaddleWebhookEvent).toHaveBeenCalledOnce();
+		expect(mockQueueEvent).toHaveBeenCalledOnce();
+		expect(waitUntil).toHaveBeenCalledOnce();
+		expect(mockClaimEvent).not.toHaveBeenCalled();
+		expect(mockHandleCustomerCreated).not.toHaveBeenCalled();
+	});
+
+	it('returns 500 when durable event persistence fails', async () => {
+		mockUnmarshal.mockResolvedValue({
+			eventId: 'evt_queue_failed',
+			notificationId: 'ntf_queue_failed',
+			eventType: 'customer.created',
+			occurredAt: '2026-01-01T00:00:00Z',
+			data: { id: 'ctm_queue_failed' },
+		});
+		mockQueueEvent.mockRejectedValue(new Error('database queue unavailable'));
+
+		const { status } = await callPost('{}', 'valid-sig', {
+			netlify: {
+				context: {
+					requestId: 'netlify-request-queue-failed',
+					deploy: { context: 'production', published: true },
+					waitUntil: vi.fn(),
+				},
+			},
+		});
+
+		expect(status).toBe(500);
+		expect(mockClaimEvent).not.toHaveBeenCalled();
+	});
+
+	it('returns 500 instead of overrunning Paddle acknowledgement time', async () => {
+		mockUnmarshal.mockResolvedValue({
+			eventId: 'evt_deadline',
+			notificationId: 'ntf_deadline',
+			eventType: 'customer.created',
+			occurredAt: '2026-01-01T00:00:00Z',
+			data: { id: 'ctm_deadline' },
+		});
+		const expiredTimestamp = Math.floor(Date.now() / 1000) - 10;
+
+		const { status } = await callPost(
+			'{}',
+			`ts=${expiredTimestamp};h1=test`,
+			{
+				netlify: {
+					context: {
+						requestId: 'netlify-request-deadline',
+						deploy: { context: 'production', published: true },
+						waitUntil: vi.fn(),
+					},
+				},
+			},
+		);
+
+		expect(status).toBe(500);
+		expect(mockQueueEvent).not.toHaveBeenCalled();
 	});
 
 	it('processes a scheduled end-of-period cancellation update', async () => {

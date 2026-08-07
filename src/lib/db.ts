@@ -1,4 +1,6 @@
 import { getSupabaseAdmin } from './supabase';
+import type { Json } from './database.types';
+import type { VerifiedPaddleWebhookEvent } from './paddle-webhook-processor';
 
 export interface DbCustomer {
 	id: string;
@@ -55,7 +57,68 @@ export interface EventClaim {
 	token: string;
 }
 
-const STALE_PROCESSING_SECONDS = 240;
+const STALE_PROCESSING_SECONDS = 30;
+
+export async function queueEvent(
+	event: VerifiedPaddleWebhookEvent,
+	signal?: AbortSignal,
+): Promise<'queued' | 'processing' | 'completed'> {
+	const supabase = getSupabaseAdmin();
+	const query = supabase.rpc('enqueue_paddle_event', {
+		p_event_id: event.eventId,
+		p_notification_id: event.notificationId ?? null,
+		p_event_type: event.eventType,
+		p_occurred_at: event.occurredAt ?? '',
+		p_payload: event as unknown as Json,
+	});
+	const { data, error } = await (signal ? query.abortSignal(signal) : query);
+
+	if (error) throw new Error(`Failed to queue event: ${error.message}`);
+	const status = (data as { status?: string } | null)?.status;
+	if (status === 'queued' || status === 'processing' || status === 'completed') {
+		return status;
+	}
+
+	throw new Error('Failed to queue event: unexpected database response');
+}
+
+export async function getQueuedEvent(
+	eventId: string,
+): Promise<VerifiedPaddleWebhookEvent | null> {
+	const { data, error } = await getSupabaseAdmin()
+		.from('event_processing')
+		.select('payload')
+		.eq('event_id', eventId)
+		.maybeSingle();
+
+	if (error) throw new Error(`Failed to load queued event: ${error.message}`);
+	return (data?.payload as unknown as VerifiedPaddleWebhookEvent | null) ?? null;
+}
+
+export async function listRecoverableEvents(
+	limit = 5,
+): Promise<VerifiedPaddleWebhookEvent[]> {
+	const staleBefore = new Date(
+		Date.now() - STALE_PROCESSING_SECONDS * 1000,
+	).toISOString();
+	const { data, error } = await getSupabaseAdmin()
+		.from('event_processing')
+		.select('payload')
+		.not('payload', 'is', null)
+		.or(
+			`status.in.(queued,failed),and(status.eq.processing,processing_started_at.lte.${staleBefore})`,
+		)
+		.order('processing_started_at', { ascending: true })
+		.limit(limit);
+
+	if (error) {
+		throw new Error(`Failed to list recoverable events: ${error.message}`);
+	}
+
+	return (data ?? [])
+		.map((row) => row.payload as unknown as VerifiedPaddleWebhookEvent | null)
+		.filter((event): event is VerifiedPaddleWebhookEvent => Boolean(event));
+}
 
 export async function claimEvent(
 	eventId: string,
@@ -103,6 +166,7 @@ export async function completeEvent(
 		.update({
 			status: 'completed',
 			processed_at: new Date().toISOString(),
+			payload: null,
 		})
 		.eq('event_id', eventId)
 		.eq('status', 'processing')

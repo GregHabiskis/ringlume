@@ -2,8 +2,51 @@ begin;
 
 do $$
 declare
+	v_table text;
+begin
+	foreach v_table in array array[
+		'public.customers',
+		'public.subscriptions',
+		'public.transactions',
+		'public.event_processing'
+	]
+	loop
+		assert has_table_privilege('service_role', v_table, 'select'),
+			format('service_role requires select on %s', v_table);
+		assert has_table_privilege('service_role', v_table, 'insert'),
+			format('service_role requires insert on %s', v_table);
+		assert has_table_privilege('service_role', v_table, 'update'),
+			format('service_role requires update on %s', v_table);
+	end loop;
+end;
+$$;
+
+do $$
+declare
 	v_result jsonb;
 begin
+	v_result := public.enqueue_paddle_event(
+		'evt_integrity_queued',
+		'ntf_integrity_queued',
+		'customer.created',
+		now(),
+		jsonb_build_object(
+			'eventId', 'evt_integrity_queued',
+			'eventType', 'customer.created',
+			'occurredAt', now()
+		)
+	);
+	assert v_result->>'status' = 'queued', 'verified event must be durably queued';
+
+	v_result := public.claim_paddle_event(
+		'evt_integrity_queued',
+		'ntf_integrity_queued',
+		'customer.created',
+		now(),
+		30
+	);
+	assert v_result->>'status' = 'new', 'queued event must be claimable';
+
 	v_result := public.claim_paddle_event(
 		'evt_integrity_claim',
 		'ntf_integrity_claim_1',

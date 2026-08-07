@@ -1,3 +1,5 @@
+import { getServerEnvironmentVariable } from './env';
+
 export type PaddleEnvironment = 'sandbox' | 'production';
 
 function requireEnvironment(
@@ -23,13 +25,16 @@ function requireValue(value: string | undefined, variableName: string): string {
 
 export function getPaddleEnvironment(): PaddleEnvironment {
 	return requireEnvironment(
-		import.meta.env.PADDLE_ENVIRONMENT,
+		getServerEnvironmentVariable('PADDLE_ENVIRONMENT'),
 		'PADDLE_ENVIRONMENT',
 	);
 }
 
 export function getPaddleApiKey(environment: PaddleEnvironment): string {
-	const apiKey = requireValue(import.meta.env.PADDLE_API_KEY, 'PADDLE_API_KEY');
+	const apiKey = requireValue(
+		getServerEnvironmentVariable('PADDLE_API_KEY'),
+		'PADDLE_API_KEY',
+	);
 	const expectedPrefix =
 		environment === 'sandbox' ? 'pdl_sdbx_apikey_' : 'pdl_live_apikey_';
 
@@ -44,7 +49,7 @@ export function getPaddleApiKey(environment: PaddleEnvironment): string {
 
 export function validatePublicPaddleConfig(): void {
 	const publicEnvironment = requireEnvironment(
-		import.meta.env.PUBLIC_PADDLE_ENVIRONMENT,
+		getServerEnvironmentVariable('PUBLIC_PADDLE_ENVIRONMENT'),
 		'PUBLIC_PADDLE_ENVIRONMENT',
 	);
 	const serverEnvironment = getPaddleEnvironment();
@@ -53,7 +58,7 @@ export function validatePublicPaddleConfig(): void {
 	}
 
 	const token = requireValue(
-		import.meta.env.PUBLIC_PADDLE_CLIENT_TOKEN,
+		getServerEnvironmentVariable('PUBLIC_PADDLE_CLIENT_TOKEN'),
 		'PUBLIC_PADDLE_CLIENT_TOKEN',
 	);
 	const expectedTokenPrefix =
@@ -72,7 +77,7 @@ export function getGeneralPortalUrl(): URL {
 			? 'PADDLE_SANDBOX_CUSTOMER_PORTAL_URL'
 			: 'PADDLE_CUSTOMER_PORTAL_URL';
 	const configuredUrl = requireValue(
-		import.meta.env[variableName],
+		getServerEnvironmentVariable(variableName),
 		variableName,
 	);
 	const expectedHostname =

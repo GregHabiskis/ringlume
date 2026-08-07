@@ -7,95 +7,112 @@ interface FaqItem {
 
 const faqs: FaqItem[] = [
 	{
-		question: "Can Ringlume answer calls when we're out on jobs?",
+		question: "Can Ringlume answer calls when we're busy or unavailable?",
 		paragraphs: [
-			'Yes. Ringlume can answer calls 24/7, including while your team is at work, operating equipment, driving between jobs, after hours, or dealing with another customer.',
+			"Yes. Ringlume can answer calls 24/7, including while your team is helping customers, working on-site, in meetings, after hours, or already handling another call.",
+			"The goal is to make sure new opportunities don't automatically turn into missed calls or voicemail simply because your team is unavailable.",
 		],
 	},
 	{
-		question: 'Can the AI handle emergency tree-service calls?',
+		question: 'Can Ringlume handle urgent calls?',
 		paragraphs: [
-			"Ringlume can be configured to recognize urgent situations, collect the caller's contact and job information, and escalate the call according to your company's emergency workflow.",
-			'For example, you can flag situations such as a tree on a house, blocked access, major storm damage, or a tree near electrical lines for immediate human attention.',
+			"Yes. Ringlume can be configured to recognize situations your business considers urgent, collect the caller's information, and follow the escalation workflow you define.",
+			'For example, certain call types, keywords, existing customers, or high-priority situations can be routed or escalated for immediate human attention.',
 		],
 	},
 	{
-		question: 'Will it diagnose whether a tree is dangerous?',
+		question: 'What happens when a caller needs professional expertise?',
 		paragraphs: [
-			"It should not replace an arborist's professional assessment. Instead, the receptionist can collect details, identify potential urgency, and schedule or escalate the caller to the appropriate person on your team.",
+			'Ringlume should not replace professional judgment.',
+			'It can collect the relevant information, understand what the caller needs, and then book an appointment, transfer the call, or escalate the conversation to the appropriate person on your team.',
 		],
 	},
 	{
-		question: 'Can it book tree estimates automatically?',
+		question: 'Can Ringlume book appointments automatically?',
 		paragraphs: [
-			'Yes. Ringlume can connect to your booking workflow and schedule estimates according to the availability and rules you provide. The caller can move from "I need a quote" to a confirmed appointment during the same conversation.',
+			'Yes. Ringlume can connect to your booking workflow and schedule appointments according to the availability, services, and scheduling rules you provide.',
+			'A caller can move from asking about your business to having a confirmed appointment during the same conversation.',
 		],
 	},
 	{
-		question: 'What information can it collect from a lead?',
-		paragraphs: ['Your workflow can collect information such as:'],
+		question: 'What information can Ringlume collect from a new lead?',
+		paragraphs: ['Ringlume can collect information based on the workflow you configure, such as:'],
 		list: [
 			'Caller name',
-			'Caller phone number',
-			'Service address',
-			'Type of service',
-			'Preferred appointment time',
-			'Basically anything you prefer',
+			'Phone number',
+			'Email address',
+			'Service or request type',
+			'Location or service address',
+			'New or existing customer',
+			'Preferred appointment date or time',
+			'Details about what they need',
+			'Urgency or priority',
+			'Any other qualifying information your team requires',
 		],
 	},
 	{
-		question: 'Can it answer questions about our services?',
+		question: 'Can Ringlume answer questions about our business and services?',
 		paragraphs: [
-			'Yes. Ringlume can use information you approve, such as your website, online reviews, service list, service area, business hours, pricing rules, FAQs, and internal knowledge documents.',
+			'Yes. Ringlume can use information you approve, such as your website, services, service areas, business hours, pricing rules, FAQs, policies, and internal knowledge documents.',
+			'This allows callers to get useful answers without your team manually responding to the same questions repeatedly.',
 		],
 	},
 	{
-		question: 'What if customers ask, "How much does x service cost?"',
+		question: 'What if customers ask about pricing?',
 		paragraphs: [
-			'You control the answer. Ringlume can explain that pricing depends on multiple factors and then offer to schedule an estimate. Or, set flat rates as you wish.',
-			'The AI will never invent a price simply to keep the conversation moving.',
+			'You control how Ringlume responds.',
+			'If your business has fixed pricing, approved pricing information can be provided where appropriate.',
+			"If pricing depends on the customer's situation, Ringlume can explain the relevant factors, gather the information your team needs, and offer to schedule a consultation, estimate, or appointment.",
+			'Ringlume should not invent prices simply to keep a conversation moving.',
 		],
 	},
 	{
-		question: 'Can it handle different inquiries?',
+		question: 'Can Ringlume handle different services or types of inquiries?',
 		paragraphs: [
-			'Yes. Your knowledge base can contain the exact services your company offers, allowing Ringlume to identify the service the customer is looking for before booking or routing the lead.',
+			'Yes. Your Ringlume knowledge base can include the specific services, departments, locations, and request types your business handles.',
+			'Ringlume can identify what the caller is looking for and follow the appropriate booking, qualification, routing, or escalation workflow.',
 		],
 	},
 	{
-		question: "What happens if the AI doesn't know the answer?",
+		question: "What happens if Ringlume doesn't know the answer?",
 		paragraphs: [
-			"It can be instructed not to guess. Instead, it can collect the customer's information and transfer or escalate the conversation when human expertise is needed.",
+			"Ringlume can be instructed not to guess.",
+			"Instead, it can collect the caller's information and transfer, escalate, or create a follow-up for your team when human input is needed.",
 		],
 	},
 	{
-		question: 'Can urgent or high-value jobs be transferred to me?',
+		question: 'Can important calls be transferred to a real person?',
 		paragraphs: [
-			"Yes. Ringlume can support live transfer and human escalation when enabled for the customer's setup or plan, allowing the business to define which calls deserve immediate attention.",
+			'Yes. Ringlume can support live transfer and human escalation when enabled for your setup or plan.',
+			'You can define which situations should remain automated and which calls should be handed off to a member of your team.',
 		],
 	},
 	{
 		question: 'Will we know what happened after every call?',
 		paragraphs: [
-			'Depending on the Ringlume configuration and plan, the team can receive call information such as summaries, transcripts, recordings, and CRM updates so leads do not disappear into a voicemail inbox.',
+			'Depending on your Ringlume configuration and plan, your team can receive call information such as summaries, transcripts, recordings, lead details, and CRM updates.',
+			'This gives your team visibility into conversations without requiring someone to personally answer every call.',
 		],
 	},
 	{
-		question: 'Does Ringlume replace my office staff?',
+		question: 'Does Ringlume replace my receptionist or office staff?',
 		paragraphs: [
-			"It doesn't have to. Some companies may use Ringlume as their main front desk, while others can use it for overflow calls, after-hours coverage, lead qualification, and booking so existing staff can focus on higher-value work.",
+			"It doesn't have to.",
+			'Some businesses may use Ringlume as their primary receptionist, while others use it for overflow calls, after-hours coverage, lead qualification, appointment booking, or repetitive inquiries.',
+			'The goal is to let your team spend more time on work that requires human attention while Ringlume handles routine phone workflows.',
 		],
 	},
 	{
 		question: 'How long does setup take?',
 		paragraphs: [
-			"Ringlume currently advertises a typical setup time of approximately 24-48 hours. The receptionist is configured around the business's services, FAQs, booking rules, and escalation requirements.",
+			'Ringlume currently advertises a typical setup time of approximately 24-48 hours.',
+			'The receptionist is configured around your business, services, FAQs, booking rules, call flows, and escalation requirements.',
 		],
 	},
 	{
 		question: 'How much does Ringlume cost?',
 		paragraphs: [
-			'Ringlume offers plans for different call volumes and workflow requirements. See the pricing above for the current plans and included features, or book a demo if you are unsure which setup fits your tree-service business.',
+			"Ringlume offers plans for different call volumes and workflow requirements. See the pricing above for current plans and included features, or book a demo if you're unsure which setup is the right fit for your business.",
 		],
 	},
 ]
@@ -112,6 +129,13 @@ const faqs: FaqItem[] = [
 			<h2 id="faq-heading" class="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
 				Frequently Asked <span class="gradient-green-text">Questions</span>
 			</h2>
+			<p class="mt-6 text-xl font-semibold text-white sm:text-2xl">
+				Everything you need to know about Ringlume
+			</p>
+			<p class="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+				Common questions about how Ringlume answers calls, qualifies leads, books appointments,
+				handles urgent requests, and works alongside your team.
+			</p>
 		</header>
 
 		<div class="card-shadow-lg mx-auto max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-slate-bg">

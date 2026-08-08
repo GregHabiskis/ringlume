@@ -7,6 +7,7 @@ const dataSourceUrl = new URL('../../data/faqs.ts', import.meta.url)
 const homepageSourceUrl = new URL('../../pages/index.astro', import.meta.url)
 const faqPageSourceUrl = new URL('../../pages/faq.astro', import.meta.url)
 const footerSourceUrl = new URL('../Footer.astro', import.meta.url)
+const headerSourceUrl = new URL('../Header.astro', import.meta.url)
 
 const expectedQuestions = [
 	"Can Ringlume answer calls when we're busy or unavailable?",
@@ -42,6 +43,15 @@ describe('FAQ content', () => {
 		expect(source).toContain('How do I cancel my subscription plan?')
 		expect(source).toContain("href: '/portal'")
 		expect(source).toContain('Manage or Cancel Subscription.')
+	})
+
+	it('links pricing FAQ visitors to the pricing section', async () => {
+		const source = await readFile(dataSourceUrl, 'utf8')
+
+		expect(source).toContain('See our ')
+		expect(source).toContain("href: '/#pricing'")
+		expect(source).toContain('book a demo')
+		expect(source).not.toContain('See the pricing above')
 	})
 
 	it('keeps only the main FAQ heading above the accordion', async () => {
@@ -83,10 +93,11 @@ describe('FAQ content', () => {
 	})
 
 	it('links the homepage preview and footer to the full FAQ page', async () => {
-		const [faqPageSource, footerSource, faqComponentSource] = await Promise.all([
+		const [faqPageSource, footerSource, faqComponentSource, headerSource] = await Promise.all([
 			readFile(faqPageSourceUrl, 'utf8'),
 			readFile(footerSourceUrl, 'utf8'),
 			readFile(faqSourceUrl, 'utf8'),
+			readFile(headerSourceUrl, 'utf8'),
 		])
 
 		expect(faqPageSource).toContain('title="Frequently Asked Questions | Ringlume"')
@@ -95,5 +106,7 @@ describe('FAQ content', () => {
 		expect(footerSource).toContain('>FAQ</a>')
 		expect(faqComponentSource).toContain('href="/faq"')
 		expect(faqComponentSource).toContain('View all FAQs')
+		expect(headerSource).toContain("{ label: 'FAQ', href: '/faq' }")
+		expect(headerSource).toContain('{navLinks.map((link) => (')
 	})
 })

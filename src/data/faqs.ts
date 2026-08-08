@@ -19,7 +19,7 @@ export type FaqId =
 export interface FaqLinkedParagraph {
 	before: string
 	linkText: string
-	href: '/contact' | '/portal'
+	href: '/contact' | '/portal' | '/#pricing'
 	after: string
 }
 
@@ -151,8 +151,13 @@ export const faqItems: FaqItem[] = [
 	{
 		id: 'pricing',
 		question: 'How much does Ringlume cost?',
-		paragraphs: [
-			"Ringlume offers plans for different call volumes and workflow requirements. See the pricing above for current plans and included features, or book a demo if you're unsure which setup is the right fit for your business.",
+		linkedParagraphs: [
+			{
+				before: 'Ringlume offers plans for different call volumes and workflow requirements. See our ',
+				linkText: 'pricing',
+				href: '/#pricing',
+				after: " for current plans and included features, or book a demo if you're unsure which setup is the right fit for your business.",
+			},
 		],
 	},
 	{

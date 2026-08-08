@@ -18,7 +18,7 @@ Instructions for AI coding agents working in this repository.
 | CMS                    | **None**                                                    |
 | React / Next / Payload | **Not used**                                                |
 
-Do **not** assume Next.js App Router, Payload CMS, Supabase, or a monorepo app stack. This repo is a lean Astro landing site only.
+Do **not** assume Next.js App Router, Payload CMS, or a monorepo app stack. This repo is a lean Astro landing site only.
 
 ---
 
@@ -33,7 +33,7 @@ pnpm preview          # serve dist/
 
 After meaningful UI/CSS changes, always run `pnpm build` and confirm it succeeds.
 
-Vitest covers Paddle routes, webhook persistence, and access-state behavior.
+Vitest covers Paddle configuration, hosted portal redirects, and pricing checkout launchers.
 There is no lint or dedicated typecheck script in `package.json`; run Astro's
 checker and `pnpm build` as verification gates.
 
@@ -45,7 +45,7 @@ checker and `pnpm build` as verification gates.
 /
 ├── AGENTS.md                 # this file
 ├── astro.config.mjs          # Vite + Tailwind, compressHTML, inlineStylesheets
-├── package.json              # astro, tailwindcss, @tailwindcss/vite only
+├── package.json              # Astro, Paddle.js, Tailwind CSS, and build tooling
 ├── netlify.toml              # build + cache/security headers
 ├── pnpm-lock.yaml
 ├── public/
@@ -90,7 +90,7 @@ Reuse this pattern for new marketing pages: layout → chrome → sections.
 1. **Static first.** Prefer zero client JS. Interactive bits are tiny vanilla `<script>` blocks inside `.astro` files (menu, pricing toggle, hero word rotation, contact FAB).
 2. **No heavy frameworks.** Do not add React, Vue, Framer Motion, GSAP, analytics SDKs, or chat widgets unless explicitly requested.
 3. **No third-party render-blocking scripts.** Checkout uses the installed Paddle.js package and opens an overlay only after user interaction.
-4. **Keep deps minimal.** Paddle Billing and Supabase support the checkout, hosted portal, and webhook state mirror.
+4. **Keep deps minimal.** Paddle Billing supports checkout and the hosted portal; the site has no application database, account, entitlement, or webhook layer.
 5. **pnpm only.**
 
 ---
@@ -205,7 +205,7 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 - CTAs are `<button>` elements with `data-plan`, `data-monthly-price-id`, and `data-annual-price-id` attributes. Paddle checkout overlay opens on click.
 - Paddle.js is imported from `@paddle/paddle-js` and initialized with the client-side token.
 - A shared setup-fee price ID (`PUBLIC_PADDLE_SETUP_FEE_PRICE_ID`) is added to every checkout.
-- Provisioning script: `scripts/provision-paddle.mjs` (idempotent — run with `PADDLE_API_KEY`).
+- Provisioning script: `scripts/provision-paddle.mjs` (idempotent, one-off catalog administration only).
 
 ### Contact
 
@@ -223,9 +223,7 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
   Paddle portal URL. It must not mint or cache authenticated portal sessions.
 - Tokenized customer portal-session URLs and subscription `management_urls`
   are temporary and must never be stored.
-- Scheduled portal cancellation remains active through the paid period;
-  `subscription.updated` records the schedule and `subscription.canceled`
-  records the terminal state.
+- Paddle displays cancellation timing and effective dates in its hosted portal.
 
 Keep contact channels consistent across Footer, CtaSection, Contact page, and widget.
 
@@ -279,7 +277,7 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 | ------------------------------ | ---------------------------------------------------------- |
 | Change hero copy               | `src/components/Hero.astro`                                |
 | Change pricing / price IDs     | `src/components/Pricing.astro` + `.env`                    |
-| Provision Paddle catalog       | `node scripts/provision-paddle.mjs` (set `PADDLE_API_KEY`) |
+| Provision Paddle catalog       | `pnpm paddle:provision` (one-off admin key required)       |
 | Nav links                      | `src/components/Header.astro`                              |
 | Footer / legal links           | `src/components/Footer.astro`                              |
 | Brand colors / fonts           | `src/styles/global.css` `@theme` + `@font-face`            |
@@ -311,7 +309,7 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 2. **`public/Ringlume-Logo-No-Background.png`** is large; UI must use `/images/logo-*` variants.
 3. **`site.webmanifest`** has empty `name` / `short_name` — fix if shipping PWA polish.
 4. **Unicode-range minify bug** — see Typography section.
-5. **No automated tests** — visual/regression checks are manual + production PSI.
+5. **No browser automation** — visual/regression checks are manual + production PSI.
 
 ---
 
@@ -328,7 +326,7 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 
 ## Out of scope (unless user explicitly asks)
 
-- Migrating to Next.js / Payload / Supabase
+- Migrating to Next.js / Payload / another backend
 - Wiring Storyblok or another CMS
 - Adding auth, dashboards, or app backend
 - Installing analytics / pixels / chat SDKs
@@ -341,5 +339,5 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 - Be concise and direct.
 - Prefer implementing over long plans once direction is clear.
 - Do not commit unless the user asks.
-- Do not invent Paddle IDs; run `scripts/provision-paddle.mjs` or use IDs from `.env`.
-- Do not expose `PADDLE_API_KEY` in client code. The `PUBLIC_PADDLE_*` env vars are safe for client-side use.
+- Do not invent Paddle IDs; run the one-off provisioning script or use IDs from `.env`.
+- `PADDLE_API_KEY` is only for that local catalog-administration script and must never be exposed in client code. The `PUBLIC_PADDLE_*` env vars are safe for client-side use.

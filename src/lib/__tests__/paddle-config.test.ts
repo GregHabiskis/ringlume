@@ -44,12 +44,4 @@ describe('Paddle configuration', () => {
 
 		expect(() => validatePublicPaddleConfig()).toThrow('does not match');
 	});
-
-	it('validates the server API key prefix without exposing its value', async () => {
-		vi.stubEnv('PADDLE_API_KEY', 'pdl_sdbx_apikey_example');
-		const { getPaddleApiKey } = await importConfig();
-
-		expect(getPaddleApiKey('sandbox')).toBeTruthy();
-		expect(() => getPaddleApiKey('production')).toThrow('does not match');
-	});
 });

@@ -30,23 +30,6 @@ export function getPaddleEnvironment(): PaddleEnvironment {
 	);
 }
 
-export function getPaddleApiKey(environment: PaddleEnvironment): string {
-	const apiKey = requireValue(
-		getServerEnvironmentVariable('PADDLE_API_KEY'),
-		'PADDLE_API_KEY',
-	);
-	const expectedPrefix =
-		environment === 'sandbox' ? 'pdl_sdbx_apikey_' : 'pdl_live_apikey_';
-
-	if (!apiKey.startsWith(expectedPrefix)) {
-		throw new Error(
-			`PADDLE_API_KEY does not match the configured ${environment} environment`,
-		);
-	}
-
-	return apiKey;
-}
-
 export function validatePublicPaddleConfig(): void {
 	const publicEnvironment = requireEnvironment(
 		getServerEnvironmentVariable('PUBLIC_PADDLE_ENVIRONMENT'),

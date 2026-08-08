@@ -1,19 +1,20 @@
 #!/usr/bin/env node
 
 /**
- * Idempotent provisioning script for Paddle Sandbox catalog.
+ * Optional local-only catalog administration script for Paddle Sandbox.
  *
- * Reads PADDLE_API_KEY from environment. Creates products and prices
- * only if they don't already exist (matched by custom_data.app + name).
+ * PADDLE_API_KEY is never used by the Ringlume application runtime. This
+ * script creates products and prices only if they don't already exist
+ * (matched by custom_data.app + name).
  *
  * Usage:
- *   PADDLE_API_KEY=pdl_sdbx_... node scripts/provision-paddle.mjs
+ *   PADDLE_API_KEY=pdl_sdbx_... pnpm paddle:provision
  */
 
 const PADDLE_API_KEY = process.env.PADDLE_API_KEY;
 if (!PADDLE_API_KEY) {
   console.error('Missing PADDLE_API_KEY environment variable.');
-  console.error('Usage: PADDLE_API_KEY=pdl_sdbx_... node scripts/provision-paddle.mjs');
+  console.error('Usage: PADDLE_API_KEY=pdl_sdbx_... pnpm paddle:provision');
   process.exit(1);
 }
 
@@ -278,7 +279,7 @@ async function main() {
     `PUBLIC_PADDLE_MAX_ANNUAL_PRICE_ID=${maxAnnual?.price?.id || 'MISSING'}`,
     `PUBLIC_PADDLE_SETUP_FEE_PRICE_ID=${setupFee?.price?.id || 'MISSING'}`,
     '',
-    '# Server-side only (provisioning)',
+    '# Optional local tooling only (catalog administration)',
     '# PADDLE_API_KEY=pdl_sdbx_...',
   ];
   console.log(lines.join('\n'));

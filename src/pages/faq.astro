@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import Header from '../components/Header.astro'
+import FAQ from '../components/FAQ.astro'
+import Footer from '../components/Footer.astro'
+import ContactWidget from '../components/ContactWidget.astro'
+---
+
+<BaseLayout
+  title="Frequently Asked Questions | Ringlume"
+  description="Find answers about Ringlume call handling, appointment booking, lead qualification, transfers, setup, pricing, and subscription management."
+>
+  <Header />
+
+  <main class="min-h-screen pt-16 lg:pt-20">
+    <FAQ headingLevel="h1" />
+  </main>
+
+  <Footer />
+  <ContactWidget />
+</BaseLayout>

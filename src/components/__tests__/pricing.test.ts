@@ -18,7 +18,9 @@ describe('pricing checkout launchers', () => {
 		expect(source).toContain('Refund Policy');
 		expect(source).toContain('href="/refund"');
 		expect(source).toContain('subscription charges are 100% refundable');
-		expect(source).toContain('the setup fee is 50% refundable');
+		expect(source).toContain('the Service Setup Fee is 50% refundable');
+		expect(source).toContain('+ $1,200 one-time Service Setup Fee');
+		expect(source).not.toContain('Voice AI Setup Fee');
 	});
 
 	it('keeps the one-time setup fee in the checkout items', async () => {

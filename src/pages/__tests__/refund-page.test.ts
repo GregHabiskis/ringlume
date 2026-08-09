@@ -13,5 +13,7 @@ describe('refund policy', () => {
 		expect(source).toContain('$600');
 		expect(source).toContain('After the 7-day guarantee period');
 		expect(source).toContain('No partial refund guarantee applies');
+		expect(source).toContain('Service Setup Fee');
+		expect(source).not.toContain('Voice AI Setup Fee');
 	});
 });

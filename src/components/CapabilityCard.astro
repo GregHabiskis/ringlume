@@ -72,7 +72,7 @@ const iconPaths: Record<CapabilityKind, string> = {
 			<div
 				class="call-panel relative mt-8 rounded-2xl border border-white/10 bg-[#0d100f]/90 p-5 sm:mt-auto sm:p-6"
 				role="img"
-				aria-label="Incoming call from a new customer, answered by the AI receptionist in 1.2 seconds"
+				aria-label="Incoming call from a new customer, answered by Ringlume's virtual receptionist in 1.2 seconds"
 			>
 				<div class="flex items-center justify-between gap-4">
 					<div class="flex min-w-0 items-center gap-3">
@@ -93,7 +93,7 @@ const iconPaths: Record<CapabilityKind, string> = {
 					</div>
 					<div class="inline-flex shrink-0 items-center gap-2 text-xs font-medium text-slate-300">
 						<span class="status-pulse h-2 w-2 rounded-full bg-green-primary"></span>
-						AI is speaking
+						The receptionist is speaking
 					</div>
 				</div>
 			</div>
@@ -120,17 +120,17 @@ const iconPaths: Record<CapabilityKind, string> = {
 		)}
 
 		{kind === 'follow-up' && (
-			<ol class="mt-auto flex flex-wrap items-center gap-2 pt-7 text-xs" aria-label="Automatic follow-up workflow">
+			<ol class="mt-auto flex flex-wrap items-center gap-2 pt-7 text-xs" aria-label="After-call follow-up steps">
 				<li class="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2 text-slate-200">Form submitted</li>
 				<li class="text-green-primary" aria-hidden="true">&rarr;</li>
-				<li class="rounded-lg border border-green-primary/20 bg-green-primary/10 px-3 py-2 text-green-accent">AI calls</li>
+				<li class="rounded-lg border border-green-primary/20 bg-green-primary/10 px-3 py-2 text-green-accent">Ringlume calls</li>
 				<li class="text-green-primary" aria-hidden="true">&rarr;</li>
 				<li class="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2 text-slate-200">Appointment confirmed</li>
 			</ol>
 		)}
 
 		{kind === 'knowledge' && (
-			<ul class="mt-auto flex flex-wrap gap-2 pt-7" aria-label="Business knowledge sources">
+			<ul class="mt-auto flex flex-wrap gap-2 pt-7" aria-label="Business information sources">
 				{['Website', 'Pricing', 'FAQs', 'Services'].map((source) => (
 					<li class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-slate-300">{source}</li>
 				))}
@@ -150,8 +150,8 @@ const iconPaths: Record<CapabilityKind, string> = {
 		)}
 
 		{kind === 'reporting' && (
-			<ul class="mt-auto space-y-2 pt-7" aria-label="Post-call automation status">
-				{['Transcript ready', 'CRM updated', '12 languages'].map((status) => (
+			<ul class="mt-auto space-y-2 pt-7" aria-label="After-call updates">
+				{['Written record ready', 'Customer record updated', '12 languages'].map((status) => (
 					<li class="flex items-center justify-between rounded-lg border border-white/[0.07] bg-black/15 px-3 py-2 text-xs text-slate-300">
 						<span>{status}</span>
 						<svg class="h-4 w-4 text-green-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

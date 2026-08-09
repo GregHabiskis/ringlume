@@ -1,7 +1,7 @@
-# Ringlume — Voice AI Receptionist
+# Ringlume — Virtual Receptionist
 
-Astro marketing site for a Voice AI receptionist product, with Paddle Billing
-checkout and a hosted customer portal redirect.
+Astro marketing site for Ringlume's virtual receptionist service, with Paddle
+Billing checkout and a hosted customer portal redirect.
 
 | Stack           |                                                      |
 | --------------- | ---------------------------------------------------- |

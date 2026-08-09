@@ -31,7 +31,7 @@ const PRICE_VERSION = '2'
 const PRODUCT_DEFS = [
   {
     name: 'Basic',
-    description: 'Perfect for small businesses getting started with Voice AI',
+    description: 'Perfect for small businesses getting started with a virtual receptionist',
     tax_category: 'saas',
     custom_data: { ...CUSTOM_DATA, plan: 'basic' },
     prices: [
@@ -110,8 +110,8 @@ const PRODUCT_DEFS = [
     ],
   },
   {
-    name: 'Voice AI Setup Fee',
-    description: 'One-time setup fee for Voice AI receptionist',
+    name: 'Service Setup Fee',
+    description: 'One-time setup fee for a virtual receptionist service',
     tax_category: 'standard',
     custom_data: { ...CUSTOM_DATA, type: 'setup_fee' },
     prices: [
@@ -265,7 +265,7 @@ async function main() {
   const plusAnnual = created.find((c) => c.product === 'Plus' && c.price.billing_cycle?.interval === 'year');
   const maxMonthly = created.find((c) => c.product === 'Max' && c.price.billing_cycle?.interval === 'month');
   const maxAnnual = created.find((c) => c.product === 'Max' && c.price.billing_cycle?.interval === 'year');
-  const setupFee = created.find((c) => c.product === 'Voice AI Setup Fee');
+  const setupFee = created.find((c) => c.product === 'Service Setup Fee');
 
   const lines = [
     '# Configure PUBLIC_PADDLE_ENVIRONMENT and PUBLIC_PADDLE_CLIENT_TOKEN separately.',

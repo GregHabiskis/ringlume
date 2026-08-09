@@ -87,13 +87,13 @@ const iconPaths: Record<CapabilityKind, string> = {
 					</span>
 				</div>
 
-				<div class="mt-6 flex items-end justify-between gap-5">
-					<div class="waveform flex h-9 items-center gap-1" aria-hidden="true">
+				<div class="mt-5 flex flex-wrap items-end justify-between gap-3 pb-1 sm:mt-6 sm:flex-nowrap sm:gap-5 sm:pb-0">
+					<div class="waveform flex h-9 shrink-0 items-center gap-1" aria-hidden="true">
 						<span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
 					</div>
-					<div class="inline-flex shrink-0 items-center gap-2 text-xs font-medium text-slate-300">
-						<span class="status-pulse h-2 w-2 rounded-full bg-green-primary"></span>
-						The receptionist is speaking
+					<div class="inline-flex min-w-0 max-w-full items-center gap-2 text-xs font-medium text-slate-300">
+						<span class="status-pulse h-2 w-2 shrink-0 rounded-full bg-green-primary"></span>
+						<span class="min-w-0 break-words">The receptionist is speaking</span>
 					</div>
 				</div>
 			</div>

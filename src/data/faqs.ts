@@ -144,7 +144,7 @@ export const faqItems: FaqItem[] = [
 		id: 'setup-time',
 		question: 'How long does setup take?',
 		paragraphs: [
-			'Ringlume currently advertises a typical setup time of approximately 24-48 hours.',
+			'Ringlume currently advertises a typical setup time of approximately 24–48 hours.',
 			'The receptionist is set up around your business, services, FAQs, booking rules, how calls should be handled, and when your team should be involved.',
 		],
 	},

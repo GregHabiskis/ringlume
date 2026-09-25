@@ -4,11 +4,11 @@ import Header from '../components/Header.astro'
 import Hero from '../components/Hero.astro'
 import FomoSection from '../components/FomoSection.astro'
 import Capabilities from '../components/Capabilities.astro'
+import DemoSection from '../components/DemoSection.astro'
 import Pricing from '../components/Pricing.astro'
 import FAQ from '../components/FAQ.astro'
 import CtaSection from '../components/CtaSection.astro'
 import Footer from '../components/Footer.astro'
-import ContactWidget from '../components/ContactWidget.astro'
 import type { FaqId } from '../data/faqs'
 
 const homepageFaqIds = [
@@ -30,11 +30,11 @@ const homepageFaqIds = [
     <Hero />
     <FomoSection />
     <Capabilities />
+    <DemoSection />
     <Pricing />
     <FAQ faqIds={homepageFaqIds} showAllLink />
     <CtaSection />
   </main>
 
   <Footer />
-  <ContactWidget />
 </BaseLayout>

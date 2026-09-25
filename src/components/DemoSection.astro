@@ -1,0 +1,253 @@
+---
+import { getRetellConfig } from '../lib/retell-config'
+
+const retell = getRetellConfig()
+
+const tryAsking = [
+	'What do your plans cost?',
+	'Book me in for Tuesday at 3pm',
+	'Do you cover my area?',
+]
+---
+
+{
+	retell && (
+		<section
+			id="demo"
+			class="gradient-bg-muted relative scroll-mt-16 overflow-hidden py-20 content-auto lg:scroll-mt-20 lg:py-32"
+			data-retell-public-key={retell.voicePublicKey}
+			data-retell-agent-id={retell.voiceAgentId}
+			data-retell-recaptcha-key={retell.recaptchaKey}
+		>
+			<div
+				class="absolute inset-0 hidden overflow-hidden md:block"
+				aria-hidden="true"
+			>
+				<div class="orb orb-sm absolute -top-40 -right-40 h-80 w-80 bg-white/10" />
+				<div class="orb orb-sm absolute -bottom-40 -left-40 h-80 w-80 bg-white/10" />
+			</div>
+
+			<div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				<div class="mx-auto max-w-3xl text-center">
+					<p class="mb-5 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[11px] font-bold tracking-[0.2em] text-white uppercase">
+						<span
+							class="h-1.5 w-1.5 animate-pulse rounded-full bg-white"
+							aria-hidden="true"
+						/>
+						Live demo
+					</p>
+
+					<h2 class="mb-6 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+						Hear it live.
+					</h2>
+
+					<p class="mb-10 text-base text-white/80 sm:text-lg">
+						Talk to Ringlume's AI receptionist right here on the page. It
+						answers questions, books appointments, and qualifies leads — the
+						same agent that picks up when your customers call.
+					</p>
+
+					<button
+						type="button"
+						data-demo-open
+						class="inline-flex items-center gap-3 rounded-full border border-white/30 bg-[#181a1d] px-8 py-4 text-base font-semibold text-white transition-all hover:border-white/50 hover:bg-[#24272b] disabled:opacity-60"
+					>
+						<svg
+							class="h-5 w-5 shrink-0"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							aria-hidden="true"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"
+							/>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"
+							/>
+						</svg>
+						<span data-demo-label>Talk to the demo</span>
+					</button>
+
+					<p class="mt-4 text-sm text-white/70">
+						Opens a live voice call in your browser. Your microphone will be
+						asked for permission.
+					</p>
+
+					<div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+						<span
+							class="text-xs font-bold tracking-[0.2em] text-white/70 uppercase"
+							set:text="Try asking"
+						/>
+						{tryAsking.map((prompt) => (
+							<span
+								class="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm text-white/90"
+								set:text={prompt}
+							/>
+						))}
+					</div>
+				</div>
+			</div>
+		</section>
+	)
+}
+---
+
+<script>
+	const RETELL_SCRIPT_ID = 'retell-widget'
+	const RETELL_SRC = 'https://dashboard.retellai.com/retell-widget-v2.js'
+	const RETELL_TITLE = 'Talk to Ringlume'
+	const RETELL_FAB_TEXT = 'Try our AI receptionist'
+	const OPEN_LABEL = 'Talk to the demo'
+	const BUSY_LABEL = 'Connecting…'
+	const MAX_WAIT_MS = 8000
+
+	const CLOSED_FAB_SELECTOR =
+		'button[aria-label="Open Assistant"], button[title="Assistant"]'
+	const OPEN_PANEL_SELECTOR =
+		'button[aria-label="Minimize window"], button[aria-label="Return to active call"]'
+
+	type RetellConfig = {
+		publicKey: string
+		agentId: string
+		recaptchaKey: string
+	}
+
+	let injected = false
+	let opening = false
+
+	function readConfig(): RetellConfig | null {
+		const section = document.getElementById('demo')
+		if (!section) return null
+
+		const publicKey = section.dataset.retellPublicKey?.trim()
+		const agentId = section.dataset.retellAgentId?.trim()
+		if (!publicKey || !agentId) return null
+
+		return {
+			publicKey,
+			agentId,
+			recaptchaKey: section.dataset.retellRecaptchaKey?.trim() ?? '',
+		}
+	}
+
+	function isOpen(): boolean {
+		return Boolean(document.querySelector(OPEN_PANEL_SELECTOR))
+	}
+
+	function inject(config: RetellConfig): void {
+		if (injected || document.getElementById(RETELL_SCRIPT_ID)) {
+			injected = true
+			return
+		}
+
+		const tag = document.createElement('script')
+		tag.id = RETELL_SCRIPT_ID
+		tag.src = RETELL_SRC
+		tag.type = 'module'
+		tag.dataset.voicePublicKey = config.publicKey
+		tag.dataset.voiceAgentId = config.agentId
+		tag.dataset.title = RETELL_TITLE
+		tag.dataset.fabText = RETELL_FAB_TEXT
+		tag.dataset.botName = 'Ringlume'
+		tag.dataset.logoUrl = '/images/logo-240.webp'
+		tag.dataset.themeColor = '#0A1120'
+		tag.dataset.componentColor = '#269635'
+		tag.dataset.showAiPopup = 'true'
+		tag.dataset.showAiPopupTime = '8'
+		tag.dataset.popupMessage = "Hi — I'm Ringlume's AI receptionist. Ask me anything."
+
+		if (config.recaptchaKey) {
+			const recaptcha = document.createElement('script')
+			recaptcha.src = `https://www.google.com/recaptcha/api.js?render=${config.recaptchaKey}`
+			recaptcha.async = true
+			document.head.appendChild(recaptcha)
+			tag.dataset.recaptchaKey = config.recaptchaKey
+		}
+
+		tag.addEventListener(
+			'error',
+			() => {
+				injected = false
+			},
+			{ once: true },
+		)
+
+		document.head.appendChild(tag)
+		injected = true
+	}
+
+	function waitForFab(timeoutMs = MAX_WAIT_MS): Promise<HTMLButtonElement | null> {
+		return new Promise((resolve) => {
+			const existing = document.querySelector<HTMLButtonElement>(
+				CLOSED_FAB_SELECTOR,
+			)
+			if (existing) {
+				resolve(existing)
+				return
+			}
+
+			const observer = new MutationObserver(() => {
+				const fab = document.querySelector<HTMLButtonElement>(
+					CLOSED_FAB_SELECTOR,
+				)
+				if (fab) {
+					cleanup()
+					resolve(fab)
+				}
+			})
+
+			const timer = window.setTimeout(() => {
+				cleanup()
+				resolve(
+					document.querySelector<HTMLButtonElement>(CLOSED_FAB_SELECTOR),
+				)
+			}, timeoutMs)
+
+			function cleanup(): void {
+				observer.disconnect()
+				window.clearTimeout(timer)
+			}
+
+			observer.observe(document.body, { childList: true, subtree: true })
+		})
+	}
+
+	function setBusy(button: HTMLButtonElement, busy: boolean): void {
+		const label = button.querySelector<HTMLElement>('[data-demo-label]')
+		button.disabled = busy
+		button.setAttribute('aria-busy', String(busy))
+		if (label) label.textContent = busy ? BUSY_LABEL : OPEN_LABEL
+	}
+
+	async function openDemo(button: HTMLButtonElement): Promise<void> {
+		if (opening || isOpen()) return
+
+		const config = readConfig()
+		if (!config) return
+
+		opening = true
+		setBusy(button, true)
+
+		try {
+			inject(config)
+			const fab = await waitForFab()
+			if (fab && !isOpen()) fab.click()
+		} finally {
+			opening = false
+			setBusy(button, false)
+		}
+	}
+
+	document.querySelectorAll<HTMLButtonElement>('[data-demo-open]').forEach(
+		(button) => {
+			button.addEventListener('click', () => void openDemo(button))
+		},
+	)
+</script>

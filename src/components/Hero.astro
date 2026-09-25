@@ -1,4 +1,7 @@
 ---
+import { getRetellConfig } from '../lib/retell-config'
+
+const retell = getRetellConfig()
 ---
 
 <section class="relative pt-32 lg:pt-40 pb-20 lg:pb-32 overflow-hidden bg-navy">
@@ -38,10 +41,10 @@
           Get Started Today
         </a>
         <a
-          href="#capabilities"
+          href={retell ? '#demo' : '#capabilities'}
           class="text-white px-8 py-4 rounded-full text-base font-semibold border border-white/20 hover:bg-white/10 transition-all"
         >
-          Explore Features
+          {retell ? 'Try a Demo' : 'Explore Features'}
         </a>
       </div>
 

@@ -75,13 +75,17 @@ BaseLayout
     Hero
     FomoSection
     Capabilities
+    DemoSection        # live Retell voice demo; renders nothing when PUBLIC_RETELL_* unset
     Pricing
+    FAQ
     CtaSection
   Footer
-  ContactWidget
 ```
 
 Reuse this pattern for new marketing pages: layout → chrome → sections.
+
+The homepage deliberately has **no** `ContactWidget` — the Retell demo FAB takes
+that corner after it loads. Every other page still mounts it.
 
 ---
 
@@ -89,7 +93,7 @@ Reuse this pattern for new marketing pages: layout → chrome → sections.
 
 1. **Static first.** Prefer zero client JS. Interactive bits are tiny vanilla `<script>` blocks inside `.astro` files (menu, pricing toggle, hero word rotation, contact FAB).
 2. **No heavy frameworks.** Do not add React, Vue, Framer Motion, GSAP, analytics SDKs, or chat widgets unless explicitly requested.
-3. **No third-party render-blocking scripts.** Checkout uses the installed Paddle.js package and opens an overlay only after user interaction.
+3. **No third-party render-blocking scripts.** Checkout uses the installed Paddle.js package and opens an overlay only after user interaction. The Retell demo widget (`~1.4 MB`) is injected only when someone clicks a demo CTA — never at page load.
 4. **Keep deps minimal.** Paddle Billing supports checkout and the hosted portal; the site has no application database, account, entitlement, or webhook layer.
 5. **pnpm only.**
 
@@ -283,6 +287,7 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 | Brand colors / fonts           | `src/styles/global.css` `@theme` + `@font-face`            |
 | SEO title/description defaults | `src/layouts/BaseLayout.astro`                             |
 | Landing section order          | `src/pages/index.astro`                                    |
+| Live voice demo (Retell)       | `src/components/DemoSection.astro` + `PUBLIC_RETELL_*`      |
 | Cache / security headers       | `netlify.toml`                                             |
 | New page                       | `src/pages/<slug>.astro` + link from Header/Footer         |
 

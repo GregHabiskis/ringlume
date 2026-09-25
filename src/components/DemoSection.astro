@@ -103,7 +103,7 @@ const tryAsking = [
 	const RETELL_SCRIPT_ID = 'retell-widget'
 	const RETELL_SRC = 'https://dashboard.retellai.com/retell-widget-v2.js'
 	const RETELL_TITLE = "Talk to Ringlume's Virtual receptionist"
-	const RETELL_FAB_TEXT = 'Try our AI receptionist'
+	const RETELL_FAB_TEXT = 'Try our Virtual receptionist'
 	const OPEN_LABEL = 'Talk to the demo'
 	const BUSY_LABEL = 'Connecting…'
 	const MAX_WAIT_MS = 8000
@@ -165,7 +165,14 @@ const tryAsking = [
 
 		const style = document.createElement('style')
 		style.id = STYLE_OVERRIDE_ID
-		style.textContent = '[class*="_brandSubtitle_"] { display: none !important; }'
+		style.textContent = [
+			/* Retell hardcodes the subtitle and only drops it behind their
+			   white-label token, so suppress it locally instead. */
+			'[class*="_brandSubtitle_"] { display: none !important; }',
+			/* Retell left-aligns the brand title; keep it centred at every
+			   breakpoint so it matches the avatar and the Start-to-call button. */
+			'[class*="_brandTitle_"] { text-align: center !important; }',
+		].join('\n')
 		root.appendChild(style)
 	}
 
@@ -196,7 +203,7 @@ const tryAsking = [
 		tag.dataset.componentColor = '#269635'
 		tag.dataset.showAiPopup = 'true'
 		tag.dataset.showAiPopupTime = '8'
-		tag.dataset.popupMessage = "Hi — I'm Ringlume's AI receptionist. Ask me anything."
+		tag.dataset.popupMessage = "Hi — I'm Ringlume's Virtual receptionist. Ask me anything."
 
 		if (config.recaptchaKey) {
 			const recaptcha = document.createElement('script')

@@ -8,8 +8,8 @@ import {
 
 function env(overrides: Partial<RetellEnv> = {}): RetellEnv {
 	return {
-		PUBLIC_RETELL_VOICE_PUBLIC_KEY: 'public_key_662284caeebd49d44c29f',
-		PUBLIC_RETELL_VOICE_AGENT_ID: 'agent_fe9ad8c2f25108a5476a5f9014',
+		PUBLIC_RETELL_VOICE_PUBLIC_KEY: 'public_key_test_00000000000000000000',
+		PUBLIC_RETELL_VOICE_AGENT_ID: 'agent_test_00000000000000000000',
 		...overrides,
 	};
 }
@@ -19,8 +19,8 @@ describe('Retell configuration', () => {
 		const config = resolveRetellConfig(env());
 
 		expect(config).toEqual({
-			voicePublicKey: 'public_key_662284caeebd49d44c29f',
-			voiceAgentId: 'agent_fe9ad8c2f25108a5476a5f9014',
+			voicePublicKey: 'public_key_test_00000000000000000000',
+			voiceAgentId: 'agent_test_00000000000000000000',
 			recaptchaKey: undefined,
 		});
 	});
@@ -76,7 +76,7 @@ describe('Retell configuration', () => {
 		expect(isUsableRetellValue('   ')).toBe(false);
 		expect(isUsableRetellValue('<your-public-key>')).toBe(false);
 		expect(isUsableRetellValue('key_REPLACE_ME')).toBe(false);
-		expect(isUsableRetellValue('public_key_662284caeebd49d44c29f')).toBe(
+		expect(isUsableRetellValue('public_key_test_00000000000000000000')).toBe(
 			true,
 		);
 	});

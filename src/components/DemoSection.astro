@@ -42,7 +42,7 @@ const tryAsking = [
 					</h2>
 
 					<p class="mb-10 text-base text-white/80 sm:text-lg">
-						Talk to Ringlume's AI receptionist right here on the page. It
+						Talk to Ringlume's Virtual receptionist right here on the page. It
 						answers questions, books appointments, and qualifies leads — the
 						same agent that picks up when your customers call.
 					</p>
@@ -102,7 +102,7 @@ const tryAsking = [
 <script>
 	const RETELL_SCRIPT_ID = 'retell-widget'
 	const RETELL_SRC = 'https://dashboard.retellai.com/retell-widget-v2.js'
-	const RETELL_TITLE = 'Talk to Ringlume'
+	const RETELL_TITLE = "Talk to Ringlume's Virtual receptionist"
 	const RETELL_FAB_TEXT = 'Try our AI receptionist'
 	const OPEN_LABEL = 'Talk to the demo'
 	const BUSY_LABEL = 'Connecting…'
@@ -112,6 +112,8 @@ const tryAsking = [
 		'button[aria-label="Open Assistant"], button[title="Assistant"]'
 	const OPEN_PANEL_SELECTOR =
 		'button[aria-label="Minimize window"], button[aria-label="Return to active call"]'
+	const STYLE_OVERRIDE_ID = 'ringlume-retell-overrides'
+	const POLL_MS = 150
 
 	type RetellConfig = {
 		publicKey: string
@@ -138,7 +140,40 @@ const tryAsking = [
 	}
 
 	function isOpen(): boolean {
-		return Boolean(document.querySelector(OPEN_PANEL_SELECTOR))
+		return Boolean(queryWidget(OPEN_PANEL_SELECTOR))
+	}
+
+	// Retell renders its whole UI inside a shadow root, so a plain
+	// document.querySelector() never sees the FAB or the panel.
+	function widgetRoot(): ShadowRoot | null {
+		const host = document.getElementById('retell-widget-root')
+		const candidate = host?.firstElementChild ?? host
+		const root = candidate?.shadowRoot ?? findAnyShadowRoot()
+		if (root) applyOverrides(root)
+		return root
+	}
+
+	function findAnyShadowRoot(): ShadowRoot | null {
+		for (const el of document.querySelectorAll('div')) {
+			if (el.shadowRoot) return el.shadowRoot
+		}
+		return null
+	}
+
+	function applyOverrides(root: ShadowRoot): void {
+		if (root.getElementById(STYLE_OVERRIDE_ID)) return
+
+		const style = document.createElement('style')
+		style.id = STYLE_OVERRIDE_ID
+		style.textContent = '[class*="_brandSubtitle_"] { display: none !important; }'
+		root.appendChild(style)
+	}
+
+	function queryWidget<T extends Element>(selector: string): T | null {
+		return (
+			widgetRoot()?.querySelector<T>(selector) ??
+			document.querySelector<T>(selector)
+		)
 	}
 
 	function inject(config: RetellConfig): void {
@@ -183,39 +218,27 @@ const tryAsking = [
 		injected = true
 	}
 
-	function waitForFab(timeoutMs = MAX_WAIT_MS): Promise<HTMLButtonElement | null> {
+	function waitForFab(
+		timeoutMs = MAX_WAIT_MS,
+	): Promise<HTMLButtonElement | null> {
 		return new Promise((resolve) => {
-			const existing = document.querySelector<HTMLButtonElement>(
-				CLOSED_FAB_SELECTOR,
-			)
-			if (existing) {
-				resolve(existing)
-				return
-			}
+			// Shadow-root mutations never reach a document observer, so poll.
+			const started = Date.now()
 
-			const observer = new MutationObserver(() => {
-				const fab = document.querySelector<HTMLButtonElement>(
-					CLOSED_FAB_SELECTOR,
-				)
+			function tick(): void {
+				const fab = queryWidget<HTMLButtonElement>(CLOSED_FAB_SELECTOR)
 				if (fab) {
-					cleanup()
 					resolve(fab)
+					return
 				}
-			})
-
-			const timer = window.setTimeout(() => {
-				cleanup()
-				resolve(
-					document.querySelector<HTMLButtonElement>(CLOSED_FAB_SELECTOR),
-				)
-			}, timeoutMs)
-
-			function cleanup(): void {
-				observer.disconnect()
-				window.clearTimeout(timer)
+				if (Date.now() - started >= timeoutMs) {
+					resolve(null)
+					return
+				}
+				window.setTimeout(tick, POLL_MS)
 			}
 
-			observer.observe(document.body, { childList: true, subtree: true })
+			tick()
 		})
 	}
 

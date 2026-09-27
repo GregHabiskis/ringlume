@@ -1,13 +1,7 @@
 ---
-import { validatePublicPaddleConfig } from '../lib/paddle-config'
-
-validatePublicPaddleConfig()
-
 const plans = [
   {
     name: 'Basic',
-    monthlyPriceId: import.meta.env.PUBLIC_PADDLE_BASIC_MONTHLY_PRICE_ID || '',
-    annualPriceId: import.meta.env.PUBLIC_PADDLE_BASIC_ANNUAL_PRICE_ID || '',
     monthlyDisplay: '$299',
     annualMonthlyDisplay: '$249',
     annualBillingDisplay: 'Billed $2,990 annually',
@@ -21,13 +15,11 @@ const plans = [
       'Daily Call Reports',
       '1 Free Phone Number',
     ],
-    cta: 'Get Started',
+    cta: 'Contact Sales',
     popular: false,
   },
   {
     name: 'Pro',
-    monthlyPriceId: import.meta.env.PUBLIC_PADDLE_PRO_MONTHLY_PRICE_ID || '',
-    annualPriceId: import.meta.env.PUBLIC_PADDLE_PRO_ANNUAL_PRICE_ID || '',
     monthlyDisplay: '$599',
     annualMonthlyDisplay: '$499',
     annualBillingDisplay: 'Billed $5,990 annually',
@@ -41,13 +33,11 @@ const plans = [
       'Daily Call Recordings & Written Records',
       '3 Free Phone Numbers',
     ],
-    cta: 'Get Started',
+    cta: 'Contact Sales',
     popular: false,
   },
   {
     name: 'Plus',
-    monthlyPriceId: import.meta.env.PUBLIC_PADDLE_PLUS_MONTHLY_PRICE_ID || '',
-    annualPriceId: import.meta.env.PUBLIC_PADDLE_PLUS_ANNUAL_PRICE_ID || '',
     monthlyDisplay: '$999',
     annualMonthlyDisplay: '$832',
     annualBillingDisplay: 'Billed $9,990 annually',
@@ -61,13 +51,11 @@ const plans = [
       'Priority Email & Chat Support',
       '5 Free Phone Numbers',
     ],
-    cta: 'Get Started',
+    cta: 'Contact Sales',
     popular: true,
   },
   {
     name: 'Max',
-    monthlyPriceId: import.meta.env.PUBLIC_PADDLE_MAX_MONTHLY_PRICE_ID || '',
-    annualPriceId: import.meta.env.PUBLIC_PADDLE_MAX_ANNUAL_PRICE_ID || '',
     monthlyDisplay: '$1,999',
     annualMonthlyDisplay: '$1,666',
     annualBillingDisplay: 'Billed $19,990 annually',
@@ -80,7 +68,7 @@ const plans = [
       'Custom Integrations & Developer Access',
       'Dedicated Priority Support & Setup Assistance',
     ],
-    cta: 'Get Started',
+    cta: 'Contact Sales',
     popular: false,
   },
 ]
@@ -193,13 +181,10 @@ const plans = [
           </div>
 
           <!-- CTA Button -->
-          <button
-            type="button"
+          <a
+            href="https://cal.com/ringlume/meeting"
             data-plan={plan.name.toLowerCase()}
-            data-checkout-button
-            aria-describedby={`checkout-legal-notice-${plan.name.toLowerCase()}`}
-            data-monthly-price-id={plan.monthlyPriceId}
-            data-annual-price-id={plan.annualPriceId}
+            aria-describedby={`cta-legal-notice-${plan.name.toLowerCase()}`}
             class={`block w-full text-center py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 cursor-pointer ${
               plan.popular
                 ? 'gradient-green text-white hover:[background:linear-gradient(135deg,#3ABF52,#269635)] hover:scale-[1.02] shadow-lg glow-green'
@@ -207,10 +192,10 @@ const plans = [
             }`}
           >
             {plan.cta}
-          </button>
+          </a>
 
-          <p id={`checkout-legal-notice-${plan.name.toLowerCase()}`} class="mt-3 text-center text-[11px] leading-relaxed text-slate-500">
-            By continuing to checkout, you agree to our
+          <p id={`cta-legal-notice-${plan.name.toLowerCase()}`} class="mt-3 text-center text-[11px] leading-relaxed text-slate-500">
+            By continuing, you agree to our
             <a href="/terms" class="text-green-primary underline underline-offset-2 hover:text-green-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-accent focus-visible:ring-offset-2 focus-visible:ring-offset-slate-bg">Terms of Service</a>,
             <a href="/privacy" class="text-green-primary underline underline-offset-2 hover:text-green-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-accent focus-visible:ring-offset-2 focus-visible:ring-offset-slate-bg">Privacy Policy</a>, and
             <a href="/refund" class="text-green-primary underline underline-offset-2 hover:text-green-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-accent focus-visible:ring-offset-2 focus-visible:ring-offset-slate-bg">Refund Policy</a>.
@@ -218,8 +203,6 @@ const plans = [
         </div>
       ))}
     </div>
-
-    <p id="checkout-status" class="hidden mt-6 text-center text-sm text-red-300" role="status" aria-live="polite"></p>
 
     <!-- Trust Text -->
     <div class="mt-12 text-center space-y-2">
@@ -234,24 +217,13 @@ const plans = [
 </section>
 
 <script>
-  import { initializePaddle, type Paddle } from '@paddle/paddle-js'
-
-  const env: 'sandbox' | 'production' = import.meta.env.PUBLIC_PADDLE_ENVIRONMENT
-  const token: string = import.meta.env.PUBLIC_PADDLE_CLIENT_TOKEN
-  const setupFeePriceId: string = import.meta.env.PUBLIC_PADDLE_SETUP_FEE_PRICE_ID
-
   const monthlyBtn = document.getElementById('monthly-btn')
   const annualBtn = document.getElementById('annual-btn')
-  const checkoutStatus = document.getElementById('checkout-status')
-
-  let isAnnual = false
-  let paddlePromise: Promise<Paddle | undefined> | undefined
 
   monthlyBtn?.addEventListener('click', () => setBillingPeriod(false))
   annualBtn?.addEventListener('click', () => setBillingPeriod(true))
 
   function setBillingPeriod(annual: boolean) {
-    isAnnual = annual
     updateDisplay(annual)
     monthlyBtn?.classList.toggle('toggle-active', !annual)
     monthlyBtn?.classList.toggle('toggle-inactive', annual)
@@ -280,88 +252,5 @@ const plans = [
     tildes.forEach(el => {
       el.classList.toggle('hidden', !annual)
     })
-  }
-
-  function showCheckoutError(message: string) {
-    console.error(message)
-    if (checkoutStatus) {
-      checkoutStatus.textContent = message
-      checkoutStatus.classList.remove('hidden')
-    }
-  }
-
-  function getPaddle() {
-    if (paddlePromise) return paddlePromise
-
-    if (!token || (env !== 'sandbox' && env !== 'production')) {
-      paddlePromise = Promise.resolve(undefined)
-      return paddlePromise
-    }
-
-    paddlePromise = initializePaddle({ token, environment: env }).catch(error => {
-      console.error('Failed to initialize Paddle.', error)
-      return undefined
-    })
-
-    return paddlePromise
-  }
-
-  document.querySelectorAll<HTMLButtonElement>('[data-checkout-button]').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      e.preventDefault()
-
-      const priceId = isAnnual ? btn.dataset.annualPriceId : btn.dataset.monthlyPriceId
-
-      if (!priceId) {
-        showCheckoutError(`Checkout is unavailable for the ${btn.dataset.plan || 'selected'} plan.`)
-        return
-      }
-
-      if (!setupFeePriceId) {
-        showCheckoutError('Checkout is temporarily unavailable. Please contact support.')
-        return
-      }
-
-      const originalText = btn.textContent
-      btn.disabled = true
-      btn.textContent = 'Loading checkout...'
-      checkoutStatus?.classList.add('hidden')
-
-      try {
-        const paddleInstance = await getPaddle()
-        if (!paddleInstance) {
-          showCheckoutError('Checkout is temporarily unavailable. Please try again later.')
-          return
-        }
-
-        paddleInstance.Checkout.open({
-          items: [
-            { priceId, quantity: 1 },
-            { priceId: setupFeePriceId, quantity: 1 },
-          ],
-          settings: {
-            displayMode: 'overlay',
-            variant: 'one-page',
-            successUrl: window.location.origin + '/welcome',
-          },
-        })
-      } catch (error) {
-        console.error('Failed to open Paddle checkout.', error)
-        showCheckoutError('Checkout could not open. Please try again or contact support.')
-      } finally {
-        btn.disabled = false
-        btn.textContent = originalText
-      }
-    })
-  })
-
-  const warmPaddle = () => void getPaddle()
-  const idleWindow = window as Window & {
-    requestIdleCallback?: (callback: () => void, options: { timeout: number }) => number
-  }
-  if (idleWindow.requestIdleCallback) {
-    idleWindow.requestIdleCallback(warmPaddle, { timeout: 2000 })
-  } else {
-    setTimeout(warmPaddle, 1000)
   }
 </script>

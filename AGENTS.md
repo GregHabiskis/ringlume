@@ -33,7 +33,7 @@ pnpm preview          # serve dist/
 
 After meaningful UI/CSS changes, always run `pnpm build` and confirm it succeeds.
 
-Vitest covers Paddle configuration, hosted portal redirects, and pricing checkout launchers.
+Vitest covers pricing CTAs, FAQ content, and the Retell config guardrails.
 There is no lint or dedicated typecheck script in `package.json`; run Astro's
 checker and `pnpm build` as verification gates.
 
@@ -45,7 +45,7 @@ checker and `pnpm build` as verification gates.
 /
 ├── AGENTS.md                 # this file
 ├── astro.config.mjs          # Vite + Tailwind, compressHTML, inlineStylesheets
-├── package.json              # Astro, Paddle.js, Tailwind CSS, and build tooling
+├── package.json              # Astro, Tailwind CSS, and build tooling
 ├── netlify.toml              # build + cache/security headers
 ├── pnpm-lock.yaml
 ├── public/
@@ -93,8 +93,8 @@ that corner after it loads. Every other page still mounts it.
 
 1. **Static first.** Prefer zero client JS. Interactive bits are tiny vanilla `<script>` blocks inside `.astro` files (menu, pricing toggle, hero word rotation, contact FAB).
 2. **No heavy frameworks.** Do not add React, Vue, Framer Motion, GSAP, analytics SDKs, or chat widgets unless explicitly requested.
-3. **No third-party render-blocking scripts.** Checkout uses the installed Paddle.js package and opens an overlay only after user interaction. The Retell demo widget (`~1.4 MB`) is injected only when someone clicks a demo CTA — never at page load.
-4. **Keep deps minimal.** Paddle Billing supports checkout and the hosted portal; the site has no application database, account, entitlement, or webhook layer.
+3. **No third-party render-blocking scripts.** The Retell demo widget (`~1.4 MB`) is injected only when someone clicks a demo CTA — never at page load.
+4. **Keep deps minimal.** The site has no payment integration, application database, account, entitlement, or webhook layer.
 5. **pnpm only.**
 
 ---
@@ -203,13 +203,13 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 - Every page wraps content in `BaseLayout` with `title` + `description`.
 - Legal pages (`privacy`, `terms`, `refund`) are long static content — keep English-only unless asked otherwise.
 
-### Pricing / checkout
+### Pricing CTAs
 
-- Plans and Paddle price IDs live in `Pricing.astro` frontmatter.
-- CTAs are `<button>` elements with `data-plan`, `data-monthly-price-id`, and `data-annual-price-id` attributes. Paddle checkout overlay opens on click.
-- Paddle.js is imported from `@paddle/paddle-js` and initialized with the client-side token.
-- A shared setup-fee price ID (`PUBLIC_PADDLE_SETUP_FEE_PRICE_ID`) is added to every checkout.
-- Provisioning script: `scripts/provision-paddle.mjs` (idempotent, one-off catalog administration only).
+- Plans live in `Pricing.astro` frontmatter.
+- All four CTAs are `<a href="https://cal.com/ringlume/meeting">Contact Sales</a>`
+  elements carrying `data-plan` and an `aria-describedby` link to the legal
+  notice under the button. There is no payment or checkout integration.
+- The only script in the section is the Monthly/Annually display toggle.
 
 ### Contact
 
@@ -218,16 +218,52 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 - Email: `support@ringlume.com`
 - Floating FAB: `ContactWidget.astro`
 
-### Customer portal
+### Retell voice demo
 
-- `/portal` links to `/api/paddle/portal`.
-- The site has no customer sign-in. Paddle authenticates customers with the
-  purchase email and an emailed magic link.
-- The API route redirects only to the permanent, environment-specific general
-  Paddle portal URL. It must not mint or cache authenticated portal sessions.
-- Tokenized customer portal-session URLs and subscription `management_urls`
-  are temporary and must never be stored.
-- Paddle displays cancellation timing and effective dates in its hosted portal.
+- **Embedding method: Retell website widget v2 (script tag), not the
+  `retell-client-js-sdk` npm package.** The bundle
+  `https://dashboard.retellai.com/retell-widget-v2.js` is injected on demand by
+  `src/components/DemoSection.astro` when someone clicks **Talk to the demo**
+  (it is never loaded at page load — see performance rules). The injected tag
+  must keep `id="retell-widget"`: the widget reads its config from
+  `data-voice-public-key` / `data-voice-agent-id` / branding `data-*` attributes
+  on that exact element (`document.getElementById('retell-widget')`). It mounts
+  its whole UI in a shadow root (`#retell-widget-root`), so queries must pierce
+  shadow DOM (the component already does this).
+- **Config flow:** `.env` → `PUBLIC_RETELL_VOICE_PUBLIC_KEY`,
+  `PUBLIC_RETELL_VOICE_AGENT_ID`, `PUBLIC_RETELL_RECAPTCHA_KEY` (optional,
+  currently empty — calls work without reCAPTCHA) →
+  `src/lib/retell-config.ts` (`getRetellConfig()`, placeholders rejected) →
+  rendered as `data-retell-*` on `#demo`. Values are baked into static HTML at
+  build time; the section renders nothing if unset. Both Retell values are
+  public (browser-exposed, domain-scoped) and are listed in
+  `netlify.toml` `SECRETS_SCAN_OMIT_KEYS`. The `ALLOWED_ORIGINS` list in
+  `DemoSection.astro` mirrors the Retell dashboard allowlist — keep in sync.
+- **Root cause of "widget opens but agent never responds":** the public key is
+  **domain-restricted in the Retell dashboard to `https://ringlume.com` and
+  `https://www.ringlume.com` only.** On any other origin (`localhost:4321`,
+  `astro preview`, `*.netlify.app`, tunnels) `POST
+  https://api.retellai.com/v3/create-web-call` returns **401**, and the widget
+  swallows the error: the panel opens, "Start to call" works, the timer stays
+  `00:00`, no greeting, no visible error. Key + agent ID themselves are valid
+  (a `create-web-call` with `Origin: https://ringlume.com` returns 201).
+  `DemoSection.astro` now logs a `console.warn` on non-allowlisted origins so
+  the failure is no longer silent.
+- **Fix / verification:**
+  1. To test locally, add the dev origin (e.g. `http://localhost:4321`) to the
+     public key's allowed domains in the Retell dashboard — or test on
+     production. This is a dashboard change; do not attempt it from the repo.
+  2. Quick API check:
+     `curl -X POST https://api.retellai.com/v3/create-web-call -H 'Content-Type: application/json' -H 'Authorization: Bearer <public key>' -H 'Origin: <origin>' --data '{"agent_id":"<agent id>"}'`
+     → expect `201` for allowlisted origins, `401` otherwise.
+  3. In-browser: open the demo, click **Start to call**, and watch the network
+     tab — healthy is `201 /v3/create-web-call` followed by `201/204
+     /webrtc-proxy/<call_id>/v1/webrtc/sessions` and a running call timer.
+  4. Microphone still needs a secure context (HTTPS or `localhost`) and
+     permission — a mic denial looks the same (silent call) but produces
+     `NotAllowedError`, so check the console before blaming the domain list.
+     Test with extensions/ad blockers disabled; the widget loads from
+     `dashboard.retellai.com` + `api.retellai.com`.
 
 Keep contact channels consistent across Footer, CtaSection, Contact page, and widget.
 
@@ -280,8 +316,8 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 | Task                           | Where / how                                                |
 | ------------------------------ | ---------------------------------------------------------- |
 | Change hero copy               | `src/components/Hero.astro`                                |
-| Change pricing / price IDs     | `src/components/Pricing.astro` + `.env`                    |
-| Provision Paddle catalog       | `pnpm paddle:provision` (one-off admin key required)       |
+| Change pricing copy            | `src/components/Pricing.astro`                             |
+| Change sales meeting link      | `src/components/Pricing.astro` (CTA `href`)                |
 | Nav links                      | `src/components/Header.astro`                              |
 | Footer / legal links           | `src/components/Footer.astro`                              |
 | Brand colors / fonts           | `src/styles/global.css` `@theme` + `@font-face`            |
@@ -344,5 +380,5 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 - Be concise and direct.
 - Prefer implementing over long plans once direction is clear.
 - Do not commit unless the user asks.
-- Do not invent Paddle IDs; run the one-off provisioning script or use IDs from `.env`.
-- `PADDLE_API_KEY` is only for that local catalog-administration script and must never be exposed in client code. The `PUBLIC_PADDLE_*` env vars are safe for client-side use.
+- Keep the site payment-free; do not add a payment or checkout integration unless asked.
+- Never commit `.env` or its values.

@@ -3,14 +3,20 @@ import { describe, expect, it } from 'vitest';
 
 const pricingSourceUrl = new URL('../Pricing.astro', import.meta.url);
 
-describe('pricing checkout launchers', () => {
-	it('displays the legal acceptance notice for every checkout launcher', async () => {
+describe('pricing CTAs', () => {
+	it('offers a Contact Sales link on every plan', async () => {
 		const source = await readFile(pricingSourceUrl, 'utf8');
 
 		expect(source.match(/name: '(Basic|Pro|Plus|Max)'/g)).toHaveLength(4);
-		expect(source).toContain('data-checkout-button');
-		expect(source).toContain('aria-describedby={`checkout-legal-notice-${plan.name.toLowerCase()}`}');
-		expect(source).toContain('id={`checkout-legal-notice-${plan.name.toLowerCase()}`}');
+		expect(source.match(/cta: 'Contact Sales'/g)).toHaveLength(4);
+		expect(source).toContain('href="https://cal.com/ringlume/meeting"');
+	});
+
+	it('keeps the legal acceptance notice next to every CTA', async () => {
+		const source = await readFile(pricingSourceUrl, 'utf8');
+
+		expect(source).toContain('aria-describedby={`cta-legal-notice-${plan.name.toLowerCase()}`}');
+		expect(source).toContain('id={`cta-legal-notice-${plan.name.toLowerCase()}`}');
 		expect(source).toContain('Terms of Service');
 		expect(source).toContain('href="/terms"');
 		expect(source).toContain('Privacy Policy');
@@ -23,9 +29,11 @@ describe('pricing checkout launchers', () => {
 		expect(source).not.toContain('Voice AI Setup Fee');
 	});
 
-	it('keeps the one-time setup fee in the checkout items', async () => {
+	it('has no payment provider wiring left in the section', async () => {
 		const source = await readFile(pricingSourceUrl, 'utf8');
 
-		expect(source).toContain('{ priceId: setupFeePriceId, quantity: 1 }');
+		expect(source).not.toMatch(/paddle/i);
+		expect(source).not.toContain('data-checkout-button');
+		expect(source).not.toContain('priceId');
 	});
 });

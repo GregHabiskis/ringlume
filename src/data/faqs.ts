@@ -19,7 +19,7 @@ export type FaqId =
 export interface FaqLinkedParagraph {
 	before: string
 	linkText: string
-	href: '/contact' | '/portal' | '/#pricing'
+	href: '/contact' | '/#pricing'
 	after: string
 }
 
@@ -180,14 +180,14 @@ export const faqItems: FaqItem[] = [
 		question: 'How do I cancel my subscription plan?',
 		linkedParagraphs: [
 			{
-				before: 'Visit our ',
-				linkText: 'Billing page',
-				href: '/portal',
-				after: ' and select "Manage or Cancel Subscription." Enter the email address you used at checkout, then follow the secure link sent to your inbox.',
+				before: 'Send us a message through our ',
+				linkText: 'Contact page',
+				href: '/contact',
+				after: ' or any of our listed contact channels and we will cancel the plan for you.',
 			},
 		],
 		paragraphs: [
-			'In the Paddle billing portal, open your active subscription and select "Cancel Subscription." Follow the on-screen instructions to confirm your cancellation.',
+			'Cancellation takes effect at the end of your current billing period, so you keep access until then. You will receive a confirmation email once your subscription is cancelled.',
 		],
 	},
 ]

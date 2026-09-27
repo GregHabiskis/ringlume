@@ -41,8 +41,8 @@ describe('FAQ content', () => {
 		expect(source).toContain("href: '/contact'")
 		expect(source).toContain('within a few hours')
 		expect(source).toContain('How do I cancel my subscription plan?')
-		expect(source).toContain("href: '/portal'")
-		expect(source).toContain('Manage or Cancel Subscription.')
+		expect(source).toContain("href: '/contact'")
+		expect(source).toContain('Cancellation takes effect at the end of your current billing period')
 	})
 
 	it('links pricing FAQ visitors to the pricing section', async () => {

@@ -249,6 +249,16 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
   (a `create-web-call` with `Origin: https://ringlume.com` returns 201).
   `DemoSection.astro` now logs a `console.warn` on non-allowlisted origins so
   the failure is no longer silent.
+- **Second root cause (browser-side): autoplay blocking.** If the call connects
+  (timer ticks, network shows `201 create-web-call` + healthy
+  `/webrtc-proxy/.../webrtc/sessions`) but *no* agent audio is heard, check the
+  browser's autoplay policy. The widget plays the agent's audio through an
+  autoplay `<audio>` element (`srcObject` + `setSinkId`) plus an `AudioContext`
+  graph — **Brave (and Chrome with autoplay set to "Block") silently suppress
+  it**, producing a perfectly silent but otherwise healthy call. Confirmed
+  2026-09-27: enabling autoplay for `ringlume.com` in Brave fixed it with zero
+  code changes. Distinguish this from the 401 case above by checking the
+  network tab first: 401 = domain allowlist; 201 + silent = autoplay/output.
 - **Fix / verification:**
   1. To test locally, add the dev origin (e.g. `http://localhost:4321`) to the
      public key's allowed domains in the Retell dashboard — or test on

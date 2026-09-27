@@ -108,6 +108,15 @@ const tryAsking = [
 	const BUSY_LABEL = 'Connecting…'
 	const MAX_WAIT_MS = 8000
 
+	// Retell's public key is domain-restricted in the Retell dashboard.
+	// Keep this in sync with that list: on any other origin
+	// POST /v3/create-web-call returns 401 and the widget fails silently
+	// (panel opens, timer stays 00:00, agent never speaks).
+	const ALLOWED_ORIGINS = [
+		'https://ringlume.com',
+		'https://www.ringlume.com',
+	]
+
 	const CLOSED_FAB_SELECTOR =
 		'button[aria-label="Open Assistant"], button[title="Assistant"]'
 	const OPEN_PANEL_SELECTOR =
@@ -180,6 +189,15 @@ const tryAsking = [
 		return (
 			widgetRoot()?.querySelector<T>(selector) ??
 			document.querySelector<T>(selector)
+		)
+	}
+
+	function warnIfOriginNotAllowed(): void {
+		if (ALLOWED_ORIGINS.includes(window.location.origin)) return
+		console.warn(
+			`[Ringlume demo] ${window.location.origin} is not on Retell's allowed-domain list for this public key. ` +
+				'The demo UI will open but create-web-call will return 401 and the agent stays silent. ' +
+				`Add this origin in the Retell dashboard (Settings → Allowed domains) or test on ${ALLOWED_ORIGINS.join(' / ')}.`,
 		)
 	}
 
@@ -264,6 +282,7 @@ const tryAsking = [
 
 		opening = true
 		setBusy(button, true)
+		warnIfOriginNotAllowed()
 
 		try {
 			inject(config)

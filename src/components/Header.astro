@@ -55,44 +55,6 @@ const isCurrent = (href: string) =>
     </div>
 
     <div class="flex items-center gap-2">
-      <!-- Theme toggle -->
-      <button
-        type="button"
-        id="theme-toggle"
-        data-theme-toggle
-        class="theme-toggle"
-        aria-label="Switch color theme"
-        aria-pressed="false"
-      >
-        <svg
-          class="theme-icon theme-icon-moon"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.75"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-        <svg
-          class="theme-icon theme-icon-sun"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.75"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="4"></circle>
-          <path
-            stroke-linecap="round"
-            d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41"
-          ></path>
-        </svg>
-      </button>
-
       <a href="/#pricing" class="btn btn-primary hidden px-6 py-2.5 text-sm md:inline-flex">
         Get Started
       </a>
@@ -141,7 +103,7 @@ const isCurrent = (href: string) =>
 
 <style>
   .nav-pill {
-    --glass-fill: light-dark(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.1));
+    --glass-fill: rgba(255, 255, 255, 0.1);
     transition:
       height var(--dur-mid) var(--ease-spring),
       box-shadow var(--dur-mid) var(--ease-spring),
@@ -176,7 +138,6 @@ const isCurrent = (href: string) =>
     opacity: 1;
   }
 
-  .theme-toggle,
   .menu-toggle {
     display: inline-flex;
     align-items: center;
@@ -193,20 +154,13 @@ const isCurrent = (href: string) =>
       transform var(--dur-fast) var(--ease-spring);
   }
 
-  .theme-toggle:hover,
   .menu-toggle:hover {
     color: var(--fg-1);
     background: color-mix(in srgb, var(--fg-1) 12%, transparent);
   }
 
-  .theme-toggle:active,
   .menu-toggle:active {
     transform: scale(0.94);
-  }
-
-  .theme-icon {
-    width: 20px;
-    height: 20px;
   }
 
   #mobile-menu {
@@ -231,7 +185,6 @@ const isCurrent = (href: string) =>
   @media (prefers-reduced-motion: reduce) {
     .nav-pill,
     .nav-indicator,
-    .theme-toggle,
     .menu-toggle {
       transition: none;
     }
@@ -270,32 +223,6 @@ const isCurrent = (href: string) =>
       }
     })
   }
-
-  // Theme toggle: flips color-scheme only, persists the choice.
-  const themeToggle = document.getElementById('theme-toggle')
-  const moonIcon = themeToggle?.querySelector('.theme-icon-moon')
-  const sunIcon = themeToggle?.querySelector('.theme-icon-sun')
-
-  function paintTheme() {
-    const light = document.documentElement.dataset.theme === 'light'
-    themeToggle?.setAttribute('aria-pressed', String(!light))
-    if (moonIcon instanceof SVGElement) moonIcon.toggleAttribute('hidden', light)
-    if (sunIcon instanceof SVGElement) sunIcon.toggleAttribute('hidden', !light)
-  }
-
-  paintTheme()
-
-  themeToggle?.addEventListener('click', () => {
-    const next =
-      document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'
-    document.documentElement.dataset.theme = next
-    try {
-      localStorage.setItem('ringlume-theme', next)
-    } catch {
-      /* storage unavailable: session-only theme */
-    }
-    paintTheme()
-  })
 
   // Condense the pill on scroll (visual only).
   const nav = document.querySelector<HTMLElement>('[data-nav]')

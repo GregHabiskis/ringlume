@@ -84,14 +84,14 @@ BaseLayout
 
 Reuse this pattern for new marketing pages: layout → chrome → sections.
 
-The homepage deliberately has **no** `ContactWidget` — the Retell demo FAB takes
-that corner after it loads. Every other page still mounts it.
+There is **no floating contact FAB**: `ContactWidget.astro` was deleted. Contact
+channels are plain links in the header, footer, CTA section, and `/contact` page.
 
 ---
 
 ## Architecture rules
 
-1. **Static first.** Prefer zero client JS. Interactive bits are tiny vanilla `<script>` blocks inside `.astro` files (menu, pricing toggle, hero word rotation, contact FAB).
+1. **Static first.** Prefer zero client JS. Interactive bits are tiny vanilla `<script>` blocks inside `.astro` files (menu, pricing toggle, hero word rotation).
 2. **No heavy frameworks.** Do not add React, Vue, Framer Motion, GSAP, analytics SDKs, or chat widgets unless explicitly requested.
 3. **No third-party render-blocking scripts.** The Retell demo widget (`~1.4 MB`) is injected only when someone clicks a demo CTA — never at page load.
 4. **Keep deps minimal.** The site has no payment integration, application database, account, entitlement, or webhook layer.
@@ -103,21 +103,22 @@ that corner after it loads. Every other page still mounts it.
 
 The site uses a **liquid-glass** design language, all defined in `src/styles/global.css`.
 
-### Theming (dual light/dark)
+### Theming (dark only)
 
-- Single token block built on the CSS `light-dark()` function; `html[data-theme="light|dark"]`
-  flips `color-scheme` and is set pre-paint by an inline script in `BaseLayout.astro`
-  (localStorage `ringlume-theme` → system preference → dark).
-- Theme toggle: `#theme-toggle` in `Header.astro`.
-- LightningCSS compiles `light-dark()` away at build time using `--lightningcss-light/dark`
-  vars keyed off both `prefers-color-scheme` and `[data-theme]`; do not "fix" those vars.
+- One token block in `global.css` with `color-scheme: dark` on `:root`, mirrored by
+  `<meta name="color-scheme" content="dark">` in `BaseLayout.astro`.
+- There is **no light mode**: no dual-value color function, no `html` theme data
+  attribute, no color-scheme media query, no toggle button, and no stored theme
+  preference. Do not reintroduce any of them.
+- Accessibility media queries are kept and are not theme code: `prefers-reduced-motion`,
+  `prefers-reduced-transparency`, `prefers-contrast`, `hover/pointer`.
 
 ### Semantic tokens (use these, not raw hex)
 
 | Utility / token              | Meaning                                        |
 | ---------------------------- | ---------------------------------------------- |
-| `text-fg-1/2/3`              | Primary / body / muted text (theme-aware)       |
-| `text-brand-text`            | AA-safe green text on either theme              |
+| `text-fg-1/2/3`              | Primary / body / muted text                    |
+| `text-brand-text`            | AA-safe green text on the dark page            |
 | `bg-brand` / `border-brand`  | Static brand green fills/edges                  |
 | `text-brand-ink`             | Near-black text on green CTAs                   |
 | `border-line` / `border-line-strong` | Hairlines                               |
@@ -133,7 +134,7 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
 - `.glass-fill` = same material **without** `backdrop-filter`; use for repeated items
   (pricing cards, capability cards). Tiers also drop blur below 768px (perf rule).
 - `.grain` = noise overlay; it also sets `position: relative` so the `::after` never escapes.
-- `.scrim` / `.scrim-soft` = theme-colored wash so small text keeps contrast over the
+- `.scrim` / `.scrim-soft` = base-color wash so small text keeps contrast over the
   fixed `.scene` backdrop (`.scene` + `.scene-orb-a..d`, paused via `html.is-paused`).
   **Do not add per-section orbs** — the old `.orb` classes are gone.
 - Refraction: `.refract` only works under `html.refract` (Chromium-only, set in
@@ -257,7 +258,6 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 - WhatsApp: `https://wa.me/8801951284128`
 - Telegram: `https://t.me/fshahariar`
 - Email: `support@ringlume.com`
-- Floating FAB: `ContactWidget.astro`
 
 ### Retell voice demo
 
@@ -324,7 +324,7 @@ Keep contact channels consistent across Footer, CtaSection, Contact page, and wi
 
 ### Do
 
-- Match existing visual language (liquid-glass panels, theme-aware greens, rounded-full CTAs).
+- Match existing visual language (liquid-glass panels, brand greens, rounded-full CTAs).
 - Prefer Server-rendered static HTML; minimize client JS.
 - Optimize new media before commit.
 - Run `pnpm build` after structural/CSS changes.

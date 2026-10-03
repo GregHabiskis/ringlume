@@ -135,8 +135,10 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
   (pricing cards, capability cards). Tiers also drop blur below 768px (perf rule).
 - `.grain` = noise overlay; it also sets `position: relative` so the `::after` never escapes.
 - `.scrim` / `.scrim-soft` = base-color wash so small text keeps contrast over the
-  fixed `.scene` backdrop (`.scene` + `.scene-orb-a..d`, paused via `html.is-paused`).
-  **Do not add per-section orbs** — the old `.orb` classes are gone.
+  fixed `.scene` backdrop (static near-black + masked 28px dot grid + one green
+  spotlight at top centre). **Do not add orbs or drifting blobs**: the scene never
+  animates; the only ambient motion is the hero's ripple rings, paused via
+  `html.is-paused`.
 - Refraction: `.refract` only works under `html.refract` (Chromium-only, set in
   `BaseLayout` from `navigator.userAgentData`) + the `#liquid-glass` SVG filter.
   Keep it on the header nav pill only (amendment: header + at most one hero element).
@@ -153,8 +155,12 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
 - `.specular` — cursor-tracked glow (fine pointers + motion allowed; one rAF-throttled
   `pointermove` listener in `BaseLayout.astro` sets `--mx/--my`. Uses `::before` so it
   coexists with `.grain::after`)
-- `.panel-float` / `.panel-float-b` — hero panel drift (animates `translate`, so it never
-  fights `transform` utilities; disabled under `prefers-reduced-motion`)
+- `.hero-rings` / `.hero-ring` — hero-only ripple rings: concentric 1px brand outlines
+  expanding with `transform: scale` + opacity only (no filter, no backdrop-filter),
+  6-9s staggered loops, 3 rings at <=768px, static fixed scales under
+  `prefers-reduced-motion`, paused while the tab is hidden
+- `.stat-strip` / `.stat-number` / `.stat-divider` — hero trust bar: one in-flow
+  `glass-regular` strip, two equal columns split by a fading 1px hairline
 - `@utility content-auto` — `content-visibility: auto` for below-the-fold sections
 - Shared component classes live in `@layer components`, so Tailwind utilities in markup
   always win (e.g. `hidden md:inline-flex` over `.btn`).

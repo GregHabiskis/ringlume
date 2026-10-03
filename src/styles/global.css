@@ -78,12 +78,6 @@
 	--bg-base: #05070c;
 	--bg-alt: #090c14;
 
-	--scene-orb-a: #3fbf5c;
-	--scene-orb-b: #1c9fbe;
-	--scene-orb-c: #5b62d6;
-	--scene-orb-d: #c94f8d;
-	--scene-orb-alpha: 0.26;
-
 	--fg-1: #f4f7fb;
 	--fg-2: #d5dce8;
 	--fg-3: #bfc9d6;
@@ -222,7 +216,9 @@
 @layer components {
 
 /* ------------------------------------------------------------
-   Backdrop scene: fixed, transform-only loops, paused when hidden
+   Backdrop "Signal": fixed and static. Near-black base + one soft
+   green spotlight at top centre + a masked dot grid, so the glass
+   has real detail to refract. The hero paints its own ripple rings.
    ------------------------------------------------------------ */
 
 .scene {
@@ -231,126 +227,27 @@
 	z-index: -1;
 	overflow: hidden;
 	pointer-events: none;
-	background:
-		radial-gradient(
-			140% 60% at 50% -10%,
-			color-mix(in srgb, var(--scene-orb-c) 22%, transparent),
-			transparent 60%
-		),
-		radial-gradient(
-			120% 70% at 100% 105%,
-			color-mix(in srgb, var(--scene-orb-a) 18%, transparent),
-			transparent 62%
-		);
+	background-color: var(--bg-base);
+	background-image: radial-gradient(
+		90% 55% at 50% -8%,
+		color-mix(in srgb, var(--brand) 13%, transparent),
+		transparent 62%
+	);
 }
 
-.scene-orb {
+/* ~1px dots, 28px pitch, ~7% white, radial mask fading to the edges */
+.scene::after {
+	content: '';
 	position: absolute;
-	border-radius: 9999px;
-	opacity: var(--scene-orb-alpha);
-	background-repeat: no-repeat;
-	background-size: 100% 100%;
-}
-
-.scene-orb-a {
-	top: -22vmax;
-	left: -16vmax;
-	width: 62vmax;
-	height: 62vmax;
-	background: radial-gradient(circle at 50% 50%, var(--scene-orb-a) 0%, transparent 62%);
-	animation: scene-drift-a 42s ease-in-out infinite;
-}
-
-.scene-orb-b {
-	top: -14vmax;
-	right: -18vmax;
-	width: 54vmax;
-	height: 54vmax;
-	background: radial-gradient(circle at 50% 50%, var(--scene-orb-b) 0%, transparent 64%);
-	animation: scene-drift-b 56s ease-in-out infinite;
-}
-
-.scene-orb-c {
-	bottom: -26vmax;
-	left: 24vw;
-	width: 58vmax;
-	height: 58vmax;
-	background: radial-gradient(circle at 50% 50%, var(--scene-orb-c) 0%, transparent 63%);
-	animation: scene-drift-c 64s ease-in-out infinite;
-}
-
-.scene-orb-d {
-	bottom: 8vh;
-	right: -12vmax;
-	width: 34vmax;
-	height: 34vmax;
-	background: radial-gradient(circle at 50% 50%, var(--scene-orb-d) 0%, transparent 66%);
-	animation: scene-drift-d 48s ease-in-out infinite;
-}
-
-@keyframes scene-drift-a {
-	0%,
-	100% {
-		transform: translate3d(0, 0, 0) scale(1);
-	}
-	50% {
-		transform: translate3d(7vw, 5vh, 0) scale(1.12);
-	}
-}
-
-@keyframes scene-drift-b {
-	0%,
-	100% {
-		transform: translate3d(0, 0, 0) scale(1.06);
-	}
-	50% {
-		transform: translate3d(-6vw, 7vh, 0) scale(0.94);
-	}
-}
-
-@keyframes scene-drift-c {
-	0%,
-	100% {
-		transform: translate3d(0, 0, 0) scale(1);
-	}
-	50% {
-		transform: translate3d(-8vw, -6vh, 0) scale(1.1);
-	}
-}
-
-@keyframes scene-drift-d {
-	0%,
-	100% {
-		transform: translate3d(0, 0, 0) scale(0.96);
-	}
-	50% {
-		transform: translate3d(-5vw, -8vh, 0) scale(1.14);
-	}
-}
-
-html.is-paused .scene-orb {
-	animation-play-state: paused;
-}
-
-@media (max-width: 767px) {
-	.scene-orb-d {
-		display: none;
-	}
-
-	.scene-orb {
-		opacity: 0.2;
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.scene-orb {
-		animation: none;
-	}
-
-	.panel-float,
-	.panel-float-b {
-		animation: none;
-	}
+	inset: 0;
+	background-image: radial-gradient(
+		circle,
+		rgba(255, 255, 255, 0.07) 1px,
+		transparent 1.4px
+	);
+	background-size: 28px 28px;
+	-webkit-mask-image: radial-gradient(ellipse 78% 70% at 50% 42%, #000 30%, transparent 100%);
+	mask-image: radial-gradient(ellipse 78% 70% at 50% 42%, #000 30%, transparent 100%);
 }
 
 /* ------------------------------------------------------------
@@ -574,8 +471,11 @@ html.is-paused .scene-orb {
 .btn-secondary {
 	color: var(--fg-1);
 	--glass-fill: rgba(255, 255, 255, 0.07);
-	--glass-edge-hi: rgba(255, 255, 255, 0.55);
-	--glass-edge-lo: rgba(255, 255, 255, 0.14);
+	/* Edge must clear 3:1 against the scene outside on all four sides;
+	   the gradient's 55% stop sits on the bottom/right, so lo needs
+	   enough alpha to keep those edges legible too. */
+	--glass-edge-hi: rgba(255, 255, 255, 0.78);
+	--glass-edge-lo: rgba(255, 255, 255, 0.4);
 	border: 1px solid transparent;
 	background:
 		linear-gradient(var(--glass-fill), var(--glass-fill)) padding-box,
@@ -585,7 +485,8 @@ html.is-paused .scene-orb {
 
 .btn-secondary:hover {
 	--glass-fill: rgba(255, 255, 255, 0.14);
-	--glass-edge-hi: rgba(255, 255, 255, 0.85);
+	--glass-edge-hi: rgba(255, 255, 255, 0.95);
+	--glass-edge-lo: rgba(255, 255, 255, 0.55);
 }
 
 .btn-quiet {
@@ -764,28 +665,6 @@ html.is-paused .scene-orb {
 	.specular:hover::before {
 		opacity: 1;
 	}
-}
-
-/* Hero floating panels: gentle drift (xl+ uses absolute placement,
-   so the keyframes animate `translate` and never touch `transform`) */
-@keyframes panel-float {
-	0%,
-	100% {
-		translate: 0 -7px;
-	}
-
-	50% {
-		translate: 0 7px;
-	}
-}
-
-.panel-float {
-	animation: panel-float 7s ease-in-out infinite;
-}
-
-.panel-float-b {
-	animation-duration: 9s;
-	animation-delay: -4.5s;
 }
 
 @media (prefers-reduced-motion: reduce) {

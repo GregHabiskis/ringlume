@@ -5,6 +5,16 @@ const retell = getRetellConfig()
 ---
 
 <section class="scrim-soft relative overflow-hidden pt-32 pb-20 lg:pt-40 lg:pb-32">
+  <!-- Hero ripple rings: concentric outlines expanding from behind the
+       headline. Transform + opacity only, no blur, clipped and inert. -->
+  <div class="hero-rings" aria-hidden="true">
+    <span class="hero-ring"></span>
+    <span class="hero-ring"></span>
+    <span class="hero-ring"></span>
+    <span class="hero-ring"></span>
+    <span class="hero-ring"></span>
+  </div>
+
   <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-4xl text-center">
       <!-- Headline -->
@@ -39,18 +49,18 @@ const retell = getRetellConfig()
         </a>
       </div>
 
-      <!-- Value Proposition -->
-      <div class="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2 xl:mt-0">
-        <div
-          class="glass glass-thick grain reveal specular panel-float rounded-2xl p-6 text-center xl:absolute xl:left-0 xl:bottom-2 xl:w-52"
-        >
-          <div class="gradient-green-text mb-2 text-3xl font-bold">7 Days</div>
+      <!-- Trust strip: one in-flow glass bar, two equal columns -->
+      <div
+        class="stat-strip glass glass-regular grain reveal mx-auto mt-10 flex w-full max-w-[520px] items-stretch rounded-2xl px-4 py-4"
+        style="--reveal-delay: 260ms"
+      >
+        <div class="flex-1 text-center">
+          <div class="stat-number gradient-green-text font-bold">7 Days</div>
           <div class="text-sm text-fg-3">7-Day Guarantee</div>
         </div>
-        <div
-          class="glass glass-thick grain reveal specular panel-float panel-float-b rounded-2xl p-6 text-center xl:absolute xl:right-0 xl:bottom-2 xl:w-52"
-        >
-          <div class="gradient-green-text mb-2 text-3xl font-bold">24/7</div>
+        <span class="stat-divider" aria-hidden="true"></span>
+        <div class="flex-1 text-center">
+          <div class="stat-number gradient-green-text font-bold">24/7</div>
           <div class="text-sm text-fg-3">Always Working</div>
         </div>
       </div>
@@ -80,6 +90,138 @@ const retell = getRetellConfig()
   .word.leave {
     opacity: 0;
     transform: translateY(-100%);
+  }
+
+  /* The glass edge gradient is painted border-box and shows through the
+     translucent fill; over the narrow strip that washes the whole panel
+     light gray (worst pixel ~L0.27) and sinks the stat text below AA.
+     Smoke the fill dark so only the 1px rim and the blurred backdrop
+     read through, keeping the worst interior pixel near L0.02. */
+  .glass.stat-strip {
+    --glass-fill: rgba(8, 11, 18, 0.78);
+  }
+
+  /* Stat strip: two columns, one fading hairline between them */
+  .stat-number {
+    font-size: clamp(1.5rem, 4vw + 0.6rem, 2rem);
+    line-height: 1.2;
+  }
+
+  .stat-divider {
+    width: 1px;
+    align-self: stretch;
+    margin-block: 0.35rem;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(255, 255, 255, 0.3) 40%,
+      rgba(255, 255, 255, 0.3) 60%,
+      transparent
+    );
+  }
+
+  /* Hero ripple rings: concentric outlines expanding from behind the
+     headline. Transform + opacity only, no filter, no backdrop-filter. */
+  .hero-rings {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .hero-ring {
+    position: absolute;
+    top: 34%;
+    left: 50%;
+    width: min(820px, 130vw);
+    aspect-ratio: 1;
+    margin-block-start: calc(min(820px, 130vw) / -2);
+    margin-inline-start: calc(min(820px, 130vw) / -2);
+    border: 1px solid var(--brand);
+    border-radius: 9999px;
+    opacity: 0;
+    animation: ring-expand var(--ring-dur, 7s) linear var(--ring-delay, 0s)
+      infinite;
+  }
+
+  .hero-ring:nth-child(1) {
+    --ring-dur: 7s;
+    --ring-delay: -1s;
+  }
+
+  .hero-ring:nth-child(2) {
+    --ring-dur: 8.5s;
+    --ring-delay: -6s;
+  }
+
+  .hero-ring:nth-child(3) {
+    --ring-dur: 6s;
+    --ring-delay: -3s;
+  }
+
+  .hero-ring:nth-child(4) {
+    --ring-dur: 9s;
+    --ring-delay: -7.5s;
+  }
+
+  .hero-ring:nth-child(5) {
+    --ring-dur: 7.5s;
+    --ring-delay: -4.5s;
+  }
+
+  @keyframes ring-expand {
+    0% {
+      transform: scale(0.16);
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.24;
+    }
+    72% {
+      opacity: 0.12;
+    }
+    100% {
+      transform: scale(1.15);
+      opacity: 0;
+    }
+  }
+
+  /* Pause with the shared visibilitychange hook in BaseLayout */
+  html.is-paused .hero-ring {
+    animation-play-state: paused;
+  }
+
+  @media (max-width: 768px) {
+    .hero-ring:nth-child(n + 4) {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-ring {
+      animation: none;
+      opacity: 0.16;
+    }
+
+    .hero-ring:nth-child(1) {
+      transform: scale(0.3);
+    }
+
+    .hero-ring:nth-child(2) {
+      transform: scale(0.5);
+    }
+
+    .hero-ring:nth-child(3) {
+      transform: scale(0.7);
+    }
+
+    .hero-ring:nth-child(4) {
+      transform: scale(0.9);
+    }
+
+    .hero-ring:nth-child(5) {
+      transform: scale(1.1);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

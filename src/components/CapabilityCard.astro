@@ -30,9 +30,8 @@ const iconPaths: Record<CapabilityKind, string> = {
 
 <article
 	class:list={[
-		'capability-card group relative isolate flex h-full flex-col overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#151718] p-6 sm:p-8',
+		'capability-card glass glass-fill glass-regular grain specular group relative isolate flex h-full flex-col overflow-hidden rounded-[28px] p-6 sm:p-8',
 		kind === 'call' && 'capability-card-primary',
-		kind === 'reporting' && 'bg-green-primary/[0.035]',
 		layoutClass,
 	]}
 	style={`--reveal-delay: ${index * 65}ms`}
@@ -42,7 +41,9 @@ const iconPaths: Record<CapabilityKind, string> = {
 
 	<div class="relative z-10 flex h-full flex-col">
 		<div class="mb-5 flex items-center justify-between">
-			<div class="capability-icon flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-green-accent">
+			<div
+				class="capability-icon flex h-10 w-10 items-center justify-center rounded-xl border border-line bg-fg-1/[0.05] text-brand-text"
+			>
 				<svg
 					class="h-5 w-5"
 					fill="none"
@@ -54,35 +55,35 @@ const iconPaths: Record<CapabilityKind, string> = {
 			</div>
 
 			{kind === 'call' && (
-				<span class="inline-flex items-center gap-2 rounded-full border border-green-primary/20 bg-green-primary/10 px-3 py-1 text-[11px] font-semibold text-green-accent">
-					<span class="status-pulse h-1.5 w-1.5 rounded-full bg-green-primary"></span>
+				<span class="inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/10 px-3 py-1 text-[11px] font-semibold text-brand-text">
+					<span class="status-pulse h-1.5 w-1.5 rounded-full bg-brand"></span>
 					Always on
 				</span>
 			)}
 		</div>
 
-		<h3 class:list={['font-semibold tracking-tight text-white', kind === 'call' ? 'text-2xl sm:text-3xl' : 'text-xl']}>
+		<h3 class:list={['font-semibold tracking-tight text-fg-1', kind === 'call' ? 'text-2xl sm:text-3xl' : 'text-xl']}>
 			{title}
 		</h3>
-		<p class:list={['mt-3 max-w-xl leading-relaxed text-slate-400', kind === 'call' ? 'text-base' : 'text-sm']}>
+		<p class:list={['mt-3 max-w-xl leading-relaxed text-fg-3', kind === 'call' ? 'text-base' : 'text-sm']}>
 			{description}
 		</p>
 
 		{kind === 'call' && (
 			<div
-				class="call-panel relative mt-8 rounded-2xl border border-white/10 bg-[#0d100f]/90 p-5 sm:mt-auto sm:p-6"
+				class="call-panel relative mt-8 rounded-2xl border border-line bg-fg-1/[0.06] p-5 sm:mt-auto sm:p-6"
 				role="img"
 				aria-label="Incoming call from a new customer, answered by Ringlume's virtual receptionist in 1.2 seconds"
 			>
 				<div class="flex items-center justify-between gap-4">
 					<div class="flex min-w-0 items-center gap-3">
-						<div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-sm font-bold text-white">NC</div>
+						<div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-fg-1/10 text-sm font-bold text-fg-1">NC</div>
 						<div class="min-w-0">
-							<p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-green-accent">Incoming call</p>
-							<p class="mt-1 truncate text-sm font-semibold text-white">New customer</p>
+							<p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-text">Incoming call</p>
+							<p class="mt-1 truncate text-sm font-semibold text-fg-1">New customer</p>
 						</div>
 					</div>
-					<span class="shrink-0 rounded-full border border-green-primary/20 bg-green-primary/10 px-2.5 py-1 text-[10px] font-semibold text-green-accent">
+					<span class="shrink-0 rounded-full border border-brand/25 bg-brand/10 px-2.5 py-1 text-[10px] font-semibold text-brand-text">
 						Answered in 1.2s
 					</span>
 				</div>
@@ -91,8 +92,8 @@ const iconPaths: Record<CapabilityKind, string> = {
 					<div class="waveform flex h-9 shrink-0 items-center gap-1" aria-hidden="true">
 						<span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
 					</div>
-					<div class="inline-flex min-w-0 max-w-full items-center gap-2 text-xs font-medium text-slate-300">
-						<span class="status-pulse h-2 w-2 shrink-0 rounded-full bg-green-primary"></span>
+					<div class="inline-flex min-w-0 max-w-full items-center gap-2 text-xs font-medium text-fg-3">
+						<span class="status-pulse h-2 w-2 shrink-0 rounded-full bg-brand"></span>
 						<span class="min-w-0 break-words">The receptionist is speaking</span>
 					</div>
 				</div>
@@ -101,17 +102,17 @@ const iconPaths: Record<CapabilityKind, string> = {
 
 		{kind === 'booking' && (
 			<div class="mt-auto pt-7" aria-label="Appointment booking confirmation">
-				<div class="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+				<div class="rounded-2xl border border-line bg-fg-1/[0.06] p-4">
 					<div class="flex items-center gap-3">
-						<div class="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-green-primary/10 text-green-accent">
+						<div class="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-brand/10 text-brand-text">
 							<span class="text-[9px] font-bold uppercase">Tue</span>
 							<span class="text-sm font-bold leading-none">18</span>
 						</div>
 						<div>
-							<p class="text-sm font-semibold text-white">Consultation booked</p>
-							<p class="mt-1 text-xs text-slate-400">Tue, 10:30 AM</p>
+							<p class="text-sm font-semibold text-fg-1">Consultation booked</p>
+							<p class="mt-1 text-xs text-fg-3">Tue, 10:30 AM</p>
 						</div>
-						<svg class="ml-auto h-5 w-5 text-green-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+						<svg class="ml-auto h-5 w-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 						</svg>
 					</div>
@@ -121,29 +122,29 @@ const iconPaths: Record<CapabilityKind, string> = {
 
 		{kind === 'follow-up' && (
 			<ol class="mt-auto flex flex-wrap items-center gap-2 pt-7 text-xs" aria-label="After-call follow-up steps">
-				<li class="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2 text-slate-200">Form submitted</li>
-				<li class="text-green-primary" aria-hidden="true">&rarr;</li>
-				<li class="rounded-lg border border-green-primary/20 bg-green-primary/10 px-3 py-2 text-green-accent">Ringlume calls</li>
-				<li class="text-green-primary" aria-hidden="true">&rarr;</li>
-				<li class="rounded-lg border border-white/[0.08] bg-black/20 px-3 py-2 text-slate-200">Appointment confirmed</li>
+				<li class="rounded-lg border border-line bg-fg-1/[0.06] px-3 py-2 text-fg-2">Form submitted</li>
+				<li class="text-brand" aria-hidden="true">&rarr;</li>
+				<li class="rounded-lg border border-brand/25 bg-brand/10 px-3 py-2 text-brand-text">Ringlume calls</li>
+				<li class="text-brand" aria-hidden="true">&rarr;</li>
+				<li class="rounded-lg border border-line bg-fg-1/[0.06] px-3 py-2 text-fg-2">Appointment confirmed</li>
 			</ol>
 		)}
 
 		{kind === 'knowledge' && (
 			<ul class="mt-auto flex flex-wrap gap-2 pt-7" aria-label="Business information sources">
 				{['Website', 'Pricing', 'FAQs', 'Services'].map((source) => (
-					<li class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-slate-300">{source}</li>
+					<li class="rounded-full border border-line bg-fg-1/[0.05] px-3 py-1.5 text-xs font-medium text-fg-3">{source}</li>
 				))}
 			</ul>
 		)}
 
 		{kind === 'handoff' && (
 			<div class="mt-auto pt-7" aria-label="Call transfer in progress">
-				<div class="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-black/20 p-3.5">
-					<span class="status-pulse h-2 w-2 shrink-0 rounded-full bg-green-primary"></span>
+				<div class="flex items-center gap-3 rounded-xl border border-line bg-fg-1/[0.06] p-3.5">
+					<span class="status-pulse h-2 w-2 shrink-0 rounded-full bg-brand"></span>
 					<div class="min-w-0">
-						<p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">Live transfer</p>
-						<p class="mt-1 truncate text-sm font-medium text-white">Transferring to Sarah &middot; Sales</p>
+						<p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-3">Live transfer</p>
+						<p class="mt-1 truncate text-sm font-medium text-fg-1">Transferring to Sarah &middot; Sales</p>
 					</div>
 				</div>
 			</div>
@@ -152,9 +153,9 @@ const iconPaths: Record<CapabilityKind, string> = {
 		{kind === 'reporting' && (
 			<ul class="mt-auto space-y-2 pt-7" aria-label="After-call updates">
 				{['Written record ready', 'Customer record updated', '12 languages'].map((status) => (
-					<li class="flex items-center justify-between rounded-lg border border-white/[0.07] bg-black/15 px-3 py-2 text-xs text-slate-300">
+					<li class="flex items-center justify-between rounded-lg border border-line bg-fg-1/[0.06] px-3 py-2 text-xs text-fg-3">
 						<span>{status}</span>
-						<svg class="h-4 w-4 text-green-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+						<svg class="h-4 w-4 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 						</svg>
 					</li>
@@ -166,20 +167,21 @@ const iconPaths: Record<CapabilityKind, string> = {
 
 <style>
 	.capability-card {
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.025),
-			0 16px 40px rgba(0, 0, 0, 0.08);
 		transition:
 			transform 300ms ease,
 			border-color 300ms ease,
 			background-color 300ms ease,
+			box-shadow 300ms ease,
 			opacity 500ms ease;
 		transition-delay: 0ms;
 	}
 
 	.capability-card:hover {
 		transform: translateY(-3px);
-		border-color: rgba(255, 255, 255, 0.16);
+		box-shadow:
+			inset 0 1px 0 var(--glass-specular),
+			var(--shadow-contact),
+			var(--shadow-lift);
 	}
 
 	.capability-icon {
@@ -190,7 +192,7 @@ const iconPaths: Record<CapabilityKind, string> = {
 
 	.capability-card:hover .capability-icon {
 		transform: translateY(-1px);
-		background-color: rgba(76, 217, 100, 0.08);
+		background-color: color-mix(in srgb, var(--brand) 10%, transparent);
 	}
 
 	.capability-card.reveal-pending {
@@ -220,7 +222,7 @@ const iconPaths: Record<CapabilityKind, string> = {
 	}
 
 	.call-panel {
-		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+		box-shadow: inset 0 1px 0 var(--glass-specular);
 	}
 
 	.waveform span {

@@ -7,95 +7,333 @@ const navLinks = [
   { label: 'Try a Demo', href: '/#demo' },
   { label: 'Contact', href: '/contact' },
 ]
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/'
+const isCurrent = (href: string) =>
+  href.includes('#') ? false : (href.replace(/\/+$/, '') || '/') === path
 ---
 
-<header class="fixed top-0 left-0 right-0 z-40 bg-[#111213] md:bg-[#111213]/90 md:backdrop-blur-md border-b border-white/10">
-  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16 lg:h-20">
-      <!-- Logo -->
-      <a href="/" class="flex items-center gap-3 group">
-        <div class="transition-transform group-hover:scale-105">
-          <picture>
-            <source srcset="/images/logo-240.webp" type="image/webp" />
-            <img
-              src="/images/logo-240.png"
-              alt="Ringlume"
-              width="240"
-              height="96"
-              class="h-8 lg:h-10 w-auto"
-              decoding="async"
-              fetchpriority="high"
-            />
-          </picture>
-        </div>
-      </a>
-
-      <!-- Desktop Navigation -->
-      <div class="hidden md:flex items-center gap-8">
-        {navLinks.map((link) => (
-          <a
-            href={link.href}
-            class="text-sm font-medium text-slate-300 hover:text-green-primary transition-colors"
-          >
-            {link.label}
-          </a>
-        ))}
-        <a
-          href="/#pricing"
-          class="gradient-bg text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:[background:linear-gradient(135deg,#3ABF52,#269635)] hover:scale-[1.02] transition-all"
-        >
-          Get Started
-        </a>
+<header
+  class="pointer-events-none fixed inset-x-0 top-0 z-40 px-3 pt-3 sm:px-4 lg:px-6 lg:pt-4"
+>
+  <nav
+    data-nav
+    class="nav-pill glass glass-regular grain refract pointer-events-auto relative mx-auto flex h-14 max-w-7xl items-center justify-between rounded-full px-4 sm:px-5 lg:h-16 lg:px-6"
+    aria-label="Main"
+  >
+    <!-- Logo -->
+    <a href="/" class="group flex shrink-0 items-center gap-3">
+      <div class="transition-transform duration-300 group-hover:scale-105">
+        <picture>
+          <source srcset="/images/logo-240.webp" type="image/webp" />
+          <img
+            src="/images/logo-240.png"
+            alt="Ringlume"
+            width="240"
+            height="96"
+            class="h-8 w-auto lg:h-9"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </picture>
       </div>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <div class="hidden items-center gap-1 md:flex" data-nav-links>
+      <span class="nav-indicator" aria-hidden="true"></span>
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          data-nav-link
+          aria-current={isCurrent(link.href) ? 'page' : undefined}
+          class="relative rounded-full px-3.5 py-2 text-sm font-medium text-fg-2 transition-colors duration-200 hover:text-fg-1"
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+
+    <div class="flex items-center gap-2">
+      <!-- Theme toggle -->
+      <button
+        type="button"
+        id="theme-toggle"
+        data-theme-toggle
+        class="theme-toggle"
+        aria-label="Switch color theme"
+        aria-pressed="false"
+      >
+        <svg
+          class="theme-icon theme-icon-moon"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg
+          class="theme-icon theme-icon-sun"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4"></circle>
+          <path
+            stroke-linecap="round"
+            d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41"
+          ></path>
+        </svg>
+      </button>
+
+      <a href="/#pricing" class="btn btn-primary hidden px-6 py-2.5 text-sm md:inline-flex">
+        Get Started
+      </a>
 
       <!-- Mobile Menu Button -->
       <button
         id="mobile-menu-toggle"
-        class="md:hidden p-2 text-slate-300 hover:text-white"
+        class="menu-toggle md:hidden"
         aria-label="Toggle menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
       >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
     </div>
-
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden md:hidden pb-4">
-      <div class="flex flex-col gap-3">
-        {navLinks.map((link) => (
-          <a
-            href={link.href}
-            class="text-sm font-medium text-slate-300 hover:text-green-primary py-2 transition-colors"
-          >
-            {link.label}
-          </a>
-        ))}
-        <a
-          href="/#pricing"
-          class="gradient-bg text-white px-6 py-2.5 rounded-full text-sm font-semibold text-center hover:[background:linear-gradient(135deg,#3ABF52,#269635)] hover:scale-[1.02] transition-all"
-        >
-          Get Started
-        </a>
-      </div>
-    </div>
   </nav>
 </header>
+
+<!-- Mobile drawer: sibling of the glass header, never a descendant,
+     so backdrop-filter on the pill cannot break its fixed positioning. -->
+<div
+  id="mobile-menu"
+  class="glass glass-thick grain fixed right-3 left-3 top-[4.75rem] z-40 hidden rounded-3xl p-4 md:hidden sm:left-auto sm:w-80"
+>
+  <div class="flex flex-col gap-1">
+    {navLinks.map((link) => (
+      <a
+        href={link.href}
+        aria-current={isCurrent(link.href) ? 'page' : undefined}
+        class="rounded-2xl px-4 py-3 text-sm font-medium text-fg-2 transition-colors duration-200 hover:bg-white/10 hover:text-fg-1"
+      >
+        {link.label}
+      </a>
+    ))}
+    <a href="/#pricing" class="btn btn-primary mt-3 w-full text-sm">
+      Get Started
+    </a>
+  </div>
+</div>
+
+<style>
+  .nav-pill {
+    --glass-fill: light-dark(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.1));
+    transition:
+      height var(--dur-mid) var(--ease-spring),
+      box-shadow var(--dur-mid) var(--ease-spring),
+      transform var(--dur-mid) var(--ease-spring);
+  }
+
+  .nav-pill[data-condensed] {
+    box-shadow:
+      inset 0 1px 0 var(--glass-specular),
+      inset 0 0 24px -12px var(--glass-inner),
+      0 10px 30px -12px var(--shadow-diffuse);
+  }
+
+  .nav-indicator {
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    left: 0;
+    width: 0;
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--brand) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--brand) 38%, transparent);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform var(--dur-mid) var(--ease-spring),
+      width var(--dur-mid) var(--ease-spring),
+      opacity var(--dur-fast) ease;
+  }
+
+  .nav-indicator.is-active {
+    opacity: 1;
+  }
+
+  .theme-toggle,
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 9999px;
+    color: var(--fg-2);
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--fg-1) 6%, transparent);
+    transition:
+      color var(--dur-fast) ease,
+      background-color var(--dur-fast) ease,
+      transform var(--dur-fast) var(--ease-spring);
+  }
+
+  .theme-toggle:hover,
+  .menu-toggle:hover {
+    color: var(--fg-1);
+    background: color-mix(in srgb, var(--fg-1) 12%, transparent);
+  }
+
+  .theme-toggle:active,
+  .menu-toggle:active {
+    transform: scale(0.94);
+  }
+
+  .theme-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  #mobile-menu {
+    transform-origin: top right;
+  }
+
+  #mobile-menu:not(.hidden) {
+    animation: drawer-in var(--dur-mid) var(--ease-spring) both;
+  }
+
+  @keyframes drawer-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-pill,
+    .nav-indicator,
+    .theme-toggle,
+    .menu-toggle {
+      transition: none;
+    }
+
+    #mobile-menu:not(.hidden) {
+      animation: none;
+    }
+  }
+</style>
 
 <script>
   const toggle = document.getElementById('mobile-menu-toggle')
   const menu = document.getElementById('mobile-menu')
 
+  function setMenu(open: boolean) {
+    menu?.classList.toggle('hidden', !open)
+    toggle?.setAttribute('aria-expanded', String(open))
+  }
+
   if (toggle && menu) {
     toggle.addEventListener('click', () => {
-      menu.classList.toggle('hidden')
+      setMenu(menu.classList.contains('hidden'))
     })
 
     document.addEventListener('click', (e) => {
       const target = e.target as Node | null
       if (!menu.classList.contains('hidden') && !menu.contains(target) && !toggle.contains(target)) {
-        menu.classList.add('hidden')
+        setMenu(false)
+      }
+    })
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !menu.classList.contains('hidden')) {
+        setMenu(false)
+        toggle.focus()
       }
     })
   }
+
+  // Theme toggle: flips color-scheme only, persists the choice.
+  const themeToggle = document.getElementById('theme-toggle')
+  const moonIcon = themeToggle?.querySelector('.theme-icon-moon')
+  const sunIcon = themeToggle?.querySelector('.theme-icon-sun')
+
+  function paintTheme() {
+    const light = document.documentElement.dataset.theme === 'light'
+    themeToggle?.setAttribute('aria-pressed', String(!light))
+    if (moonIcon instanceof SVGElement) moonIcon.toggleAttribute('hidden', light)
+    if (sunIcon instanceof SVGElement) sunIcon.toggleAttribute('hidden', !light)
+  }
+
+  paintTheme()
+
+  themeToggle?.addEventListener('click', () => {
+    const next =
+      document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'
+    document.documentElement.dataset.theme = next
+    try {
+      localStorage.setItem('ringlume-theme', next)
+    } catch {
+      /* storage unavailable: session-only theme */
+    }
+    paintTheme()
+  })
+
+  // Condense the pill on scroll (visual only).
+  const nav = document.querySelector<HTMLElement>('[data-nav]')
+  if (nav) {
+    const sync = () => nav.toggleAttribute('data-condensed', window.scrollY > 12)
+    sync()
+    window.addEventListener('scroll', sync, { passive: true })
+  }
+
+  // Liquid indicator that slides between nav items.
+  const linksBox = document.querySelector<HTMLElement>('[data-nav-links]')
+  const indicator = linksBox?.querySelector<HTMLElement>('.nav-indicator')
+  const links = linksBox
+    ? Array.from(linksBox.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'))
+    : []
+
+  function moveTo(el: HTMLAnchorElement | undefined) {
+    if (!indicator || !linksBox || !el) return
+    const box = linksBox.getBoundingClientRect()
+    const rect = el.getBoundingClientRect()
+    indicator.style.width = `${rect.width}px`
+    indicator.style.transform = `translateX(${rect.left - box.left}px)`
+    indicator.classList.add('is-active')
+  }
+
+  function currentLink() {
+    return links.find((link) => link.getAttribute('aria-current') === 'page')
+  }
+
+  links.forEach((link) => {
+    link.addEventListener('pointerenter', () => moveTo(link))
+    link.addEventListener('focus', () => moveTo(link))
+  })
+
+  linksBox?.addEventListener('pointerleave', () => {
+    moveTo(currentLink())
+  })
+
+  moveTo(currentLink())
+  window.addEventListener('resize', () => moveTo(currentLink()))
 </script>

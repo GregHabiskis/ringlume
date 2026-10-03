@@ -101,37 +101,78 @@ that corner after it loads. Every other page still mounts it.
 
 ## Design system
 
-Defined in `src/styles/global.css` under `@theme`:
+The site uses a **liquid-glass** design language, all defined in `src/styles/global.css`.
 
-| Token                        | Value                 | Use                             |
-| ---------------------------- | --------------------- | ------------------------------- |
-| `navy`                       | `#0A1120`             | Dark sections                   |
-| `green-primary`              | `#4CD964`             | Brand accent                    |
-| `green-accent`               | `#6EEB83`             | Gradients / highlights          |
-| `green-dark`                 | `#34C759`             | Darker green text on light CTAs |
-| `green-muted` / `green-deep` | `#2A8C3E` / `#1C6B30` | Muted gradient backgrounds      |
-| `slate-bg`                   | `#1E1F21`             | Cards                           |
-| Body bg                      | `#111213`             | Page chrome                     |
+### Theming (dual light/dark)
+
+- Single token block built on the CSS `light-dark()` function; `html[data-theme="light|dark"]`
+  flips `color-scheme` and is set pre-paint by an inline script in `BaseLayout.astro`
+  (localStorage `ringlume-theme` → system preference → dark).
+- Theme toggle: `#theme-toggle` in `Header.astro`.
+- LightningCSS compiles `light-dark()` away at build time using `--lightningcss-light/dark`
+  vars keyed off both `prefers-color-scheme` and `[data-theme]`; do not "fix" those vars.
+
+### Semantic tokens (use these, not raw hex)
+
+| Utility / token              | Meaning                                        |
+| ---------------------------- | ---------------------------------------------- |
+| `text-fg-1/2/3`              | Primary / body / muted text (theme-aware)       |
+| `text-brand-text`            | AA-safe green text on either theme              |
+| `bg-brand` / `border-brand`  | Static brand green fills/edges                  |
+| `text-brand-ink`             | Near-black text on green CTAs                   |
+| `border-line` / `border-line-strong` | Hairlines                               |
+| `bg-surface-1/2`             | Page / panel surfaces                           |
+| `text-danger` / `warn` / `info` / `violet` | Status colors                   |
+| `text-h1`…`h3`, `text-lead`, `text-stat`, `text-display` | Fluid type scale    |
+| `shadow-lift`                | Raised hover shadow (`--shadow-*` live in `@theme` so utilities generate) |
+
+### Glass material
+
+- `.glass` + one tier: `.glass-thin` / `.glass-regular` / `.glass-thick`
+  (translucent fill + gradient edge + backdrop blur + specular inset + shadow stack).
+- `.glass-fill` = same material **without** `backdrop-filter`; use for repeated items
+  (pricing cards, capability cards). Tiers also drop blur below 768px (perf rule).
+- `.grain` = noise overlay; it also sets `position: relative` so the `::after` never escapes.
+- `.scrim` / `.scrim-soft` = theme-colored wash so small text keeps contrast over the
+  fixed `.scene` backdrop (`.scene` + `.scene-orb-a..d`, paused via `html.is-paused`).
+  **Do not add per-section orbs** — the old `.orb` classes are gone.
+- Refraction: `.refract` only works under `html.refract` (Chromium-only, set in
+  `BaseLayout` from `navigator.userAgentData`) + the `#liquid-glass` SVG filter.
+  Keep it on the header nav pill only (amendment: header + at most one hero element).
 
 ### Utility classes (do not duplicate)
 
-- `.gradient-text` / `.gradient-green-text` — green gradient clipped text
-- `.gradient-bg` / `.gradient-bg-muted` / `.gradient-green` — filled gradients
-- `.glass-effect` — frosted cards (**backdrop-blur only from `md` up**)
-- `.glow-green` / `.glow-green-lg` — soft green shadows
+- `.btn` / `.btn-primary` / `.btn-secondary` / `.btn-quiet` — pill CTAs (≥44px, light sweep)
+- `.chip` + `.chip-danger` / `.chip-warn` / `.chip-brand` — uppercase pills
+- `.eyebrow`, `.gradient-green-text` / `.gradient-text`, `.gradient-bg`, `.gradient-bg-muted`
+- `.reveal` (boxes) / `.reveal-text` (text, blur allowed) — one shared IntersectionObserver
+  in `BaseLayout.astro`; hidden state only exists after `html.reveal-ready`, and both the
+  reveal classes and inline `--reveal-delay` are removed once the transition ends
 - `.pricing-card` / `.pricing-card-popular` / `.toggle-active` / `.toggle-inactive`
-- `.orb` / `.orb-sm` — decorative blurs (prefer these over ad-hoc `blur-3xl`)
-- `.content-auto` — `content-visibility: auto` for below-the-fold sections
+- `.specular` — cursor-tracked glow (fine pointers + motion allowed; one rAF-throttled
+  `pointermove` listener in `BaseLayout.astro` sets `--mx/--my`. Uses `::before` so it
+  coexists with `.grain::after`)
+- `.panel-float` / `.panel-float-b` — hero panel drift (animates `translate`, so it never
+  fights `transform` utilities; disabled under `prefers-reduced-motion`)
+- `@utility content-auto` — `content-visibility: auto` for below-the-fold sections
+- Shared component classes live in `@layer components`, so Tailwind utilities in markup
+  always win (e.g. `hidden md:inline-flex` over `.btn`).
 
 ### Typography
 
-- Family: **Comfortaa** (self-hosted variable 400–700) + metric-adjusted fallback
-- Fonts live in `public/fonts/comfortaa-latin.woff2` and `comfortaa-latin-ext.woff2`
-- Loaded via `@font-face` in `global.css` with `font-display: swap`
-- Preloaded in `BaseLayout.astro`
+- Headings: **Comfortaa** (self-hosted variable 400–700). Body/UI: **Plus Jakarta Sans**
+  (self-hosted variable 200–800). Both in `public/fonts/` (latin + latin-ext).
+- Loaded via `@font-face` in `global.css` with `font-display: swap`; latin subsets preloaded
+  in `BaseLayout.astro`. Metric-adjusted fallback faces keep CLS near zero.
 - **Do not** reintroduce Google Fonts CDN links
 
 **CSS minify gotcha:** never use `U+0000` in `unicode-range` — some minifiers corrupt it to `U+??`. Use `U+0020-00FF` (or similar) for latin.
+
+**Vendor-prefix gotcha:** Vite 8 minifies CSS with LightningCSS using `build.cssTarget`
+(default `baseline-widely-available`), which drops `-webkit-backdrop-filter`.
+`astro.config.mjs` pins `cssTarget: ['chrome100','firefox100','safari17']` — it must stay
+an **array** (Vite's converter does not split comma strings, so a string silently
+degrades to Chrome-only and the prefix is lost again).
 
 ---
 
@@ -160,9 +201,9 @@ Mobile PageSpeed (LCP, FCP, CLS, INP, TBT) is a first-class concern.
 ### Paint / GPU
 
 - Avoid many stacked `blur-3xl` / `backdrop-blur` layers on mobile.
-- Header: solid bg on small screens; `backdrop-blur` from `md` only.
-- Decorative orbs: use `.orb` / `.orb-sm`; hide extras below `md` when possible.
-- Glass: no backdrop-filter on small viewports.
+- Header: glass pill on all sizes (`.glass-regular`; blur is dropped below 768px by the tier media query).
+- Ambient colour comes from the fixed `.scene` backdrop; do not stack per-section blur orbs.
+- Glass: tiers drop `backdrop-filter` below 768px; `.glass-fill` never has it.
 - Respect `prefers-reduced-motion` for animations and motion-heavy effects.
 
 ### JS
@@ -283,7 +324,7 @@ Keep contact channels consistent across Footer, CtaSection, Contact page, and wi
 
 ### Do
 
-- Match existing visual language (dark navy/slate, green gradients, rounded-full CTAs).
+- Match existing visual language (liquid-glass panels, theme-aware greens, rounded-full CTAs).
 - Prefer Server-rendered static HTML; minimize client JS.
 - Optimize new media before commit.
 - Run `pnpm build` after structural/CSS changes.

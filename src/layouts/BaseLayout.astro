@@ -29,6 +29,13 @@ const {
     />
     <link
       rel="preload"
+      href="/fonts/plus-jakarta-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
       href="/images/logo-240.webp"
       as="image"
       type="image/webp"
@@ -39,8 +46,150 @@ const {
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <title>{title}</title>
+    <script is:inline>
+      ;(() => {
+        const root = document.documentElement
+        try {
+          const stored = localStorage.getItem('ringlume-theme')
+          if (stored === 'light' || stored === 'dark') {
+            root.dataset.theme = stored
+          } else {
+            root.dataset.theme = window.matchMedia('(prefers-color-scheme: light)')
+              .matches
+              ? 'light'
+              : 'dark'
+          }
+        } catch {
+          root.dataset.theme = 'dark'
+        }
+        // SVG refraction is a Chromium feature; keep other engines on the
+        // plain blur fallback shipped in global.css.
+        const brands = navigator.userAgentData && navigator.userAgentData.brands
+        if (
+          Array.isArray(brands) &&
+          brands.some((b) => b.brand && b.brand.indexOf('Chromium') !== -1)
+        ) {
+          root.classList.add('refract')
+        }
+      })()
+    </script>
   </head>
   <body class="min-h-screen antialiased">
+    <div class="scene" aria-hidden="true">
+      <div class="scene-orb scene-orb-a"></div>
+      <div class="scene-orb scene-orb-b"></div>
+      <div class="scene-orb scene-orb-c"></div>
+      <div class="scene-orb scene-orb-d"></div>
+    </div>
+
+    <!-- Liquid-glass refraction filter (Chromium only, see html.refract) -->
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      width="0"
+      height="0"
+      style="position: absolute; width: 0; height: 0; overflow: hidden"
+    >
+      <filter
+        id="liquid-glass"
+        x="-15%"
+        y="-15%"
+        width="130%"
+        height="130%"
+        color-interpolation-filters="sRGB"
+      >
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.012 0.018"
+          numOctaves="2"
+          seed="7"
+          result="noise"
+        />
+        <feGaussianBlur in="noise" stdDeviation="2.5" result="smooth" />
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="smooth"
+          scale="16"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        />
+      </filter>
+    </svg>
+
     <slot />
+
+    <script>
+      // One shared scroll-reveal observer. Hidden state only exists after
+      // .reveal-ready is set, so content is never withheld from no-JS or
+      // reduced-motion users. Classes are removed once the transition ends
+      // so the end state is plain: opacity 1, filter none, no will-change.
+      const root = document.documentElement
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+      if ('IntersectionObserver' in window && !reduce.matches) {
+        const items = Array.from(
+          document.querySelectorAll('.reveal, .reveal-text'),
+        )
+        if (items.length > 0) {
+          root.classList.add('reveal-ready')
+          const observer = new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) {
+                if (!entry.isIntersecting) continue
+                const el = entry.target
+                el.classList.add('is-visible')
+                observer.unobserve(el)
+                window.setTimeout(() => {
+                  el.classList.remove('is-visible', 'reveal', 'reveal-text')
+                  ;(el as HTMLElement).style.removeProperty('--reveal-delay')
+                }, 1400)
+              }
+            },
+            { rootMargin: '0px 0px -6% 0px', threshold: 0.12 },
+          )
+          items.forEach((el) => observer.observe(el))
+        }
+      }
+
+      // Cursor-tracked specular glow: one rAF-throttled listener shared by
+      // every `.specular` element (gated to fine pointers + motion allowed).
+      if (
+        window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
+        !reduce.matches
+      ) {
+        let frame = 0
+        let last: PointerEvent | null = null
+        document.addEventListener(
+          'pointermove',
+          (e) => {
+            last = e
+            if (frame) return
+            frame = requestAnimationFrame(() => {
+              frame = 0
+              const evt = last
+              last = null
+              if (!evt || !(evt.target instanceof Element)) return
+              const card = evt.target.closest('.specular')
+              if (!(card instanceof HTMLElement)) return
+              const rect = card.getBoundingClientRect()
+              card.style.setProperty(
+                '--mx',
+                `${((evt.clientX - rect.left) / rect.width) * 100}%`,
+              )
+              card.style.setProperty(
+                '--my',
+                `${((evt.clientY - rect.top) / rect.height) * 100}%`,
+              )
+            })
+          },
+          { passive: true },
+        )
+      }
+
+      // Pause ambient backdrop loops while the tab is hidden.
+      const sync = () => root.classList.toggle('is-paused', document.hidden)
+      sync()
+      document.addEventListener('visibilitychange', sync)
+    </script>
   </body>
 </html>

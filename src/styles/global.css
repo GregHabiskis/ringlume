@@ -1,208 +1,871 @@
 @import 'tailwindcss';
 
+/* Fonts: Plus Jakarta Sans (body/UI) + Comfortaa (display). Self-hosted only. */
+
 @font-face {
-  font-family: 'Comfortaa';
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url('/fonts/comfortaa-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+	font-family: 'Plus Jakarta Sans';
+	font-style: normal;
+	font-weight: 200 800;
+	font-display: swap;
+	src: url('/fonts/plus-jakarta-latin.woff2') format('woff2');
+	/* Never U+0000 here: some minifiers corrupt it to U+?? */
+	unicode-range: U+0020-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+		U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+		U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: 'Comfortaa';
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url('/fonts/comfortaa-latin.woff2') format('woff2');
-  /* Avoid U+0000 in range: some CSS minifiers corrupt it to U+?? */
-  unicode-range: U+0020-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+	font-family: 'Plus Jakarta Sans';
+	font-style: normal;
+	font-weight: 200 800;
+	font-display: swap;
+	src: url('/fonts/plus-jakarta-latin-ext.woff2') format('woff2');
+	unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+		U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+		U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+		U+A720-A7FF;
 }
 
-/* Metric-adjusted fallback to reduce CLS during font swap */
 @font-face {
-  font-family: 'Comfortaa Fallback';
-  src: local('Segoe UI'), local('Helvetica Neue'), local('Arial');
-  size-adjust: 104%;
-  ascent-override: 95%;
-  descent-override: 22%;
-  line-gap-override: 0%;
+	font-family: 'Jakarta Fallback';
+	src: local('Segoe UI'), local('Helvetica Neue'), local('Arial');
+	size-adjust: 100%;
+	ascent-override: 98%;
+	descent-override: 24%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: 'Comfortaa';
+	font-style: normal;
+	font-weight: 400 700;
+	font-display: swap;
+	src: url('/fonts/comfortaa-latin-ext.woff2') format('woff2');
+	unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+		U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+		U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+		U+A720-A7FF;
+}
+
+@font-face {
+	font-family: 'Comfortaa';
+	font-style: normal;
+	font-weight: 400 700;
+	font-display: swap;
+	src: url('/fonts/comfortaa-latin.woff2') format('woff2');
+	unicode-range: U+0020-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+		U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+		U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+	font-family: 'Comfortaa Fallback';
+	src: local('Segoe UI'), local('Helvetica Neue'), local('Arial');
+	size-adjust: 104%;
+	ascent-override: 95%;
+	descent-override: 22%;
+	line-gap-override: 0%;
+}
+
+/* ------------------------------------------------------------
+   Theme tokens. One block: `color-scheme` picks the palette via
+   light-dark(); the toggle only flips color-scheme. The plain
+   (dark) line above each pair is the light-dark() fallback.
+   ------------------------------------------------------------ */
+
+:root {
+	color-scheme: light dark;
+
+	--bg-base: #05070c;
+	--bg-base: light-dark(#f1f4fa, #05070c);
+	--bg-alt: #090c14;
+	--bg-alt: light-dark(#e8ecf6, #090c14);
+
+	--scene-orb-a: #4cd964;
+	--scene-orb-a: light-dark(#7bec97, #3fbf5c);
+	--scene-orb-b: #22d3ee;
+	--scene-orb-b: light-dark(#8be4f5, #1c9fbe);
+	--scene-orb-c: #818cf8;
+	--scene-orb-c: light-dark(#bfc6fb, #5b62d6);
+	--scene-orb-d: #f472b6;
+	--scene-orb-d: light-dark(#f9bcd9, #c94f8d);
+	--scene-orb-alpha: 0.26;
+	--scene-orb-alpha: light-dark(0.52, 0.26);
+
+	--fg-1: #f4f7fb;
+	--fg-1: light-dark(#0a1120, #f4f7fb);
+	--fg-2: #d5dce8;
+	--fg-2: light-dark(#26303f, #d5dce8);
+	--fg-3: #bfc9d6;
+	--fg-3: light-dark(#4a5567, #bfc9d6);
+
+	--brand: #4cd964;
+	--brand-bright: #6eeb83;
+	--brand-deep: #269635;
+	--brand-ink: #06140a;
+	--brand-text: #5fe07a;
+	--brand-text: light-dark(#0e7a31, #5fe07a);
+	--grad-accent-from: #6eeb83;
+	--grad-accent-from: light-dark(#128a3a, #6eeb83);
+	--grad-accent-to: #2f9e48;
+	--grad-accent-to: light-dark(#0a5f25, #2f9e48);
+
+	--danger: #ff7a7a;
+	--danger: light-dark(#b42318, #ff7a7a);
+	--warn: #fbbf24;
+	--warn: light-dark(#8a5a06, #fbbf24);
+	--info: #56b4f0;
+	--info: light-dark(#0b6fc4, #56b4f0);
+	--violet: #a78bfa;
+	--violet: light-dark(#6d28d9, #a78bfa);
+
+	--line: rgba(255, 255, 255, 0.1);
+	--line: light-dark(rgba(10, 17, 32, 0.12), rgba(255, 255, 255, 0.1));
+	--line-strong: rgba(255, 255, 255, 0.22);
+	--line-strong: light-dark(rgba(10, 17, 32, 0.26), rgba(255, 255, 255, 0.22));
+
+	--focus: #6eeb83;
+	--focus: light-dark(#0e7a31, #6eeb83);
+
+	/* Glass ingredients (shared) */
+	--glass-edge-hi: rgba(255, 255, 255, 0.55);
+	--glass-edge-hi: light-dark(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.55));
+	--glass-edge-lo: rgba(255, 255, 255, 0.08);
+	--glass-edge-lo: light-dark(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08));
+	--glass-specular: rgba(255, 255, 255, 0.45);
+	--glass-specular: light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.45));
+	--glass-inner: rgba(255, 255, 255, 0.16);
+	--glass-inner: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.16));
+
+	--grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+
+	/* Motion */
+	--ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+	--dur-fast: 200ms;
+	--dur-mid: 320ms;
+	--dur-slow: 600ms;
+}
+
+:root[data-theme='dark'] {
+	color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+	color-scheme: light;
 }
 
 @theme {
-  --color-navy: #0A1120;
-  --color-navy-light: #111827;
-  --color-green-primary: #4CD964;
-  --color-green-accent: #6EEB83;
-  --color-green-dark: #34C759;
-  --color-green-light: #A8F5B2;
-  --color-green-pale: #EAFCEF;
-  --color-green-muted: #2A8C3E;
-  --color-green-deep: #1C6B30;
-  --color-slate-bg: #1E1F21;
-  --font-sans: 'Comfortaa', 'Comfortaa Fallback', system-ui, -apple-system, sans-serif;
+	/* Depth: theme keys so Tailwind generates `shadow-*` utilities */
+	--shadow-contact: 0 1px 2px rgba(0, 0, 0, 0.32);
+	--shadow-contact: light-dark(rgba(15, 23, 42, 0.14), rgba(0, 0, 0, 0.32));
+	--shadow-diffuse: 0 28px 56px -20px rgba(0, 0, 0, 0.6);
+	--shadow-diffuse: light-dark(rgba(15, 23, 42, 0.18), rgba(0, 0, 0, 0.6));
+	--shadow-lift: 0 40px 80px -28px rgba(0, 0, 0, 0.65);
+	--shadow-lift: light-dark(rgba(15, 23, 42, 0.26), rgba(0, 0, 0, 0.65));
+	--glow-brand: 0 12px 34px -10px rgba(76, 217, 100, 0.55);
+
+	--font-sans: 'Plus Jakarta Sans', 'Jakarta Fallback', system-ui, -apple-system, sans-serif;
+	--font-display: 'Comfortaa', 'Comfortaa Fallback', 'Plus Jakarta Sans', sans-serif;
+
+	/* Fluid type scale */
+	--text-display: clamp(2.6rem, 1.4rem + 4.8vw, 5.25rem);
+	--text-display--line-height: 1.04;
+	--text-display--letter-spacing: -0.025em;
+	--text-h1: clamp(2.1rem, 1.5rem + 2.6vw, 3.5rem);
+	--text-h1--line-height: 1.1;
+	--text-h1--letter-spacing: -0.02em;
+	--text-h2: clamp(1.85rem, 1.35rem + 2.1vw, 3rem);
+	--text-h2--line-height: 1.15;
+	--text-h2--letter-spacing: -0.018em;
+	--text-h3: clamp(1.3rem, 1.15rem + 0.7vw, 1.75rem);
+	--text-h3--line-height: 1.3;
+	--text-lead: clamp(1.06rem, 1rem + 0.35vw, 1.3rem);
+	--text-lead--line-height: 1.65;
+	--text-stat: clamp(2.75rem, 1.9rem + 3.2vw, 4.5rem);
+	--text-stat--line-height: 1;
+
+	/* Brand (static across themes) */
+	--color-brand: #4cd964;
+	--color-brand-bright: #6eeb83;
+	--color-brand-deep: #269635;
+	--color-brand-ink: #06140a;
+	--color-green-primary: #4cd964;
+	--color-green-accent: #6eeb83;
+	--color-slate-bg: #1e1f21;
+
+	/* Semantic, theme-aware */
+	--color-fg-1: var(--fg-1);
+	--color-fg-2: var(--fg-2);
+	--color-fg-3: var(--fg-3);
+	--color-brand-text: var(--brand-text);
+	--color-surface-1: var(--bg-base);
+	--color-surface-2: var(--bg-alt);
+	--color-line: var(--line);
+	--color-line-strong: var(--line-strong);
+	--color-danger: var(--danger);
+	--color-warn: var(--warn);
+	--color-info: var(--info);
+	--color-violet: var(--violet);
+}
+
+/* Below-the-fold sections: skip rendering offscreen content */
+@utility content-auto {
+	content-visibility: auto;
 }
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-  body {
-    font-family: var(--font-sans);
-    color: #e2e8f0;
-    background-color: #111213;
-  }
+	html {
+		background-color: var(--bg-base);
+		scroll-behavior: smooth;
+		-webkit-tap-highlight-color: transparent;
+	}
 
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-  }
+	body {
+		font-family: var(--font-sans);
+		color: var(--fg-2);
+		background: transparent;
+		text-rendering: optimizeLegibility;
+	}
+
+	h1,
+	h2,
+	h3 {
+		font-family: var(--font-display);
+		color: var(--fg-1);
+	}
+
+	::selection {
+		background: rgba(76, 217, 100, 0.32);
+		color: var(--fg-1);
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 3px;
+		border-radius: 4px;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+	}
 }
 
-@layer utilities {
-  .gradient-text {
-    background: linear-gradient(135deg, #46D461, #31A442);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+/* Component styles live in Tailwind's `components` layer so any
+   utility written in markup still wins (e.g. `hidden md:inline-flex`
+   over .btn's display). */
+@layer components {
 
-  .gradient-bg {
-    background: linear-gradient(135deg, #46D461, #31A442);
-  }
+/* ------------------------------------------------------------
+   Backdrop scene: fixed, transform-only loops, paused when hidden
+   ------------------------------------------------------------ */
 
-  .gradient-bg-muted {
-    background: linear-gradient(135deg, var(--color-green-muted), var(--color-green-deep));
-  }
-
-  .gradient-bg-hover {
-    background: linear-gradient(135deg, #3ABF52, #269635);
-  }
-
-  .gradient-border {
-    position: relative;
-    background: #1E1F21;
-  }
-
-  .gradient-border::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 2px;
-    background: linear-gradient(135deg, #46D461, #31A442);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-  }
-
-  .glass-effect {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  @media (min-width: 768px) {
-    .glass-effect {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-    }
-  }
-
-  .card-shadow {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  }
-
-  .card-shadow-lg {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-  }
-
-  .gradient-green {
-    background: linear-gradient(135deg, #46D461, #31A442);
-  }
-
-  .gradient-green-text {
-    background: linear-gradient(135deg, #46D461, #31A442);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .glow-green {
-    box-shadow: 0 0 8px rgba(49, 164, 66, 0.2), 0 0 16px rgba(49, 164, 66, 0.1);
-  }
-
-  .glow-green-lg {
-    box-shadow: 0 0 12px rgba(49, 164, 66, 0.25), 0 0 24px rgba(49, 164, 66, 0.12);
-  }
-
-  .pricing-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-  }
-
-  .pricing-card:hover {
-    transform: translateY(-4px);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .pricing-card {
-      transition: none;
-    }
-    .pricing-card:hover {
-      transform: none;
-    }
-  }
-
-  .pricing-card-popular {
-    border: 2px solid rgba(49, 164, 66, 0.4);
-  }
-
-  .pricing-card-popular:hover {
-    border-color: rgba(49, 164, 66, 0.7);
-    box-shadow: 0 0 30px rgba(49, 164, 66, 0.25), 0 20px 40px rgba(0, 0, 0, 0.3);
-  }
-
-  .toggle-active {
-    background: linear-gradient(135deg, #46D461, #31A442);
-    color: white;
-  }
-
-  .toggle-inactive {
-    background: transparent;
-    color: #94a3b8;
-  }
-
-  .toggle-inactive:hover {
-    color: white;
-  }
-
-  /* Soft glow without expensive blur on small viewports */
-  .orb {
-    border-radius: 9999px;
-    pointer-events: none;
-  }
-
-  .orb-sm {
-    opacity: 0.35;
-    filter: blur(40px);
-  }
-
-  @media (min-width: 768px) {
-    .orb-sm {
-      opacity: 0.2;
-      filter: blur(64px);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .orb-sm {
-      filter: none;
-      opacity: 0.12;
-    }
-  }
-
-  .content-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 500px;
-  }
+.scene {
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	overflow: hidden;
+	pointer-events: none;
+	background:
+		radial-gradient(
+			140% 60% at 50% -10%,
+			color-mix(in srgb, var(--scene-orb-c) 22%, transparent),
+			transparent 60%
+		),
+		radial-gradient(
+			120% 70% at 100% 105%,
+			color-mix(in srgb, var(--scene-orb-a) 18%, transparent),
+			transparent 62%
+		);
 }
+
+.scene-orb {
+	position: absolute;
+	border-radius: 9999px;
+	opacity: var(--scene-orb-alpha);
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+}
+
+.scene-orb-a {
+	top: -22vmax;
+	left: -16vmax;
+	width: 62vmax;
+	height: 62vmax;
+	background: radial-gradient(circle at 50% 50%, var(--scene-orb-a) 0%, transparent 62%);
+	animation: scene-drift-a 42s ease-in-out infinite;
+}
+
+.scene-orb-b {
+	top: -14vmax;
+	right: -18vmax;
+	width: 54vmax;
+	height: 54vmax;
+	background: radial-gradient(circle at 50% 50%, var(--scene-orb-b) 0%, transparent 64%);
+	animation: scene-drift-b 56s ease-in-out infinite;
+}
+
+.scene-orb-c {
+	bottom: -26vmax;
+	left: 24vw;
+	width: 58vmax;
+	height: 58vmax;
+	background: radial-gradient(circle at 50% 50%, var(--scene-orb-c) 0%, transparent 63%);
+	animation: scene-drift-c 64s ease-in-out infinite;
+}
+
+.scene-orb-d {
+	bottom: 8vh;
+	right: -12vmax;
+	width: 34vmax;
+	height: 34vmax;
+	background: radial-gradient(circle at 50% 50%, var(--scene-orb-d) 0%, transparent 66%);
+	animation: scene-drift-d 48s ease-in-out infinite;
+}
+
+@keyframes scene-drift-a {
+	0%,
+	100% {
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+	50% {
+		transform: translate3d(7vw, 5vh, 0) scale(1.12);
+	}
+}
+
+@keyframes scene-drift-b {
+	0%,
+	100% {
+		transform: translate3d(0, 0, 0) scale(1.06);
+	}
+	50% {
+		transform: translate3d(-6vw, 7vh, 0) scale(0.94);
+	}
+}
+
+@keyframes scene-drift-c {
+	0%,
+	100% {
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+	50% {
+		transform: translate3d(-8vw, -6vh, 0) scale(1.1);
+	}
+}
+
+@keyframes scene-drift-d {
+	0%,
+	100% {
+		transform: translate3d(0, 0, 0) scale(0.96);
+	}
+	50% {
+		transform: translate3d(-5vw, -8vh, 0) scale(1.14);
+	}
+}
+
+html.is-paused .scene-orb {
+	animation-play-state: paused;
+}
+
+@media (max-width: 767px) {
+	.scene-orb-d {
+		display: none;
+	}
+
+	.scene-orb {
+		opacity: light-dark(0.44, 0.2);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.scene-orb {
+		animation: none;
+	}
+
+	.panel-float,
+	.panel-float-b {
+		animation: none;
+	}
+}
+
+/* ------------------------------------------------------------
+   Glass material system
+   .glass + one tier: .glass-thin | .glass-regular | .glass-thick
+   Recipe: translucent fill + gradient edge + backdrop blur +
+   inset specular + contact/diffuse shadow stack.
+   ------------------------------------------------------------ */
+
+.glass {
+	border: 1px solid transparent;
+	background:
+		linear-gradient(var(--glass-fill), var(--glass-fill)) padding-box,
+		linear-gradient(135deg, var(--glass-edge-hi), var(--glass-edge-lo) 55%)
+			border-box;
+	-webkit-backdrop-filter: var(--glass-filter);
+	backdrop-filter: var(--glass-filter);
+	box-shadow:
+		inset 0 1px 0 var(--glass-specular),
+		inset 0 0 24px -12px var(--glass-inner),
+		var(--shadow-contact),
+		var(--shadow-diffuse);
+	isolation: isolate;
+	transition:
+		transform var(--dur-mid) var(--ease-spring),
+		box-shadow var(--dur-mid) var(--ease-spring);
+}
+
+.glass-thin {
+	--glass-fill: rgba(255, 255, 255, 0.1);
+	--glass-fill: light-dark(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.07));
+	--glass-filter: blur(12px) saturate(150%) brightness(0.94);
+	--glass-filter: light-dark(
+		blur(12px) saturate(150%) brightness(1.04),
+		blur(12px) saturate(150%) brightness(0.9)
+	);
+}
+
+.glass-regular {
+	--glass-fill: rgba(255, 255, 255, 0.12);
+	--glass-fill: light-dark(rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.09));
+	--glass-filter: blur(20px) saturate(170%) brightness(0.92);
+	--glass-filter: light-dark(
+		blur(20px) saturate(170%) brightness(1.04),
+		blur(22px) saturate(170%) brightness(0.88)
+	);
+}
+
+.glass-thick {
+	--glass-fill: rgba(255, 255, 255, 0.14);
+	--glass-fill: light-dark(rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0.12));
+	--glass-filter: blur(32px) saturate(180%) brightness(0.9);
+	--glass-filter: light-dark(
+		blur(28px) saturate(180%) brightness(1.05),
+		blur(34px) saturate(180%) brightness(0.86)
+	);
+}
+
+/* Cheap tinted fill: same material, no backdrop-filter.
+   Used for repeated items and small screens. */
+.glass-fill {
+	border: 1px solid transparent;
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+	background:
+		linear-gradient(var(--glass-fill-2), var(--glass-fill-2)) padding-box,
+		linear-gradient(135deg, var(--glass-edge-hi), var(--glass-edge-lo)) border-box;
+	box-shadow:
+		inset 0 1px 0 var(--glass-specular),
+		var(--shadow-contact);
+	isolation: isolate;
+}
+
+.glass-fill,
+.glass-fill.glass-thin {
+	--glass-fill-2: rgba(255, 255, 255, 0.08);
+	--glass-fill-2: light-dark(rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.06));
+}
+
+.glass-fill.glass-regular {
+	--glass-fill-2: rgba(255, 255, 255, 0.1);
+	--glass-fill-2: light-dark(rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.08));
+}
+
+/* Small screens: drop the blur, keep the material (perf rule) */
+@media (max-width: 767px) {
+	.glass-thin,
+	.glass-regular {
+		--glass-filter: saturate(130%);
+		--glass-fill: light-dark(rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.14));
+	}
+
+	.glass-thick {
+		--glass-filter: blur(14px) saturate(160%);
+	}
+}
+
+/* Grain overlay: .grain also establishes the containing block so the
+   ::after never escapes to an ancestor when no `relative` utility is set. */
+.grain {
+	position: relative;
+}
+
+.grain::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: inherit;
+	pointer-events: none;
+	background-image: var(--grain);
+	background-size: 160px 160px;
+	opacity: 0.05;
+}
+
+/* Refraction (Chromium only, gated by html.refract).
+   The base .glass rule already carries plain blur, so a browser that
+   drops this declaration keeps a perfectly good fallback. */
+@supports (backdrop-filter: url(#liquid-glass)) {
+	html.refract .refract {
+		-webkit-backdrop-filter: url(#liquid-glass) var(--glass-filter);
+		backdrop-filter: url(#liquid-glass) var(--glass-filter);
+	}
+}
+
+/* Reduced transparency / high contrast: near-opaque, no blur */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+	.glass,
+	.glass-fill {
+		--glass-fill: light-dark(rgba(255, 255, 255, 0.94), rgba(8, 11, 18, 0.94));
+		--glass-fill-2: light-dark(rgba(255, 255, 255, 0.94), rgba(8, 11, 18, 0.94));
+		--glass-filter: none;
+		--glass-edge-hi: light-dark(rgba(10, 17, 32, 0.55), rgba(255, 255, 255, 0.7));
+		--glass-edge-lo: light-dark(rgba(10, 17, 32, 0.25), rgba(255, 255, 255, 0.2));
+		box-shadow:
+			inset 0 0 0 1px var(--line-strong),
+			var(--shadow-contact);
+	}
+
+	.grain::after {
+		display: none;
+	}
+}
+
+/* ------------------------------------------------------------
+   Section helpers
+   ------------------------------------------------------------ */
+
+/* Scrim keeps scene colour visible while protecting small text */
+.scrim {
+	background-color: var(--bg-base);
+	background-color: color-mix(in srgb, var(--bg-base) 76%, transparent);
+}
+
+.scrim-soft {
+	background-color: var(--bg-base);
+	background-color: color-mix(in srgb, var(--bg-base) 45%, transparent);
+}
+
+/* ------------------------------------------------------------
+   Buttons
+   ------------------------------------------------------------ */
+
+.btn {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.6rem;
+	min-height: 44px;
+	padding-inline: 1.75rem;
+	padding-block: 0.9rem;
+	border-radius: 9999px;
+	font-weight: 600;
+	font-size: 0.975rem;
+	letter-spacing: -0.01em;
+	overflow: hidden;
+	isolation: isolate;
+	text-align: center;
+	cursor: pointer;
+	transition:
+		transform var(--dur-fast) var(--ease-spring),
+		box-shadow var(--dur-mid) var(--ease-spring),
+		background-color var(--dur-fast) ease;
+}
+
+.btn:hover {
+	transform: translateY(-2px);
+}
+
+.btn:active {
+	transform: translateY(0) scale(0.98);
+}
+
+.btn-primary {
+	color: var(--brand-ink);
+	background: linear-gradient(135deg, #7df394, #4cd964 55%, #35cd58);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.75),
+		inset 0 -8px 16px -12px rgba(6, 20, 10, 0.5),
+		var(--glow-brand),
+		var(--shadow-contact);
+}
+
+.btn-primary:hover {
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.9),
+		inset 0 -8px 16px -12px rgba(6, 20, 10, 0.5),
+		0 16px 44px -12px rgba(76, 217, 100, 0.65),
+		var(--shadow-contact);
+}
+
+/* Light sweep on hover (transform only) */
+.btn-primary::after,
+.btn-secondary::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
+	background: linear-gradient(
+		105deg,
+		transparent 30%,
+		rgba(255, 255, 255, 0.4) 50%,
+		transparent 70%
+	);
+	transform: translateX(-130%);
+	transition: transform 650ms var(--ease-spring);
+}
+
+.btn-primary:hover::after,
+.btn-secondary:hover::after,
+.btn-primary:focus-visible::after,
+.btn-secondary:focus-visible::after {
+	transform: translateX(130%);
+}
+
+.btn-secondary {
+	color: var(--fg-1);
+	--glass-fill: light-dark(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.07));
+	--glass-edge-hi: light-dark(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.55));
+	--glass-edge-lo: light-dark(rgba(10, 17, 32, 0.28), rgba(255, 255, 255, 0.14));
+	border: 1px solid transparent;
+	background:
+		linear-gradient(var(--glass-fill), var(--glass-fill)) padding-box,
+		linear-gradient(135deg, var(--glass-edge-hi), var(--glass-edge-lo) 55%) border-box;
+	box-shadow: var(--shadow-contact);
+}
+
+.btn-secondary:hover {
+	--glass-fill: light-dark(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.14));
+	--glass-edge-hi: light-dark(rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.85));
+}
+
+.btn-quiet {
+	color: var(--fg-1);
+	border: 1px solid var(--line-strong);
+	background: transparent;
+}
+
+.btn-quiet:hover {
+	background: color-mix(in srgb, var(--fg-1) 8%, transparent);
+}
+
+/* ------------------------------------------------------------
+   Chips / badges
+   ------------------------------------------------------------ */
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	border-radius: 9999px;
+	padding: 0.45rem 0.95rem;
+	font-size: 0.69rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--fg-1);
+	border: 1px solid var(--line-strong);
+}
+
+.chip-danger {
+	color: var(--danger);
+	border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+	background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+.chip-warn {
+	color: var(--warn);
+	border-color: color-mix(in srgb, var(--warn) 45%, transparent);
+	background: color-mix(in srgb, var(--warn) 12%, transparent);
+}
+
+.chip-brand {
+	color: var(--brand-text);
+	border-color: color-mix(in srgb, var(--brand) 40%, transparent);
+	background: color-mix(in srgb, var(--brand) 12%, transparent);
+}
+
+/* ------------------------------------------------------------
+   Pricing
+   ------------------------------------------------------------ */
+
+.pricing-card {
+	transition:
+		transform 300ms ease,
+		box-shadow 300ms ease,
+		border-color 300ms ease;
+}
+
+.pricing-card:hover {
+	transform: translateY(-4px);
+}
+
+.pricing-card-popular {
+	border-color: color-mix(in srgb, var(--brand) 55%, transparent);
+	box-shadow:
+		inset 0 1px 0 var(--glass-specular),
+		var(--shadow-contact),
+		var(--glow-brand);
+}
+
+/* Billing toggle: script toggles these two classes */
+.toggle-active {
+	background: linear-gradient(135deg, #46d461, #31a442);
+	color: var(--brand-ink);
+}
+
+.toggle-inactive {
+	color: var(--fg-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pricing-card,
+	.pricing-card:hover {
+		transform: none;
+		transition: none;
+	}
+}
+
+/* ------------------------------------------------------------
+   Typography helpers
+   ------------------------------------------------------------ */
+
+.gradient-green-text,
+.gradient-text {
+	background: linear-gradient(135deg, var(--grad-accent-from), var(--grad-accent-to));
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	color: transparent;
+}
+
+.gradient-bg {
+	background: linear-gradient(135deg, #46d461, #31a442);
+}
+
+.gradient-bg-muted {
+	background: linear-gradient(135deg, var(--brand-deep), #0f5a25);
+}
+
+.eyebrow {
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: var(--brand-text);
+}
+
+.text-soft {
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-theme='light'] .text-soft {
+	text-shadow: none;
+}
+
+/* ------------------------------------------------------------
+   Motion: scroll reveal (runs once, ends fully clean)
+   Hidden state only applies once the observer is armed, so no-JS
+   and reduced-motion users always see content.
+   ------------------------------------------------------------ */
+
+.reveal-ready .reveal:not(.is-visible) {
+	opacity: 0;
+	transform: translate3d(0, 16px, 0);
+}
+
+.reveal-ready .reveal-text:not(.is-visible) {
+	opacity: 0;
+	transform: translate3d(0, 14px, 0);
+	filter: blur(7px);
+}
+
+.reveal.is-visible,
+.reveal-text.is-visible {
+	transition:
+		opacity var(--dur-slow) var(--ease-spring) var(--reveal-delay, 0ms),
+		transform var(--dur-slow) var(--ease-spring) var(--reveal-delay, 0ms),
+		filter var(--dur-slow) var(--ease-spring) var(--reveal-delay, 0ms);
+	opacity: 1;
+	transform: none;
+	filter: none;
+}
+
+/* ------------------------------------------------------------
+   Cursor-tracked specular highlight (fine pointers only)
+   ------------------------------------------------------------ */
+
+@media (hover: hover) and (pointer: fine) {
+	.specular {
+		position: relative;
+	}
+
+	.specular::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		border-radius: inherit;
+		pointer-events: none;
+		background: radial-gradient(
+			360px circle at var(--mx, 50%) var(--my, 0%),
+			color-mix(in srgb, var(--brand-bright) 16%, transparent),
+			transparent 62%
+		);
+		opacity: 0;
+		transition: opacity var(--dur-mid) ease;
+	}
+
+	.specular:hover::before {
+		opacity: 1;
+	}
+}
+
+/* Hero floating panels: gentle drift (xl+ uses absolute placement,
+   so the keyframes animate `translate` and never touch `transform`) */
+@keyframes panel-float {
+	0%,
+	100% {
+		translate: 0 -7px;
+	}
+
+	50% {
+		translate: 0 7px;
+	}
+}
+
+.panel-float {
+	animation: panel-float 7s ease-in-out infinite;
+}
+
+.panel-float-b {
+	animation-duration: 9s;
+	animation-delay: -4.5s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.btn,
+	.btn:hover,
+	.btn:active {
+		transform: none;
+		transition: box-shadow var(--dur-fast) ease;
+	}
+
+	.btn-primary::after,
+	.btn-secondary::after {
+		display: none;
+	}
+
+	.reveal-ready .reveal:not(.is-visible),
+	.reveal-ready .reveal-text:not(.is-visible) {
+		opacity: 1;
+		transform: none;
+		filter: none;
+	}
+}
+
+}
+/* end @layer components */
+

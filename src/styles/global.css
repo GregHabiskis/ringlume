@@ -90,6 +90,10 @@
 	--grad-accent-from: #6eeb83;
 	--grad-accent-to: #2f9e48;
 
+	/* Primary CTA gradient: deep emerald (700 -> 900), light text on top.
+	   One token drives every .btn-primary site-wide. */
+	--grad-cta: linear-gradient(135deg, #047857, #065f46 55%, #064e3b);
+
 	--danger: #ff7a7a;
 	--warn: #fbbf24;
 	--info: #56b4f0;
@@ -120,7 +124,8 @@
 	--shadow-contact: 0 1px 2px rgba(0, 0, 0, 0.32);
 	--shadow-diffuse: 0 28px 56px -20px rgba(0, 0, 0, 0.6);
 	--shadow-lift: 0 40px 80px -28px rgba(0, 0, 0, 0.65);
-	--glow-brand: 0 12px 34px -10px rgba(76, 217, 100, 0.55);
+	/* Dim deep-emerald glow (was bright mint at 0.55) */
+	--glow-brand: 0 12px 34px -10px rgba(4, 120, 87, 0.5);
 
 	--font-sans: 'Plus Jakarta Sans', 'Jakarta Fallback', system-ui, -apple-system, sans-serif;
 	--font-display: 'Comfortaa', 'Comfortaa Fallback', 'Plus Jakarta Sans', sans-serif;
@@ -426,20 +431,21 @@
 }
 
 .btn-primary {
-	color: var(--brand-ink);
-	background: linear-gradient(135deg, #7df394, #4cd964 55%, #35cd58);
+	/* Light text on the deep green: #f4f7fb on #047857 = ~5.0:1 */
+	color: var(--fg-1);
+	background: var(--grad-cta);
 	box-shadow:
-		inset 0 1px 0 rgba(255, 255, 255, 0.75),
-		inset 0 -8px 16px -12px rgba(6, 20, 10, 0.5),
+		inset 0 1px 0 rgba(255, 255, 255, 0.45),
+		inset 0 -8px 16px -12px rgba(2, 20, 12, 0.55),
 		var(--glow-brand),
 		var(--shadow-contact);
 }
 
 .btn-primary:hover {
 	box-shadow:
-		inset 0 1px 0 rgba(255, 255, 255, 0.9),
-		inset 0 -8px 16px -12px rgba(6, 20, 10, 0.5),
-		0 16px 44px -12px rgba(76, 217, 100, 0.65),
+		inset 0 1px 0 rgba(255, 255, 255, 0.62),
+		inset 0 -8px 16px -12px rgba(2, 20, 12, 0.55),
+		0 16px 44px -12px rgba(4, 120, 87, 0.62),
 		var(--shadow-contact);
 }
 
@@ -566,6 +572,18 @@
 
 .toggle-inactive {
 	color: var(--fg-1);
+}
+
+/* 2.1: pricing secondary CTAs get a near-black navy translucent fill so
+   they read as buttons inside the glass cards. No backdrop-filter
+   (glass-inside-glass is banned); the fill lets the card show through.
+   The 1px border comes from .btn-secondary's gradient edge, unchanged. */
+.pricing-card .btn-secondary {
+	--glass-fill: rgba(9, 15, 29, 0.47);
+}
+
+.pricing-card .btn-secondary:hover {
+	--glass-fill: rgba(21, 33, 58, 0.6);
 }
 
 @media (prefers-reduced-motion: reduce) {

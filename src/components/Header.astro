@@ -40,14 +40,14 @@ const isCurrent = (href: string) =>
     </a>
 
     <!-- Desktop Navigation -->
-    <div class="hidden items-center gap-1 md:flex" data-nav-links>
+    <div class="relative hidden items-center gap-1 md:flex" data-nav-links>
       <span class="nav-indicator" aria-hidden="true"></span>
       {navLinks.map((link) => (
         <a
           href={link.href}
           data-nav-link
           aria-current={isCurrent(link.href) ? 'page' : undefined}
-          class="relative rounded-full px-3.5 py-2 text-sm font-medium text-fg-2 transition-colors duration-200 hover:text-fg-1"
+          class="relative whitespace-nowrap rounded-full px-2.5 py-2 text-[13px] font-medium text-fg-2 transition-colors duration-200 hover:text-fg-1 lg:px-3.5 lg:text-sm"
         >
           {link.label}
         </a>
@@ -55,14 +55,17 @@ const isCurrent = (href: string) =>
     </div>
 
     <div class="flex items-center gap-2">
-      <a href="/#pricing" class="btn btn-primary hidden px-6 py-2.5 text-sm md:inline-flex">
+      <a
+        href="/#pricing"
+        class="btn btn-primary hidden whitespace-nowrap px-5 py-2.5 text-[13px] md:inline-flex lg:px-6 lg:text-sm"
+      >
         Get Started
       </a>
 
       <!-- Mobile Menu Button -->
       <button
         id="mobile-menu-toggle"
-        class="menu-toggle md:hidden"
+        class="menu-toggle inline-flex md:hidden"
         aria-label="Toggle menu"
         aria-expanded="false"
         aria-controls="mobile-menu"
@@ -119,10 +122,10 @@ const isCurrent = (href: string) =>
 
   .nav-indicator {
     position: absolute;
-    top: 2px;
-    bottom: 2px;
+    top: 0;
     left: 0;
     width: 0;
+    height: 0;
     border-radius: 9999px;
     background: color-mix(in srgb, var(--brand) 16%, transparent);
     border: 1px solid color-mix(in srgb, var(--brand) 38%, transparent);
@@ -131,6 +134,7 @@ const isCurrent = (href: string) =>
     transition:
       transform var(--dur-mid) var(--ease-spring),
       width var(--dur-mid) var(--ease-spring),
+      height var(--dur-mid) var(--ease-spring),
       opacity var(--dur-fast) ease;
   }
 
@@ -138,8 +142,10 @@ const isCurrent = (href: string) =>
     opacity: 1;
   }
 
+  /* display comes from the `inline-flex` utility in markup: this rule is
+     unlayered, so a `display` here would beat Tailwind's `md:hidden` and
+     keep the hamburger on desktop. */
   .menu-toggle {
-    display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 44px;
@@ -209,6 +215,14 @@ const isCurrent = (href: string) =>
       setMenu(menu.classList.contains('hidden'))
     })
 
+    // Any drawer link closes it, including same-page anchors (#features)
+    // where no page reload would clear the state.
+    menu.addEventListener('click', (e) => {
+      if (e.target instanceof Element && e.target.closest('a')) {
+        setMenu(false)
+      }
+    })
+
     document.addEventListener('click', (e) => {
       const target = e.target as Node | null
       if (!menu.classList.contains('hidden') && !menu.contains(target) && !toggle.contains(target)) {
@@ -222,6 +236,11 @@ const isCurrent = (href: string) =>
         toggle.focus()
       }
     })
+
+    // The toggle and drawer are md:hidden; above 768px nothing may stay open.
+    window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => {
+      if (e.matches) setMenu(false)
+    })
   }
 
   // Condense the pill on scroll (visual only).
@@ -232,25 +251,40 @@ const isCurrent = (href: string) =>
     window.addEventListener('scroll', sync, { passive: true })
   }
 
-  // Liquid indicator that slides between nav items.
+  // Liquid indicator that slides between nav items. The indicator is
+  // absolutely positioned inside [data-nav-links] (that container is the
+  // `relative` containing block), so every measurement is taken against
+  // its box with getBoundingClientRect: exact, and structurally unable
+  // to land on the logo.
   const linksBox = document.querySelector<HTMLElement>('[data-nav-links]')
   const indicator = linksBox?.querySelector<HTMLElement>('.nav-indicator')
   const links = linksBox
     ? Array.from(linksBox.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'))
     : []
 
-  function moveTo(el: HTMLAnchorElement | undefined) {
-    if (!indicator || !linksBox || !el) return
-    const box = linksBox.getBoundingClientRect()
-    const rect = el.getBoundingClientRect()
-    indicator.style.width = `${rect.width}px`
-    indicator.style.transform = `translateX(${rect.left - box.left}px)`
-    indicator.classList.add('is-active')
-  }
-
   function currentLink() {
     return links.find((link) => link.getAttribute('aria-current') === 'page')
   }
+
+  let shown: HTMLAnchorElement | undefined
+
+  function moveTo(el: HTMLAnchorElement | undefined) {
+    shown = el
+    if (!indicator || !linksBox) return
+    if (!el) {
+      indicator.classList.remove('is-active')
+      return
+    }
+    const box = linksBox.getBoundingClientRect()
+    const rect = el.getBoundingClientRect()
+    indicator.style.width = `${rect.width}px`
+    indicator.style.height = `${rect.height}px`
+    indicator.style.transform = `translate(${rect.left - box.left}px, ${rect.top - box.top}px)`
+    indicator.classList.add('is-active')
+  }
+
+  // Re-measure the resting target after resize, webfont swap, or reflow.
+  const rest = () => moveTo(shown ?? currentLink())
 
   links.forEach((link) => {
     link.addEventListener('pointerenter', () => moveTo(link))
@@ -261,6 +295,10 @@ const isCurrent = (href: string) =>
     moveTo(currentLink())
   })
 
-  moveTo(currentLink())
-  window.addEventListener('resize', () => moveTo(currentLink()))
+  rest()
+  window.addEventListener('resize', rest)
+  document.fonts?.ready.then(rest)
+  if (linksBox && 'ResizeObserver' in window) {
+    new ResizeObserver(rest).observe(linksBox)
+  }
 </script>

@@ -29,7 +29,7 @@
           </span>
         </div>
 
-        <div class="text-stat gradient-green-text mb-2 font-extrabold tracking-tight">62%</div>
+        <div class="fomo-stat gradient-green-text mb-2 font-extrabold tracking-tight">62%</div>
         <h3 class="text-h3 text-fg-1">Unanswered Calls</h3>
         <p class="mt-2 max-w-xs text-sm leading-relaxed text-fg-3">
           Every missed ring is a customer buying from your competitor right now.
@@ -46,7 +46,7 @@
           </span>
         </div>
 
-        <div class="text-stat gradient-green-text mb-2 font-extrabold tracking-tight">80%</div>
+        <div class="fomo-stat gradient-green-text mb-2 font-extrabold tracking-tight">80%</div>
         <h3 class="text-h3 text-fg-1">Instant Lead Decay</h3>
         <p class="mt-2 max-w-xs text-sm leading-relaxed text-fg-3">
           Wait more than 5 minutes to reply, and the lead is already gone forever.
@@ -63,7 +63,7 @@
           </span>
         </div>
 
-        <div class="text-stat gradient-green-text mb-2 font-extrabold tracking-tight">$8,000+</div>
+        <div class="fomo-stat gradient-green-text mb-2 font-extrabold tracking-tight">$8,000+</div>
         <h3 class="text-h3 text-fg-1">Lost Monthly Pipeline</h3>
         <p class="mt-2 max-w-xs text-sm leading-relaxed text-fg-3">
           On average, every business bleeds $8K+ a month by relying on voicemail.
@@ -72,3 +72,13 @@
     </div>
   </div>
 </section>
+
+<style>
+	/* Stat numbers: one size for all three, clamped so the widest figure
+	   ($8,000+) fits the narrowest 3-up card (exactly 768px, ~160px of
+	   content) with slack, without clipping. */
+	.fomo-stat {
+		font-size: clamp(2rem, 1.35rem + 1.75vw, 3.25rem);
+		line-height: 1;
+	}
+</style>

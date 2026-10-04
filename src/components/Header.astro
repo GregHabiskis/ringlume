@@ -11,6 +11,18 @@ const navLinks = [
 const path = Astro.url.pathname.replace(/\/+$/, '') || '/'
 const isCurrent = (href: string) =>
   href.includes('#') ? false : (href.replace(/\/+$/, '') || '/') === path
+// Landing page: the hero is section one, so Home ships with
+// aria-current="location" and the scroll-spy script moves it from there.
+// Every other route keeps the static exact-path "page" marker.
+const isIndex = path === '/'
+const currentAttr = (href: string) =>
+  isIndex
+    ? href === '/'
+      ? 'location'
+      : undefined
+    : isCurrent(href)
+      ? 'page'
+      : undefined
 ---
 
 <header
@@ -18,6 +30,7 @@ const isCurrent = (href: string) =>
 >
   <nav
     data-nav
+    data-spy={isIndex || undefined}
     class="nav-pill glass glass-regular grain refract pointer-events-auto relative mx-auto flex h-14 max-w-7xl items-center justify-between rounded-full px-4 sm:px-5 lg:h-16 lg:px-6"
     aria-label="Main"
   >
@@ -46,7 +59,7 @@ const isCurrent = (href: string) =>
         <a
           href={link.href}
           data-nav-link
-          aria-current={isCurrent(link.href) ? 'page' : undefined}
+          aria-current={currentAttr(link.href)}
           class="relative whitespace-nowrap rounded-full px-2.5 py-2 text-[13px] font-medium text-fg-2 transition-colors duration-200 hover:text-fg-1 lg:px-3.5 lg:text-sm"
         >
           {link.label}
@@ -92,7 +105,8 @@ const isCurrent = (href: string) =>
     {navLinks.map((link) => (
       <a
         href={link.href}
-        aria-current={isCurrent(link.href) ? 'page' : undefined}
+        data-nav-link
+        aria-current={currentAttr(link.href)}
         class="rounded-2xl px-4 py-3 text-sm font-medium text-fg-2 transition-colors duration-200 hover:bg-white/10 hover:text-fg-1"
       >
         {link.label}
@@ -265,7 +279,7 @@ const isCurrent = (href: string) =>
     : []
 
   function currentLink() {
-    return links.find((link) => link.getAttribute('aria-current') === 'page')
+    return links.find((link) => link.hasAttribute('aria-current'))
   }
 
   let shown: HTMLAnchorElement | undefined
@@ -302,5 +316,113 @@ const isCurrent = (href: string) =>
   document.fonts?.ready.then(rest)
   if (linksBox && 'ResizeObserver' in window) {
     new ResizeObserver(rest).observe(linksBox)
+  }
+
+  // Scroll-spy (index only, signalled by data-spy on the nav): ONE
+  // IntersectionObserver maps section position on the page to the active
+  // link. DOM order and nav order differ — Demo sits before Pricing and
+  // FAQ on the page but after them in the nav — so the mapping is an
+  // explicit table, not a walk of the nav. Bands without a link (the
+  // FOMO strip) keep the previous active link.
+  if (nav?.hasAttribute('data-spy')) {
+    const allLinks = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'),
+    )
+    const sections: [selector: string, href: string][] = [
+      ['main > section:first-child', '/'], // hero → Home
+      ['#capabilities', '/#capabilities'],
+      ['#demo', '/#demo'],
+      ['#pricing', '/#pricing'],
+      ['#faq', '/faq'],
+      ['#contact', '/contact'],
+    ]
+    const pairs = sections.flatMap(([selector, href]) => {
+      const el = document.querySelector<HTMLElement>(selector)
+      return el && allLinks.some((l) => l.getAttribute('href') === href)
+        ? [{ el, href }]
+        : []
+    })
+
+    let activeHref: string | null = null
+    let locked = false
+    let lockTimer = 0
+
+    function applyActive(href: string) {
+      if (href === activeHref) return
+      activeHref = href
+      for (const link of allLinks) {
+        if (link.getAttribute('href') === href)
+          link.setAttribute('aria-current', 'location')
+        else link.removeAttribute('aria-current')
+      }
+      // The indicator follows the active link; it lives inside
+      // [data-nav-links], so it can never land on the logo.
+      moveTo(links.find((l) => l.getAttribute('href') === href))
+    }
+
+    // Active = the section covering the upper-third line of the viewport
+    // (34% — exactly where the observer's rootMargin band ends). The
+    // sticky-header clearance (-80px) prunes sections that are already
+    // fully above the band. Sections never overlap, so the first match
+    // is the only match; no observed section on the line (e.g. the FOMO
+    // strip) means null: keep the previous active link.
+    function pick(): string | null {
+      const line = window.innerHeight * 0.34
+      for (const { el, href } of pairs) {
+        const r = el.getBoundingClientRect()
+        if (r.top < line && r.bottom > line) return href
+      }
+      return null
+    }
+
+    function sync() {
+      if (locked) return
+      const href = pick()
+      if (href !== null) applyActive(href)
+    }
+
+    // Synchronous state at script run: adopt the server-rendered marker
+    // first, then reconcile immediately (covers restored scroll).
+    activeHref =
+      document
+        .querySelector('[data-nav-link][aria-current]')
+        ?.getAttribute('href') ?? null
+    sync()
+
+    const observer = new IntersectionObserver(sync, {
+      rootMargin: '-80px 0px -66% 0px',
+    })
+    for (const { el } of pairs) observer.observe(el)
+
+    // A click marks the target right away and locks the spy so smooth
+    // scrolling cannot flicker the pill through intermediate sections.
+    // scrollend clears the lock; the timer is the fallback where
+    // scrollend is missing or a same-URL navigation never scrolls.
+    const unlock = () => {
+      locked = false
+    }
+    if ('onscrollend' in window) window.addEventListener('scrollend', unlock)
+    for (const link of allLinks) {
+      link.addEventListener('click', () => {
+        const href = link.getAttribute('href')
+        if (href) {
+          applyActive(href)
+          locked = true
+          clearTimeout(lockTimer)
+          lockTimer = window.setTimeout(unlock, 2000)
+        }
+      })
+    }
+    // Any other in-page anchor (Get Started, hero CTAs) freezes the spy
+    // during its scroll too — no flicker through intermediate sections.
+    document.addEventListener('click', (event) => {
+      const target = event.target as Element | null
+      const href = target?.closest?.('a')?.getAttribute('href')
+      if (href && href.startsWith('/#')) {
+        locked = true
+        clearTimeout(lockTimer)
+        lockTimer = window.setTimeout(unlock, 2000)
+      }
+    })
   }
 </script>

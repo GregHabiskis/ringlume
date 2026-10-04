@@ -42,7 +42,7 @@ const iconPaths: Record<CapabilityKind, string> = {
 	<div class="relative z-10 flex h-full flex-col">
 		<div class="mb-5 flex items-center justify-between">
 			<div
-				class="capability-icon flex h-10 w-10 items-center justify-center rounded-xl border border-line bg-fg-1/[0.05] text-brand-text"
+				class="capability-icon flex h-10 w-10 items-center justify-center rounded-xl border border-line bg-black/30 text-brand-text"
 			>
 				<svg
 					class="h-5 w-5"
@@ -71,13 +71,13 @@ const iconPaths: Record<CapabilityKind, string> = {
 
 		{kind === 'call' && (
 			<div
-				class="call-panel relative mt-8 rounded-2xl border border-line bg-fg-1/[0.06] p-5 sm:mt-auto sm:p-6"
+				class="call-panel relative mt-8 rounded-2xl border border-line bg-black/30 p-5 sm:mt-auto sm:p-6"
 				role="img"
 				aria-label="Incoming call from a new customer, answered by Ringlume's virtual receptionist in 1.2 seconds"
 			>
 				<div class="flex items-center justify-between gap-4">
 					<div class="flex min-w-0 items-center gap-3">
-						<div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-fg-1/10 text-sm font-bold text-fg-1">NC</div>
+						<div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/40 text-sm font-bold text-fg-1">NC</div>
 						<div class="min-w-0">
 							<p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-text">Incoming call</p>
 							<p class="mt-1 truncate text-sm font-semibold text-fg-1">New customer</p>
@@ -102,7 +102,7 @@ const iconPaths: Record<CapabilityKind, string> = {
 
 		{kind === 'booking' && (
 			<div class="mt-auto pt-7" aria-label="Appointment booking confirmation">
-				<div class="rounded-2xl border border-line bg-fg-1/[0.06] p-4">
+				<div class="rounded-2xl border border-line bg-black/30 p-4">
 					<div class="flex items-center gap-3">
 						<div class="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-brand/10 text-brand-text">
 							<span class="text-[9px] font-bold uppercase">Tue</span>
@@ -122,25 +122,25 @@ const iconPaths: Record<CapabilityKind, string> = {
 
 		{kind === 'follow-up' && (
 			<ol class="mt-auto flex flex-wrap items-center gap-2 pt-7 text-xs" aria-label="After-call follow-up steps">
-				<li class="rounded-lg border border-line bg-fg-1/[0.06] px-3 py-2 text-fg-2">Form submitted</li>
+				<li class="rounded-lg border border-line bg-black/30 px-3 py-2 text-fg-2">Form submitted</li>
 				<li class="text-brand" aria-hidden="true">&rarr;</li>
 				<li class="rounded-lg border border-brand/25 bg-brand/10 px-3 py-2 text-brand-text">Ringlume calls</li>
 				<li class="text-brand" aria-hidden="true">&rarr;</li>
-				<li class="rounded-lg border border-line bg-fg-1/[0.06] px-3 py-2 text-fg-2">Appointment confirmed</li>
+				<li class="rounded-lg border border-line bg-black/30 px-3 py-2 text-fg-2">Appointment confirmed</li>
 			</ol>
 		)}
 
 		{kind === 'knowledge' && (
 			<ul class="mt-auto flex flex-wrap gap-2 pt-7" aria-label="Business information sources">
 				{['Website', 'Pricing', 'FAQs', 'Services'].map((source) => (
-					<li class="rounded-full border border-line bg-fg-1/[0.05] px-3 py-1.5 text-xs font-medium text-fg-3">{source}</li>
+					<li class="rounded-full border border-line bg-black/30 px-3 py-1.5 text-xs font-medium text-fg-3">{source}</li>
 				))}
 			</ul>
 		)}
 
 		{kind === 'handoff' && (
 			<div class="mt-auto pt-7" aria-label="Call transfer in progress">
-				<div class="flex items-center gap-3 rounded-xl border border-line bg-fg-1/[0.06] p-3.5">
+				<div class="flex items-center gap-3 rounded-xl border border-line bg-black/30 p-3.5">
 					<span class="status-pulse h-2 w-2 shrink-0 rounded-full bg-brand"></span>
 					<div class="min-w-0">
 						<p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-3">Live transfer</p>
@@ -153,7 +153,7 @@ const iconPaths: Record<CapabilityKind, string> = {
 		{kind === 'reporting' && (
 			<ul class="mt-auto space-y-2 pt-7" aria-label="After-call updates">
 				{['Written record ready', 'Customer record updated', 'Multilingual'].map((status) => (
-					<li class="flex items-center justify-between rounded-lg border border-line bg-fg-1/[0.06] px-3 py-2 text-xs text-fg-3">
+					<li class="flex items-center justify-between rounded-lg border border-line bg-black/30 px-3 py-2 text-xs text-fg-3">
 						<span>{status}</span>
 						<svg class="h-4 w-4 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />

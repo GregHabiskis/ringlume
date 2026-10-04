@@ -107,7 +107,7 @@ const currentAttr = (href: string) =>
         href={link.href}
         data-nav-link
         aria-current={currentAttr(link.href)}
-        class="rounded-2xl px-4 py-3 text-sm font-medium text-fg-2 transition-colors duration-200 hover:bg-white/10 hover:text-fg-1"
+        class="rounded-2xl px-4 py-3 text-sm font-medium text-fg-2 transition-colors duration-200 hover:bg-white/[0.06] hover:text-fg-1"
       >
         {link.label}
       </a>
@@ -120,7 +120,7 @@ const currentAttr = (href: string) =>
 
 <style>
   .nav-pill {
-    --glass-fill: rgba(255, 255, 255, 0.1);
+    --glass-fill: rgba(13, 17, 26, 0.72);
     transition:
       height var(--dur-mid) var(--ease-spring),
       box-shadow var(--dur-mid) var(--ease-spring),

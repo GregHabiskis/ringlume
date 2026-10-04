@@ -21,7 +21,7 @@ const tryAsking = [
 		>
 			<div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div class="mx-auto max-w-3xl text-center">
-					<p class="mb-5 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[11px] font-bold tracking-[0.2em] text-white uppercase">
+					<p class="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/40 px-4 py-1.5 text-[11px] font-bold tracking-[0.2em] text-white uppercase">
 						<span
 							class="h-1.5 w-1.5 animate-pulse rounded-full bg-white"
 							aria-hidden="true"
@@ -42,7 +42,7 @@ const tryAsking = [
 					<button
 						type="button"
 						data-demo-open
-						class="inline-flex items-center gap-3 rounded-full border border-white/30 bg-[#181a1d] px-8 py-4 text-base font-semibold text-white transition-all hover:border-white/50 hover:bg-[#24272b] disabled:opacity-60"
+						class="inline-flex items-center gap-3 rounded-full border border-white/20 bg-[#111419] px-8 py-4 text-base font-semibold text-white transition-all hover:border-white/35 hover:bg-[#1a1e24] disabled:opacity-60"
 					>
 						<svg
 							class="h-5 w-5 shrink-0"
@@ -79,7 +79,7 @@ const tryAsking = [
 						/>
 						{tryAsking.map((prompt) => (
 							<span
-								class="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm text-white/90"
+								class="rounded-full border border-white/15 bg-black/40 px-4 py-2 text-sm text-white/90"
 								set:text={prompt}
 							/>
 						))}
@@ -180,14 +180,14 @@ const tryAsking = [
 			   Retell's surface was a white shell inside a navy rim, so the
 			   rim carries the material and the inner shell goes transparent
 			   (single fill layer = same composite as the cards). */
-			'[class*="_window_"] { background: rgba(255, 255, 255, 0.08) !important; box-shadow: inset 1px 1px 0 0 var(--glass-edge-hi), inset -1px -1px 0 0 var(--glass-edge-lo), inset 0 1px 0 var(--glass-specular), var(--shadow-contact) !important; }',
+			'[class*="_window_"] { background: rgba(13, 17, 26, 0.72) !important; box-shadow: inset 1px 1px 0 0 var(--glass-edge-hi), inset -1px -1px 0 0 var(--glass-edge-lo), inset 0 1px 0 var(--glass-specular), var(--shadow-contact) !important; }',
 			'[class*="_innerShell_"] { background: transparent !important; }',
 			/* Surface controls on the dark card. */
 			'[class*="_voiceTimer_"] { color: var(--fg-3) !important; }',
-			'[class*="_closeButton_"] { background: rgba(255, 255, 255, 0.08) !important; color: var(--fg-2) !important; }',
-			'[class*="_closeButton_"]:hover { background: rgba(255, 255, 255, 0.14) !important; color: var(--fg-1) !important; }',
+			'[class*="_closeButton_"] { background: rgba(13, 17, 26, 0.6) !important; color: var(--fg-2) !important; }',
+			'[class*="_closeButton_"]:hover { background: rgba(18, 23, 34, 0.75) !important; color: var(--fg-1) !important; }',
 			/* Start-to-call mirrors the site's primary CTA (.btn-primary). */
-			'[class*="_startCallButton_"] { background: var(--grad-cta) !important; color: var(--fg-1) !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -8px 16px -12px rgba(2, 20, 12, 0.55), var(--glow-brand), var(--shadow-contact) !important; }',
+			'[class*="_startCallButton_"] { background: var(--grad-cta) !important; color: var(--fg-1) !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -8px 16px -12px rgba(2, 20, 12, 0.55), var(--glow-brand), var(--shadow-contact) !important; }',
 			/* Any chat-variant text shares the dark shell, so swap Retell's
 			   navy-on-white palette for the site's foreground tokens. */
 			'[class*="_brandText_"], [class*="_title_"] { color: var(--fg-1) !important; }',

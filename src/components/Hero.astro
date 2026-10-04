@@ -92,15 +92,6 @@ const retell = getRetellConfig()
     transform: translateY(-100%);
   }
 
-  /* The glass edge gradient is painted border-box and shows through the
-     translucent fill; over the narrow strip that washes the whole panel
-     light gray (worst pixel ~L0.27) and sinks the stat text below AA.
-     Smoke the fill dark so only the 1px rim and the blurred backdrop
-     read through, keeping the worst interior pixel near L0.02. */
-  .glass.stat-strip {
-    --glass-fill: rgba(8, 11, 18, 0.78);
-  }
-
   /* Stat strip: two columns, one fading hairline between them */
   .stat-number {
     font-size: clamp(1.5rem, 4vw + 0.6rem, 2rem);

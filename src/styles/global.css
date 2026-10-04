@@ -258,19 +258,23 @@
 /* ------------------------------------------------------------
    Glass material system
    .glass + one tier: .glass-thin | .glass-regular | .glass-thick
-   Recipe: translucent fill + gradient edge + backdrop blur +
+   Recipe: translucent fill + 1px diagonal edge rim + backdrop blur +
    inset specular + contact/diffuse shadow stack.
    ------------------------------------------------------------ */
 
+/* The edge sheen lives on the 1px rim only, as a diagonal inset ring
+   (bright top/left, fading bottom/right). The old recipe painted a
+   border-box gradient across the whole face, which showed through the
+   translucent fill and washed every panel light gray; the face is now
+   the fill alone, so it stays uniformly dark. */
 .glass {
 	border: 1px solid transparent;
-	background:
-		linear-gradient(var(--glass-fill), var(--glass-fill)) padding-box,
-		linear-gradient(135deg, var(--glass-edge-hi), var(--glass-edge-lo) 55%)
-			border-box;
+	background: var(--glass-fill);
 	-webkit-backdrop-filter: var(--glass-filter);
 	backdrop-filter: var(--glass-filter);
 	box-shadow:
+		inset 1px 1px 0 0 var(--glass-edge-hi),
+		inset -1px -1px 0 0 var(--glass-edge-lo),
 		inset 0 1px 0 var(--glass-specular),
 		inset 0 0 24px -12px var(--glass-inner),
 		var(--shadow-contact),
@@ -302,13 +306,25 @@
 	border: 1px solid transparent;
 	-webkit-backdrop-filter: none;
 	backdrop-filter: none;
-	background:
-		linear-gradient(var(--glass-fill-2), var(--glass-fill-2)) padding-box,
-		linear-gradient(135deg, var(--glass-edge-hi), var(--glass-edge-lo)) border-box;
+	background: var(--glass-fill-2);
 	box-shadow:
+		inset 1px 1px 0 0 var(--glass-edge-hi),
+		inset -1px -1px 0 0 var(--glass-edge-lo),
 		inset 0 1px 0 var(--glass-specular),
 		var(--shadow-contact);
 	isolation: isolate;
+}
+
+/* Tailwind's `shadow-lift` utility would replace the whole shadow
+   stack (rim included); this lifts on hover while keeping the rim. */
+.lift-hover:hover {
+	box-shadow:
+		inset 1px 1px 0 0 var(--glass-edge-hi),
+		inset -1px -1px 0 0 var(--glass-edge-lo),
+		inset 0 1px 0 var(--glass-specular),
+		inset 0 0 24px -12px var(--glass-inner),
+		var(--shadow-contact),
+		var(--shadow-lift);
 }
 
 .glass-fill,
@@ -368,8 +384,7 @@
 		--glass-fill: rgba(8, 11, 18, 0.94);
 		--glass-fill-2: rgba(8, 11, 18, 0.94);
 		--glass-filter: none;
-		--glass-edge-hi: rgba(255, 255, 255, 0.7);
-		--glass-edge-lo: rgba(255, 255, 255, 0.2);
+		/* No rim ring here: the solid hairline below is the edge. */
 		box-shadow:
 			inset 0 0 0 1px var(--line-strong),
 			var(--shadow-contact);
@@ -474,19 +489,20 @@
 	transform: translateX(130%);
 }
 
+/* Edge keeps its 3:1 contrast on all four sides, but as the same 1px
+   diagonal inset rim as .glass: the border-box gradient it replaced
+   washed the whole button face light gray. */
 .btn-secondary {
 	color: var(--fg-1);
 	--glass-fill: rgba(255, 255, 255, 0.07);
-	/* Edge must clear 3:1 against the scene outside on all four sides;
-	   the gradient's 55% stop sits on the bottom/right, so lo needs
-	   enough alpha to keep those edges legible too. */
 	--glass-edge-hi: rgba(255, 255, 255, 0.78);
 	--glass-edge-lo: rgba(255, 255, 255, 0.4);
 	border: 1px solid transparent;
-	background:
-		linear-gradient(var(--glass-fill), var(--glass-fill)) padding-box,
-		linear-gradient(135deg, var(--glass-edge-hi), var(--glass-edge-lo) 55%) border-box;
-	box-shadow: var(--shadow-contact);
+	background: var(--glass-fill);
+	box-shadow:
+		inset 1px 1px 0 0 var(--glass-edge-hi),
+		inset -1px -1px 0 0 var(--glass-edge-lo),
+		var(--shadow-contact);
 }
 
 .btn-secondary:hover {
@@ -559,6 +575,8 @@
 .pricing-card-popular {
 	border-color: color-mix(in srgb, var(--brand) 55%, transparent);
 	box-shadow:
+		inset 1px 1px 0 0 var(--glass-edge-hi),
+		inset -1px -1px 0 0 var(--glass-edge-lo),
 		inset 0 1px 0 var(--glass-specular),
 		var(--shadow-contact),
 		var(--glow-brand);
@@ -577,7 +595,7 @@
 /* 2.1: pricing secondary CTAs get a near-black navy translucent fill so
    they read as buttons inside the glass cards. No backdrop-filter
    (glass-inside-glass is banned); the fill lets the card show through.
-   The 1px border comes from .btn-secondary's gradient edge, unchanged. */
+   The 1px rim comes from .btn-secondary's inset edge ring. */
 .pricing-card .btn-secondary {
 	--glass-fill: rgba(9, 15, 29, 0.47);
 }

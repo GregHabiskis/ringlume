@@ -87,8 +87,10 @@ const currentYear = new Date().getFullYear()
           </ul>
         </div>
 
-        <!-- Contact Us Column -->
-        <div>
+        <!-- Contact Us Column. min-w-0 + wrap-anywhere: the grid/flex
+             children must be able to shrink so the long email wraps
+             instead of widening the column past the panel edge. -->
+        <div class="min-w-0">
           <h3 class="mb-4 font-semibold text-fg-1">Contact Us</h3>
           <ul class="space-y-4">
             <li>
@@ -107,7 +109,7 @@ const currentYear = new Date().getFullYear()
                     ></path>
                   </svg>
                 </span>
-                <span>+8801951-284128</span>
+                <span class="min-w-0 wrap-anywhere">+8801951-284128</span>
               </a>
             </li>
             <li>
@@ -126,7 +128,7 @@ const currentYear = new Date().getFullYear()
                     ></path>
                   </svg>
                 </span>
-                <span>@fshahariar</span>
+                <span class="min-w-0 wrap-anywhere">@fshahariar</span>
               </a>
             </li>
             <li>
@@ -146,7 +148,7 @@ const currentYear = new Date().getFullYear()
                     ></path>
                   </svg>
                 </span>
-                <span>support@ringlume.com</span>
+                <span class="min-w-0 wrap-anywhere">support<wbr />@ringlume.com</span>
               </a>
             </li>
           </ul>

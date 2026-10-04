@@ -14,11 +14,14 @@ const currentYear = new Date().getFullYear()
           <a href="/" class="group mb-6 inline-block">
             <div class="transition-transform duration-300 group-hover:scale-105">
               <picture>
-                <source srcset="/images/logo-320.webp" type="image/webp" />
+                <!-- logo-320-trimmed: same artwork with the 28px of transparent
+                     left padding cropped off so the logo sits flush with the
+                     column text (h-14 keeps the visible size unchanged). -->
+                <source srcset="/images/logo-320-trimmed.webp" type="image/webp" />
                 <img
-                  src="/images/logo-320.png"
+                  src="/images/logo-320-trimmed.png"
                   alt="Ringlume"
-                  width="320"
+                  width="292"
                   height="128"
                   class="h-14 w-auto"
                   loading="lazy"

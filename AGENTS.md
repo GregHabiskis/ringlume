@@ -198,7 +198,10 @@ Mobile PageSpeed (LCP, FCP, CLS, INP, TBT) is a first-class concern.
 - Prefer `public/images/*` optimized assets over the full-size source PNG.
 - Current logos:
   - Header: `/images/logo-240.webp` (+ `.png` fallback), 240×96
-  - Footer: `/images/logo-320.webp` (+ `.png` fallback), 320×128
+  - Footer: `/images/logo-320-trimmed.webp` (+ `.png` fallback), 292×128
+    (trimmed copy of `logo-320`: the original's 28px transparent left padding
+    is cropped off so the logo renders flush with the column text; keep the
+    originals for reference)
 - Always set explicit `width` and `height`.
 - Above-fold: `fetchpriority="high"`, `decoding="async"`.
 - Below-fold: `loading="lazy"`, `decoding="async"`.

@@ -398,10 +398,108 @@ const currentAttr = (href: string) =>
     // scrolling cannot flicker the pill through intermediate sections.
     // scrollend clears the lock; the timer is the fallback where
     // scrollend is missing or a same-URL navigation never scrolls.
+    //
+    // Anchor landing: a native fragment scroll resolves its destination
+    // ONCE, from the layout as it is at click time. Below-the-fold
+    // sections are still content-visibility placeholders then; when they
+    // render mid-flight the target moves and the scroll stops a section
+    // or two short (Pricing landing on Features / Try a Demo). So every
+    // in-page anchor click is tracked and the scroll is re-issued from
+    // live layout until the target really sits under the header. Manual
+    // scrolling (wheel / touch / scroll keys) abandons the correction
+    // immediately, and an 8s deadline guarantees the scroll ends.
+    let pendingEl: HTMLElement | null = null
+    let pendingTimer = 0
+    let pendingDeadline = 0
+
+    const anchorHash = (href: string | null): string | null => {
+      if (!href) return null
+      if (href.startsWith('/#') && href.length > 2) return href.slice(1)
+      if (href.startsWith('#') && href.length > 1) return href
+      return null
+    }
+
+    const targetY = (el: HTMLElement): number => {
+      const offset = parseFloat(getComputedStyle(el).scrollMarginTop) || 0
+      return Math.max(
+        0,
+        Math.round(el.getBoundingClientRect().top + window.scrollY - offset),
+      )
+    }
+
+    const endPending = () => {
+      clearTimeout(pendingTimer)
+      pendingEl = null
+      locked = false
+      sync()
+    }
+
+    const settleAnchor = () => {
+      const el = pendingEl
+      if (!el || !el.isConnected) {
+        endPending()
+        return
+      }
+      const y = targetY(el)
+      const diff = Math.abs(window.scrollY - y)
+      if (diff <= 3) {
+        endPending()
+        return
+      }
+      if (Date.now() >= pendingDeadline) {
+        window.scrollTo({ top: y, behavior: 'instant' })
+        endPending()
+        return
+      }
+      const reduced = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+      ).matches
+      window.scrollTo({ top: y, behavior: reduced ? 'instant' : 'smooth' })
+      clearTimeout(pendingTimer)
+      pendingTimer = window.setTimeout(settleAnchor, 2500)
+    }
+
+    const armAnchor = (el: HTMLElement) => {
+      pendingEl = el
+      pendingDeadline = Date.now() + 8000
+      clearTimeout(pendingTimer)
+      pendingTimer = window.setTimeout(settleAnchor, 3500)
+    }
+
+    const abandonAnchor = () => {
+      if (!pendingEl) return
+      clearTimeout(pendingTimer)
+      pendingEl = null
+      locked = false
+      sync()
+    }
+
     const unlock = () => {
+      if (pendingEl) return // anchor still settling: keep the pill frozen
       locked = false
     }
-    if ('onscrollend' in window) window.addEventListener('scrollend', unlock)
+    if ('onscrollend' in window)
+      window.addEventListener('scrollend', () => {
+        if (pendingEl) settleAnchor()
+        else locked = false
+      })
+    window.addEventListener('wheel', abandonAnchor, { passive: true })
+    window.addEventListener('touchmove', abandonAnchor, { passive: true })
+    window.addEventListener('keydown', (event) => {
+      if (
+        [
+          'ArrowUp',
+          'ArrowDown',
+          'PageUp',
+          'PageDown',
+          'Home',
+          'End',
+          ' ',
+          'Spacebar',
+        ].includes(event.key)
+      )
+        abandonAnchor()
+    })
     for (const link of allLinks) {
       link.addEventListener('click', () => {
         const href = link.getAttribute('href')
@@ -414,15 +512,19 @@ const currentAttr = (href: string) =>
       })
     }
     // Any other in-page anchor (Get Started, hero CTAs) freezes the spy
-    // during its scroll too — no flicker through intermediate sections.
+    // during its scroll too — no flicker through intermediate sections —
+    // and gets the same landing correction as the nav links.
     document.addEventListener('click', (event) => {
       const target = event.target as Element | null
-      const href = target?.closest?.('a')?.getAttribute('href')
-      if (href && href.startsWith('/#')) {
-        locked = true
-        clearTimeout(lockTimer)
-        lockTimer = window.setTimeout(unlock, 2000)
-      }
+      const hash = anchorHash(
+        target?.closest?.('a')?.getAttribute('href') ?? null,
+      )
+      if (!hash) return
+      locked = true
+      clearTimeout(lockTimer)
+      lockTimer = window.setTimeout(unlock, 2000)
+      const el = document.querySelector<HTMLElement>(hash)
+      if (el) armAnchor(el)
     })
   }
 </script>

@@ -20,8 +20,8 @@
 	},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.10",
-		"@astrojs/netlify": "^8.1.2",
-		"@tailwindcss/vite": "^4.3.2",
-		"vitest": "^4.1.10"
+		"@astrojs/netlify": "^8.2.6",
+		"@tailwindcss/vite": "^4.3.3",
+		"vitest": "^5.0.3"
 	}
 }

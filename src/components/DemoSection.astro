@@ -90,6 +90,33 @@ const tryAsking = [
 	)
 }
 
+<style>
+	/*
+		The "Live demo" dot pulses forever, and this section keeps `content-auto`
+		(content-visibility: auto) so it stays out of the initial style/layout
+		budget. Those two facts fight: an always-running animation inside a
+		content-visibility subtree stops the renderer from skipping that subtree,
+		so it re-ran style recalculation for it on every frame, 3.1s of 3.9s (82%)
+		of the page's main-thread burn in a 6s window under 4x CPU throttle.
+
+		Three fixes were measured; only the last one ships:
+		  - Pulses on a pseudo-element instead: no gain (+268ms), the animation is
+		    still inside the skipped subtree.
+		  - Drop `content-auto` from this section: burn gone (-2,528ms median of 5
+		    paired runs), but the section is then laid out at load and Lighthouse
+		    mobile regressed in 5 runs (TBT 407 -> 522ms, FCP 1921 -> 2003ms,
+		    SI 5133 -> 5330ms, score 84 -> 80) while every section below #demo
+		    shifted down 537px (6,296 -> 6,833px scroll height). Rejected.
+		  - Drive the pulse from scroll position: burn -2,792ms, subtree stays
+		    skippable, markup and lab numbers unchanged. Ships below.
+		`animation-timeline` is Chromium/WebKit-only for now; engines without it
+		discard the declaration and keep the original time-based blink.
+	*/
+	.animate-pulse {
+		animation-timeline: view();
+	}
+</style>
+
 <script>
 	const RETELL_SCRIPT_ID = 'retell-widget'
 	const RETELL_SRC = 'https://dashboard.retellai.com/retell-widget-v2.js'

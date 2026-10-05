@@ -341,7 +341,7 @@ Keep contact channels consistent across Footer, CtaSection, Contact page, and wi
 
 ### Don't
 
-- Add Storyblok / CMS scaffolding from the stale README without being asked.
+- Add Storyblok / CMS scaffolding without being asked.
 - Switch package managers.
 - Introduce Google Fonts or other render-blocking third-party CSS.
 - Add analytics or heatmaps without explicit request (TBT/privacy impact).
@@ -360,10 +360,8 @@ Keep contact channels consistent across Footer, CtaSection, Contact page, and wi
 
 | Setting           | Value            |
 | ----------------- | ---------------- |
-| Setting           | Value            |
-| ---------         | --------         |
 | Platform          | Netlify          |
-| Build command     | `pnpm run build` |
+| Build command     | `pnpm build`     |
 | Publish directory | `dist`           |
 | Node version      | `22`             |
 
@@ -408,9 +406,8 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 
 1. **`package.json` name** is still `all-in-one-system` — cosmetic; not a monorepo.
 2. **`public/Ringlume-Logo-No-Background.png`** is large; UI must use `/images/logo-*` variants.
-3. **`site.webmanifest`** has empty `name` / `short_name` — fix if shipping PWA polish.
-4. **Unicode-range minify bug** — see Typography section.
-5. **No browser automation** — visual/regression checks are manual + production PSI.
+3. **Unicode-range minify bug** — see Typography section.
+4. **No browser automation** — visual/regression checks are manual + production PSI.
 
 ---
 

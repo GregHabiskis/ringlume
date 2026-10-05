@@ -1,26 +1,27 @@
-# Ringlume — Virtual Receptionist
+# Ringlume
 
-Astro marketing site for Ringlume's virtual receptionist service.
+Static marketing site for Ringlume, a Voice AI receptionist product.
 
-| Stack           |                                |
-| --------------- | ------------------------------ |
-| Framework       | **Astro 7** (static pages)      |
-| Styling         | **Tailwind CSS v4**             |
-| Package manager | **pnpm**                        |
-| Hosting         | **Netlify**                     |
+- **Framework:** Astro 7 (fully static pages)
+- **Styling:** Tailwind CSS v4
+- **Package manager:** pnpm
+- **Hosting:** Netlify
+- **No CMS, no database, no payment integration:** plan CTAs link to a sales
+  meeting instead of a checkout
+
+## Quick commands
 
 ```sh
-pnpm install
-pnpm dev       # http://localhost:4321
-pnpm build     # static build → dist/
-pnpm preview   # serve dist/
-pnpm test      # Vitest unit and integration tests
+pnpm install    # install deps
+pnpm dev        # http://localhost:4321
+pnpm build      # static build → dist/
+pnpm preview    # serve dist/
 ```
 
-## Sales
+## Deploy
 
-The four plan CTAs in the `#pricing` section link to
-https://cal.com/ringlume/meeting. There is no payment or checkout integration
-in this repository.
+Netlify builds from Git on every push: build command `pnpm build`, publish
+directory `dist`, Node 22. Build settings and the cache/security headers live
+in `netlify.toml`.
 
-See `AGENTS.md` for the design system and repository conventions.
+See `AGENTS.md` for design system and repository conventions.

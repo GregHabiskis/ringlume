@@ -37,8 +37,6 @@ const iconPaths: Record<CapabilityKind, string> = {
 	style={`--reveal-delay: ${index * 65}ms`}
 	data-capability-card
 >
-	{kind === 'call' && <div class="primary-glow" aria-hidden="true"></div>}
-
 	<div class="relative z-10 flex h-full flex-col">
 		<div class="mb-5 flex items-center justify-between">
 			<div
@@ -213,17 +211,6 @@ const iconPaths: Record<CapabilityKind, string> = {
 
 	.capability-card.reveal-visible:hover {
 		transform: translateY(-3px);
-	}
-
-	.primary-glow {
-		position: absolute;
-		right: -8rem;
-		bottom: -9rem;
-		width: 24rem;
-		height: 24rem;
-		border-radius: 9999px;
-		background: radial-gradient(circle, rgba(76, 217, 100, 0.13), transparent 68%);
-		pointer-events: none;
 	}
 
 	.call-panel {

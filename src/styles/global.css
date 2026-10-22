@@ -581,8 +581,7 @@
 		inset 1px 1px 0 0 var(--glass-edge-hi),
 		inset -1px -1px 0 0 var(--glass-edge-lo),
 		inset 0 1px 0 var(--glass-specular),
-		var(--shadow-contact),
-		var(--glow-brand);
+		var(--shadow-contact);
 }
 
 /* Billing toggle: script toggles these two classes */

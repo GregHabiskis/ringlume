@@ -1,0 +1,1003 @@
+---
+import {
+	MISSED_CALL_DEFAULTS,
+	MISSED_CALL_LIMITS,
+	buildAssumptionSummary,
+	calculateMissedCallRevenue,
+	formatBookings,
+	formatCurrency,
+	formatInputValue,
+	formatPercent,
+	formatRepeatVisits,
+	percentOfRange,
+} from '../lib/missed-calls-calc'
+
+const defaults = MISSED_CALL_DEFAULTS
+const limits = MISSED_CALL_LIMITS
+const result = calculateMissedCallRevenue(defaults)
+const helper = buildAssumptionSummary(defaults.bookRate, defaults.repeatVisits)
+
+const missedPercent = percentOfRange(
+	'missedCallsPerWeek',
+	defaults.missedCallsPerWeek,
+)
+const bookRatePercent = percentOfRange('bookRate', defaults.bookRate)
+const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
+---
+
+<div
+	class="glass glass-regular grain reveal mx-auto max-w-4xl rounded-3xl p-4 sm:p-6 md:p-8"
+	data-missed-calculator
+	role="group"
+	aria-label="Missed revenue calculator"
+>
+	<div class="grid gap-4 sm:gap-6 md:grid-cols-2 md:gap-0">
+		<div
+			class="min-w-0 md:col-start-2 md:row-start-1 md:border-l md:border-line md:pl-8"
+		>
+			<div
+				class="calc-output-card glass-fill relative overflow-hidden rounded-2xl border p-4 sm:p-5"
+			>
+				<p class="calc-label">Potential missed revenue</p>
+				<p class="mt-1.5">
+					<span
+						class="calc-annual gradient-green-text"
+						data-calc-annual>{formatCurrency(result.annual)}</span
+					>
+				</p>
+				<p class="calc-caption mt-1">per year</p>
+
+				<div class="mt-5 border-t border-line pt-4">
+					<div class="grid grid-cols-2 gap-4">
+						<div class="min-w-0 overflow-hidden">
+							<p class="calc-mini-label">Monthly</p>
+							<p class="calc-secondary-value mt-1" data-calc-monthly>
+								{formatCurrency(result.monthly)}
+							</p>
+						</div>
+						<div class="min-w-0 overflow-hidden">
+							<p class="calc-mini-label">Bookings</p>
+							<p class="calc-secondary-value mt-1">
+								<span data-calc-bookings
+									>{formatBookings(result.bookingsPerWeek)}</span
+								>
+								<span class="calc-unit">/ week</span>
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<p class="calc-footnote mt-4">
+					Estimate only. Actual recovered revenue depends on call volume, lead
+					quality, scheduling capacity, and more.
+				</p>
+
+				<p
+					class="sr-only"
+					role="status"
+					aria-live="polite"
+					aria-atomic="true"
+					data-calc-status
+				></p>
+			</div>
+		</div>
+
+		<div class="min-w-0 md:col-start-1 md:row-start-1 md:pr-8">
+			<div class="flex flex-col gap-4">
+				<div>
+					<label class="calc-label block" for="calc-booking-value">
+						Average booking value
+					</label>
+					<div
+						class="calc-field mt-2 flex h-11 items-center rounded-full border border-line px-4"
+					>
+						<span class="calc-prefix" aria-hidden="true">$</span>
+						<input
+							id="calc-booking-value"
+							class="calc-text-input ml-1.5 w-full"
+							type="text"
+							inputmode="numeric"
+							enterkeyhint="done"
+							autocomplete="off"
+							spellcheck="false"
+							value={formatInputValue('bookingValue', defaults.bookingValue)}
+							data-calc-field="bookingValue"
+							data-calc-kind="text"
+						/>
+					</div>
+				</div>
+
+				<div class="calc-panel rounded-2xl border border-line p-4">
+					<div class="flex items-center justify-between gap-3">
+						<label
+							id="calc-missed-label"
+							class="calc-label min-w-0 flex-1 leading-snug"
+							for="calc-missed-value"
+						>
+							Missed calls per week
+						</label>
+						<div
+							class="calc-field flex h-11 w-[5.5rem] shrink-0 items-center rounded-full border border-line px-3"
+						>
+							<input
+								id="calc-missed-value"
+								class="calc-text-input calc-text-input--right w-full"
+								type="text"
+								inputmode="numeric"
+								enterkeyhint="done"
+								autocomplete="off"
+								spellcheck="false"
+								value={formatInputValue(
+									'missedCallsPerWeek',
+									defaults.missedCallsPerWeek,
+								)}
+								data-calc-field="missedCallsPerWeek"
+								data-calc-kind="text"
+							/>
+							<span class="calc-suffix ml-1" aria-hidden="true">calls</span>
+						</div>
+					</div>
+
+					<div
+						class="calc-slider-wrap"
+						data-calc-slider-wrap
+						style={`--pct: ${missedPercent}`}
+					>
+						<span class="calc-tooltip" data-calc-tooltip aria-hidden="true">
+							{formatInputValue('missedCallsPerWeek', defaults.missedCallsPerWeek)}
+						</span>
+						<input
+							id="calc-missed-range"
+							class="calc-range"
+							type="range"
+							min={limits.missedCallsPerWeek.min}
+							max={limits.missedCallsPerWeek.max}
+							step={limits.missedCallsPerWeek.step}
+							value={defaults.missedCallsPerWeek}
+							aria-labelledby="calc-missed-label"
+							data-calc-field="missedCallsPerWeek"
+							data-calc-kind="range"
+						/>
+					</div>
+				</div>
+
+				<div class="calc-panel rounded-2xl border border-line">
+					<button
+						type="button"
+						class="calc-acc-trigger flex min-h-11 w-full items-start justify-between gap-3 px-4 py-3 text-left"
+						aria-expanded="false"
+						aria-controls="calc-assumptions"
+						data-calc-acc-toggle
+					>
+						<span class="min-w-0">
+							<span class="calc-acc-title block">Adjust assumptions</span>
+							<span class="calc-acc-helper mt-0.5 block" data-calc-helper>
+								{helper}
+							</span>
+						</span>
+						<span class="calc-acc-icon mt-0.5 shrink-0" aria-hidden="true">
+							<svg
+								width="14"
+								height="14"
+								viewBox="0 0 16 16"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.75"
+								stroke-linecap="round"
+							>
+								<path d="M8 2.5v11M2.5 8h11"></path>
+							</svg>
+						</span>
+					</button>
+
+					<div
+						id="calc-assumptions"
+						class="calc-acc-panel"
+						data-calc-acc-panel
+						data-open="false"
+						inert
+					>
+						<div class="calc-acc-inner">
+							<div class="border-t border-line px-4 pb-4 pt-4">
+								<div>
+									<div class="flex items-center justify-between gap-3">
+										<label
+											id="calc-rate-label"
+											class="calc-label min-w-0 flex-1 leading-snug"
+											for="calc-rate-value"
+										>
+											Missed callers who would book
+										</label>
+										<div
+											class="calc-field flex h-11 w-[4.75rem] shrink-0 items-center rounded-full border border-line px-3"
+										>
+											<input
+												id="calc-rate-value"
+												class="calc-text-input calc-text-input--right w-full"
+												type="text"
+												inputmode="numeric"
+												enterkeyhint="done"
+												autocomplete="off"
+												spellcheck="false"
+												value={formatInputValue('bookRate', defaults.bookRate)}
+												data-calc-field="bookRate"
+												data-calc-kind="text"
+											/>
+											<span class="calc-suffix ml-1" aria-hidden="true">%</span>
+										</div>
+									</div>
+
+									<div
+										class="calc-slider-wrap"
+										data-calc-slider-wrap
+										style={`--pct: ${bookRatePercent}`}
+									>
+										<span
+											class="calc-tooltip"
+											data-calc-tooltip
+											aria-hidden="true"
+										>
+											{formatPercent(defaults.bookRate)}
+										</span>
+										<input
+											id="calc-rate-range"
+											class="calc-range"
+											type="range"
+											min={limits.bookRate.min}
+											max={limits.bookRate.max}
+											step={limits.bookRate.step}
+											value={defaults.bookRate}
+											aria-labelledby="calc-rate-label"
+											data-calc-field="bookRate"
+											data-calc-kind="range"
+										/>
+									</div>
+								</div>
+
+								<div class="mt-4 border-t border-line pt-4">
+									<div class="flex items-center justify-between gap-3">
+										<label
+											id="calc-repeat-label"
+											class="calc-label min-w-0 flex-1 leading-snug"
+											for="calc-repeat-value"
+										>
+											Average repeat visits
+										</label>
+										<div
+											class="calc-field flex h-11 w-[4.75rem] shrink-0 items-center rounded-full border border-line px-3"
+										>
+											<input
+												id="calc-repeat-value"
+												class="calc-text-input calc-text-input--right w-full"
+												type="text"
+												inputmode="decimal"
+												enterkeyhint="done"
+												autocomplete="off"
+												spellcheck="false"
+												value={formatInputValue(
+													'repeatVisits',
+													defaults.repeatVisits,
+												)}
+												data-calc-field="repeatVisits"
+												data-calc-kind="text"
+											/>
+											<span class="calc-suffix ml-1" aria-hidden="true">x</span>
+										</div>
+									</div>
+
+									<div
+										class="calc-slider-wrap"
+										data-calc-slider-wrap
+										style={`--pct: ${repeatPercent}`}
+									>
+										<span
+											class="calc-tooltip"
+											data-calc-tooltip
+											aria-hidden="true"
+										>
+											{formatRepeatVisits(defaults.repeatVisits)}x
+										</span>
+										<input
+											id="calc-repeat-range"
+											class="calc-range"
+											type="range"
+											min={limits.repeatVisits.min}
+											max={limits.repeatVisits.max}
+											step={limits.repeatVisits.step}
+											value={defaults.repeatVisits}
+											aria-labelledby="calc-repeat-label"
+											data-calc-field="repeatVisits"
+											data-calc-kind="range"
+										/>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	import {
+		CALC_FIELDS,
+		MISSED_CALL_DEFAULTS,
+		bookingsPrecision,
+		buildAssumptionSummary,
+		buildResultSummary,
+		calculateMissedCallRevenue,
+		clampFieldValue,
+		formatBookings,
+		formatCurrency,
+		formatInputValue,
+		formatPercent,
+		formatRepeatVisits,
+		parseNumericInput,
+		percentOfRange,
+		sanitizeNumericText,
+		type CalcField,
+		type MissedCallResult,
+	} from '../lib/missed-calls-calc'
+
+	const root = document.querySelector<HTMLElement>('[data-missed-calculator]')
+
+	if (root) {
+		init(root)
+	}
+
+	function init(calculator: HTMLElement) {
+		const annualEl = calculator.querySelector<HTMLElement>('[data-calc-annual]')
+		const monthlyEl =
+			calculator.querySelector<HTMLElement>('[data-calc-monthly]')
+		const bookingsEl =
+			calculator.querySelector<HTMLElement>('[data-calc-bookings]')
+		const helperEl =
+			calculator.querySelector<HTMLElement>('[data-calc-helper]')
+		const statusEl =
+			calculator.querySelector<HTMLElement>('[data-calc-status]')
+
+		if (!annualEl || !monthlyEl || !bookingsEl) return
+
+		const annualOutput = annualEl
+		const monthlyOutput = monthlyEl
+		const bookingsOutput = bookingsEl
+
+		const state: Record<CalcField, number> = { ...MISSED_CALL_DEFAULTS }
+
+		const groups = new Map<
+			CalcField,
+			{
+				text?: HTMLInputElement
+				range?: HTMLInputElement
+				wrap?: HTMLElement
+				tooltip?: HTMLElement
+			}
+		>()
+
+		for (const field of CALC_FIELDS) {
+			const text = calculator.querySelector<HTMLInputElement>(
+				`[data-calc-field="${field}"][data-calc-kind="text"]`,
+			)
+			const range = calculator.querySelector<HTMLInputElement>(
+				`[data-calc-field="${field}"][data-calc-kind="range"]`,
+			)
+			const wrap = range?.closest<HTMLElement>('[data-calc-slider-wrap]')
+			const tooltip = wrap?.querySelector<HTMLElement>('[data-calc-tooltip]')
+
+			groups.set(field, {
+				text: text ?? undefined,
+				range: range ?? undefined,
+				wrap: wrap ?? undefined,
+				tooltip: tooltip ?? undefined,
+			})
+		}
+
+		const initialResult = calculateMissedCallRevenue(state)
+		const tweens = new Map<HTMLElement, { value: number; frame: number }>()
+		tweens.set(annualOutput, { value: initialResult.annual, frame: 0 })
+		tweens.set(monthlyOutput, { value: initialResult.monthly, frame: 0 })
+		tweens.set(bookingsOutput, {
+			value: initialResult.bookingsPerWeek,
+			frame: 0,
+		})
+
+		const hideTimers = new WeakMap<HTMLElement, number>()
+		const reducedMotion = window.matchMedia(
+			'(prefers-reduced-motion: reduce)',
+		)
+		let statusTimer: number | undefined
+
+		for (const field of CALC_FIELDS) {
+			const group = groups.get(field)
+			if (!group) continue
+
+			if (group.text) {
+				const text = group.text
+
+				text.parentElement?.addEventListener('click', (event) => {
+					if (event.target !== text) text.focus()
+				})
+
+				text.addEventListener('focus', () => {
+					requestAnimationFrame(() => text.select())
+				})
+
+				text.addEventListener('input', () => {
+					const clean = sanitizeNumericText(field, text.value)
+					if (text.value !== clean) text.value = clean
+
+					const parsed = parseNumericInput(field, clean)
+					if (!Number.isFinite(parsed)) return
+
+					state[field] = parsed
+					render()
+				})
+
+				text.addEventListener('blur', () => {
+					const value = clampFieldValue(field, state[field])
+					state[field] = value
+					text.value = formatInputValue(field, value)
+					render()
+				})
+
+				text.addEventListener('keydown', (event) => {
+					if (event.key === 'Enter') {
+						event.preventDefault()
+						text.blur()
+					}
+				})
+			}
+
+			if (group.range) {
+				const range = group.range
+				const wrap = group.wrap
+
+				range.addEventListener('input', () => {
+					const value = Number(range.value)
+					if (!Number.isFinite(value)) return
+
+					state[field] = value
+					render()
+					if (wrap) showTooltip(wrap)
+				})
+
+				range.addEventListener('focus', () => {
+					if (wrap) showTooltip(wrap)
+				})
+
+				range.addEventListener('blur', () => {
+					if (wrap) hideTooltip(wrap)
+				})
+
+				range.addEventListener('pointerdown', () => {
+					if (wrap) showTooltip(wrap)
+				})
+
+				range.addEventListener('pointerup', (event) => {
+					if (wrap && event.pointerType === 'touch') {
+						hideTooltip(wrap, 800)
+					}
+				})
+
+				range.addEventListener('pointercancel', () => {
+					if (wrap) hideTooltip(wrap, 800)
+				})
+
+				range.addEventListener('keydown', () => {
+					if (wrap) showTooltip(wrap)
+				})
+			}
+		}
+
+		const accordionButton = calculator.querySelector<HTMLButtonElement>(
+			'[data-calc-acc-toggle]',
+		)
+		const accordionPanel = calculator.querySelector<HTMLElement>(
+			'[data-calc-acc-panel]',
+		)
+
+		if (accordionButton && accordionPanel) {
+			accordionButton.addEventListener('click', () => {
+				const open = accordionButton.getAttribute('aria-expanded') !== 'true'
+				accordionButton.setAttribute('aria-expanded', String(open))
+				accordionPanel.dataset.open = String(open)
+
+				if (open) {
+					accordionPanel.removeAttribute('inert')
+				} else {
+					accordionPanel.setAttribute('inert', '')
+				}
+			})
+		}
+
+		syncVisuals()
+
+		function render() {
+			const next = calculateMissedCallRevenue(state)
+			const digits = bookingsPrecision(next.bookingsPerWeek)
+
+			animateNumber(annualOutput, next.annual, formatCurrency)
+			animateNumber(monthlyOutput, next.monthly, formatCurrency)
+			animateNumber(bookingsOutput, next.bookingsPerWeek, (value) =>
+				formatBookings(value, digits),
+			)
+
+			if (helperEl) {
+				helperEl.textContent = buildAssumptionSummary(
+					state.bookRate,
+					state.repeatVisits,
+				)
+			}
+
+			syncVisuals()
+			scheduleStatus(next)
+		}
+
+		function syncVisuals() {
+			for (const field of CALC_FIELDS) {
+				const group = groups.get(field)
+				if (!group) continue
+
+				const value = clampFieldValue(field, state[field])
+
+				if (group.range) group.range.value = String(value)
+				if (group.text && document.activeElement !== group.text) {
+					group.text.value = formatInputValue(field, value)
+				}
+				if (group.wrap) {
+					group.wrap.style.setProperty(
+						'--pct',
+						String(percentOfRange(field, value)),
+					)
+				}
+				if (group.tooltip) {
+					group.tooltip.textContent = tooltipValue(field, value)
+				}
+			}
+		}
+
+		function tooltipValue(field: CalcField, value: number): string {
+			if (field === 'bookRate') return formatPercent(value)
+			if (field === 'repeatVisits') return `${formatRepeatVisits(value)}x`
+			return String(Math.round(value))
+		}
+
+		function animateNumber(
+			element: HTMLElement,
+			target: number,
+			format: (value: number) => string,
+		) {
+			const entry = tweens.get(element) ?? { value: target, frame: 0 }
+
+			if (entry.frame) cancelAnimationFrame(entry.frame)
+
+			if (
+				reducedMotion.matches ||
+				!Number.isFinite(target) ||
+				Math.abs(target - entry.value) < 0.0001
+			) {
+				entry.value = target
+				entry.frame = 0
+				element.textContent = format(target)
+				tweens.set(element, entry)
+				return
+			}
+
+			const from = entry.value
+			const startedAt = performance.now()
+
+			const tick = (now: number) => {
+				const progress = Math.min(1, (now - startedAt) / 480)
+				const eased = 1 - Math.pow(1 - progress, 3)
+				const value = from + (target - from) * eased
+
+				entry.value = value
+				element.textContent = format(value)
+
+				if (progress < 1) {
+					entry.frame = requestAnimationFrame(tick)
+				} else {
+					entry.value = target
+					entry.frame = 0
+					element.textContent = format(target)
+				}
+			}
+
+			entry.frame = requestAnimationFrame(tick)
+			tweens.set(element, entry)
+		}
+
+		function showTooltip(wrap: HTMLElement) {
+			const timer = hideTimers.get(wrap)
+			if (timer) {
+				window.clearTimeout(timer)
+				hideTimers.delete(wrap)
+			}
+			wrap.classList.add('is-active')
+		}
+
+		function hideTooltip(wrap: HTMLElement, delay = 0) {
+			const timer = hideTimers.get(wrap)
+			if (timer) window.clearTimeout(timer)
+
+			if (delay > 0) {
+				const nextTimer = window.setTimeout(() => {
+					wrap.classList.remove('is-active')
+					hideTimers.delete(wrap)
+				}, delay)
+				hideTimers.set(wrap, nextTimer)
+				return
+			}
+
+			wrap.classList.remove('is-active')
+			hideTimers.delete(wrap)
+		}
+
+		function scheduleStatus(next: MissedCallResult) {
+			if (!statusEl) return
+			if (statusTimer) window.clearTimeout(statusTimer)
+
+			statusTimer = window.setTimeout(() => {
+				statusEl.textContent = buildResultSummary(next)
+			}, 900)
+		}
+	}
+</script>
+
+<style>
+	.calc-output-card {
+		border-color: var(--line-strong);
+		border-color: color-mix(in srgb, var(--brand) 20%, transparent);
+		background-image: linear-gradient(
+			180deg,
+			color-mix(in srgb, var(--fg-1) 4%, transparent),
+			transparent 45%
+		);
+	}
+
+	.calc-label {
+		color: var(--fg-2);
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+	}
+
+	.calc-caption {
+		color: var(--fg-3);
+		font-size: 0.75rem;
+		font-weight: 500;
+	}
+
+	.calc-annual {
+		display: block;
+		max-width: 100%;
+		overflow: hidden;
+		font-family: var(--font-sans);
+		font-size: clamp(1.9rem, 3.2vw + 0.6rem, 2.75rem);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.05;
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+
+	.calc-mini-label {
+		color: var(--fg-3);
+		font-size: 0.625rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		line-height: 1.2;
+		text-transform: uppercase;
+	}
+
+	.calc-secondary-value {
+		color: var(--fg-1);
+		font-size: clamp(0.875rem, 3.4vw, 1.125rem);
+		font-weight: 700;
+		line-height: 1.2;
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+
+	.calc-unit {
+		color: var(--fg-3);
+		font-size: 0.75em;
+		font-weight: 500;
+	}
+
+	.calc-footnote {
+		color: var(--fg-3);
+		font-size: 0.6875rem;
+		line-height: 1.55;
+	}
+
+	.calc-panel {
+		min-width: 0;
+		background-color: var(--bg-alt);
+		background-color: color-mix(in srgb, var(--bg-alt) 72%, transparent);
+	}
+
+	.calc-field {
+		min-width: 0;
+		cursor: text;
+		background-color: color-mix(in srgb, var(--fg-1) 5%, transparent);
+		transition:
+			border-color var(--dur-fast) ease,
+			box-shadow var(--dur-fast) ease,
+			background-color var(--dur-fast) ease;
+	}
+
+	.calc-field:focus-within {
+		border-color: var(--brand);
+		border-color: color-mix(in srgb, var(--brand) 65%, transparent);
+		background-color: color-mix(in srgb, var(--fg-1) 8%, transparent);
+		box-shadow: 0 0 0 3px var(--brand-deep);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 20%, transparent);
+	}
+
+	.calc-prefix {
+		color: var(--fg-3);
+		font-size: 0.875rem;
+		font-weight: 600;
+		line-height: 1;
+	}
+
+	.calc-suffix {
+		color: var(--fg-3);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		line-height: 1;
+		white-space: nowrap;
+	}
+
+	.calc-text-input {
+		height: 100%;
+		min-width: 0;
+		padding: 0;
+		border: 0;
+		outline: none;
+		background: transparent;
+		color: var(--fg-1);
+		font-family: var(--font-sans);
+		font-size: 1rem;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		line-height: 1.2;
+		appearance: none;
+	}
+
+	.calc-text-input--right {
+		text-align: right;
+	}
+
+	.calc-text-input:focus-visible {
+		outline: none;
+	}
+
+	@media (forced-colors: active) {
+		.calc-field:focus-within {
+			outline: 2px solid;
+			outline-offset: 2px;
+		}
+
+		.calc-annual {
+			background: none;
+			color: var(--fg-1);
+			-webkit-text-fill-color: currentColor;
+		}
+	}
+
+	.calc-slider-wrap {
+		--calc-thumb-w: 36px;
+		--calc-thumb-h: 24px;
+		--calc-track-h: 10px;
+		/* Native thumb centre runs from half a thumb to width minus half a thumb. */
+		--fill: calc(
+			(var(--calc-thumb-w) / 2) +
+				(100% - var(--calc-thumb-w)) * var(--pct, 0) / 100
+		);
+		position: relative;
+		margin-top: 0.25rem;
+		padding-top: 1.75rem;
+	}
+
+	.calc-range {
+		display: block;
+		width: 100%;
+		height: 44px;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: 9999px;
+		background: transparent;
+		cursor: pointer;
+		touch-action: pan-y;
+		-webkit-appearance: none;
+		appearance: none;
+		outline-offset: 5px;
+	}
+
+	.calc-range::-webkit-slider-runnable-track {
+		height: var(--calc-track-h);
+		border: 0;
+		border-radius: 9999px;
+		/* The rounded track clips the gradient, rounding the fill's left cap. */
+		background: linear-gradient(
+			to right,
+			var(--brand) 0,
+			var(--brand) var(--fill),
+			var(--line-strong) var(--fill),
+			var(--line-strong) 100%
+		);
+		background: linear-gradient(
+			to right,
+			var(--brand) 0,
+			var(--brand) var(--fill),
+			color-mix(in srgb, var(--fg-3) 45%, transparent) var(--fill),
+			color-mix(in srgb, var(--fg-3) 45%, transparent) 100%
+		);
+	}
+
+	.calc-range::-webkit-slider-thumb {
+		width: var(--calc-thumb-w);
+		height: var(--calc-thumb-h);
+		margin-top: calc((var(--calc-track-h) - var(--calc-thumb-h)) / 2);
+		border: 0;
+		border-radius: 9999px;
+		background: var(--fg-1);
+		box-shadow:
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 10px rgba(0, 0, 0, 0.25);
+		cursor: grab;
+		-webkit-appearance: none;
+		appearance: none;
+	}
+
+	.calc-range::-moz-range-track {
+		height: var(--calc-track-h);
+		border: 0;
+		border-radius: 9999px;
+		background: linear-gradient(
+			to right,
+			var(--brand) 0,
+			var(--brand) var(--fill),
+			var(--line-strong) var(--fill),
+			var(--line-strong) 100%
+		);
+		background: linear-gradient(
+			to right,
+			var(--brand) 0,
+			var(--brand) var(--fill),
+			color-mix(in srgb, var(--fg-3) 45%, transparent) var(--fill),
+			color-mix(in srgb, var(--fg-3) 45%, transparent) 100%
+		);
+	}
+
+	.calc-range::-moz-range-progress {
+		height: var(--calc-track-h);
+		border: 0;
+		border-radius: 9999px;
+		background: transparent;
+	}
+
+	.calc-range::-moz-range-thumb {
+		width: var(--calc-thumb-w);
+		height: var(--calc-thumb-h);
+		border: 0;
+		border-radius: 9999px;
+		background: var(--fg-1);
+		box-shadow:
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 10px rgba(0, 0, 0, 0.25);
+		cursor: grab;
+	}
+
+	.calc-tooltip {
+		position: absolute;
+		top: 0;
+		left: clamp(1.5rem, var(--fill), calc(100% - 1.5rem));
+		z-index: 2;
+		transform: translate3d(-50%, 4px, 0) scale(0.94);
+		padding: 0.25rem 0.5rem;
+		border: 1px solid var(--line-strong);
+		border-radius: 9999px;
+		background: var(--bg-alt);
+		box-shadow: var(--shadow-contact);
+		color: var(--fg-1);
+		font-size: 0.75rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		line-height: 1.2;
+		white-space: nowrap;
+		pointer-events: none;
+		opacity: 0;
+		transition:
+			opacity 160ms ease,
+			transform 160ms ease;
+	}
+
+	.calc-slider-wrap.is-active .calc-tooltip {
+		transform: translate3d(-50%, 0, 0) scale(1);
+		opacity: 1;
+	}
+
+	.calc-acc-trigger {
+		border: 0;
+		background: transparent;
+		color: inherit;
+		cursor: pointer;
+	}
+
+	.calc-acc-title {
+		color: var(--fg-1);
+		font-size: 0.875rem;
+		font-weight: 600;
+		line-height: 1.3;
+	}
+
+	.calc-acc-helper {
+		color: var(--fg-3);
+		font-size: 0.75rem;
+		line-height: 1.45;
+	}
+
+	.calc-acc-icon {
+		display: grid;
+		width: 1.5rem;
+		height: 1.5rem;
+		place-items: center;
+		border: 1px solid var(--line-strong);
+		border-radius: 9999px;
+		color: var(--fg-2);
+		transition:
+			border-color var(--dur-fast) ease,
+			color var(--dur-fast) ease;
+	}
+
+	.calc-acc-trigger[aria-expanded='true'] .calc-acc-icon {
+		border-color: var(--brand-text);
+		border-color: color-mix(in srgb, var(--brand) 55%, transparent);
+		color: var(--brand-text);
+	}
+
+	.calc-acc-icon svg {
+		transition: transform 220ms var(--ease-spring);
+	}
+
+	.calc-acc-trigger[aria-expanded='true'] .calc-acc-icon svg {
+		transform: rotate(45deg);
+	}
+
+	.calc-acc-panel {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows 280ms var(--ease-spring);
+	}
+
+	.calc-acc-panel[data-open='true'] {
+		grid-template-rows: 1fr;
+	}
+
+	.calc-acc-inner {
+		overflow: hidden;
+		min-height: 0;
+		visibility: hidden;
+		transition: visibility 0s linear 280ms;
+	}
+
+	.calc-acc-panel[data-open='true'] .calc-acc-inner {
+		visibility: visible;
+		transition-delay: 0s;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.calc-tooltip,
+		.calc-acc-icon svg,
+		.calc-acc-panel,
+		.calc-acc-inner {
+			transition: none;
+		}
+	}
+</style>

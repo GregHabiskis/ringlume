@@ -1,4 +1,5 @@
 ---
+import MissedCallCalculator from './MissedCallCalculator.astro'
 ---
 
 <section class="scrim relative overflow-hidden py-20 lg:py-32">
@@ -18,7 +19,11 @@
       </p>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+    <MissedCallCalculator />
+
+    <div
+      class="mx-auto mt-10 grid max-w-4xl grid-cols-1 gap-6 md:mt-12 md:grid-cols-2"
+    >
       <div
         class="glass glass-regular grain reveal specular rounded-2xl p-8 transition-shadow duration-300 lift-hover"
       >
@@ -52,31 +57,13 @@
           Wait more than 5 minutes to reply, and the lead is already gone forever.
         </p>
       </div>
-
-      <div
-        class="glass glass-regular grain reveal specular rounded-2xl p-8 transition-shadow duration-300 lift-hover"
-      >
-        <div class="mb-8 flex items-center justify-between">
-          <span class="chip chip-danger">
-            <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-current"></span>
-            Revenue Loss
-          </span>
-        </div>
-
-        <div class="fomo-stat gradient-green-text mb-2 font-extrabold tracking-tight">$8,000+</div>
-        <h3 class="text-h3 text-fg-1">Lost Monthly Pipeline</h3>
-        <p class="mt-2 max-w-xs text-sm leading-relaxed text-fg-3">
-          On average, every business bleeds $8K+ a month by relying on voicemail.
-        </p>
-      </div>
     </div>
   </div>
 </section>
 
 <style>
-	/* Stat numbers: one size for all three, clamped so the widest figure
-	   ($8,000+) fits the narrowest 3-up card (exactly 768px, ~160px of
-	   content) with slack, without clipping. */
+	/* Stat numbers: one shared size, clamped so both two-up cards stay
+	   balanced from mobile through desktop. */
 	.fomo-stat {
 		font-size: clamp(2rem, 1.35rem + 1.75vw, 3.25rem);
 		line-height: 1;

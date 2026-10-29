@@ -1,0 +1,135 @@
+---
+import { REFERRAL_OPTIONS, WEBSITE_PATTERN } from '../lib/contact-form'
+
+const labelClass = 'block text-sm font-medium text-fg-2 mb-2'
+const optionalClass = 'ml-1 font-normal text-fg-3'
+const fieldClass =
+  'w-full min-h-11 rounded-xl border border-line bg-surface-2 px-4 py-2.5 text-base text-fg-1 transition-colors hover:border-line-strong focus-visible:border-brand'
+---
+
+<form
+  name="contact"
+  method="POST"
+  action="/contact/thanks"
+  data-netlify="true"
+  netlify-honeypot="bot-field"
+  aria-label="Contact form"
+  class="glass glass-regular grain rounded-2xl p-6 sm:p-8 min-w-0"
+>
+  <input type="hidden" name="form-name" value="contact" />
+
+  <div class="hidden" aria-hidden="true">
+    <label for="bot-field">Don't fill this out if you're human</label>
+    <input
+      id="bot-field"
+      name="bot-field"
+      type="text"
+      tabindex="-1"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div class="min-w-0">
+      <label for="first_name" class={labelClass}>
+        First name <span class="text-brand-text" aria-hidden="true">*</span>
+      </label>
+      <input
+        id="first_name"
+        name="first_name"
+        type="text"
+        autocomplete="given-name"
+        required
+        class={fieldClass}
+      />
+    </div>
+
+    <div class="min-w-0">
+      <label for="last_name" class={labelClass}>
+        Last name <span class="text-brand-text" aria-hidden="true">*</span>
+      </label>
+      <input
+        id="last_name"
+        name="last_name"
+        type="text"
+        autocomplete="family-name"
+        required
+        class={fieldClass}
+      />
+    </div>
+
+    <div class="sm:col-span-2 min-w-0">
+      <label for="email" class={labelClass}>
+        Business email <span class="text-brand-text" aria-hidden="true">*</span>
+      </label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        required
+        class={fieldClass}
+      />
+    </div>
+
+    <div class="sm:col-span-2 min-w-0">
+      <label for="company_website" class={labelClass}>
+        Company website
+        <span class="text-brand-text" aria-hidden="true">*</span>
+      </label>
+      <input
+        id="company_website"
+        name="company_website"
+        type="text"
+        inputmode="url"
+        autocomplete="url"
+        required
+        pattern={WEBSITE_PATTERN}
+        title="Enter your website, like example.com"
+        class={fieldClass}
+      />
+    </div>
+
+    <div class="min-w-0">
+      <label for="phone" class={labelClass}>
+        Phone number <span class={optionalClass}>(optional)</span>
+      </label>
+      <input
+        id="phone"
+        name="phone"
+        type="tel"
+        autocomplete="tel"
+        class={fieldClass}
+      />
+    </div>
+
+    <div class="min-w-0">
+      <label for="referral_source" class={labelClass}>
+        How did you hear about us?
+        <span class={optionalClass}>(optional)</span>
+      </label>
+      <select
+        id="referral_source"
+        name="referral_source"
+        class={fieldClass}
+      >
+        <option value="">Select one</option>
+        {REFERRAL_OPTIONS.map((option) => <option value={option}>{option}</option>)}
+      </select>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary mt-6 w-full sm:w-auto">
+    Submit
+  </button>
+
+  <p class="mt-4 text-xs text-fg-3">
+    By submitting you agree to our
+    <a
+      href="/privacy"
+      class="text-brand-text underline underline-offset-2 transition-colors hover:text-fg-1"
+    >
+      Privacy Policy
+    </a>.
+  </p>
+</form>

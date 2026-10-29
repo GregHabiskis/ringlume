@@ -6,7 +6,6 @@ const faqSourceUrl = new URL('../FAQ.astro', import.meta.url)
 const dataSourceUrl = new URL('../../data/faqs.ts', import.meta.url)
 const homepageSourceUrl = new URL('../../pages/index.astro', import.meta.url)
 const faqPageSourceUrl = new URL('../../pages/faq.astro', import.meta.url)
-const footerSourceUrl = new URL('../Footer.astro', import.meta.url)
 const headerSourceUrl = new URL('../Header.astro', import.meta.url)
 
 const expectedQuestions = [
@@ -92,18 +91,15 @@ describe('FAQ content', () => {
 		homepageQuestions.forEach((question) => expect(source).not.toContain(question))
 	})
 
-	it('links the homepage preview and footer to the full FAQ page', async () => {
-		const [faqPageSource, footerSource, faqComponentSource, headerSource] = await Promise.all([
+	it('links the homepage preview and header to the full FAQ page', async () => {
+		const [faqPageSource, faqComponentSource, headerSource] = await Promise.all([
 			readFile(faqPageSourceUrl, 'utf8'),
-			readFile(footerSourceUrl, 'utf8'),
 			readFile(faqSourceUrl, 'utf8'),
 			readFile(headerSourceUrl, 'utf8'),
 		])
 
 		expect(faqPageSource).toContain('title="Frequently Asked Questions | Ringlume"')
 		expect(faqPageSource).toContain('<FAQ headingLevel="h1" />')
-		expect(footerSource).toContain('href="/faq"')
-		expect(footerSource).toContain('>FAQ</a>')
 		expect(faqComponentSource).toContain('href="/faq"')
 		expect(faqComponentSource).toContain('View all FAQs')
 		expect(headerSource).toContain("{ label: 'FAQ', href: '/faq' }")

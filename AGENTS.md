@@ -60,8 +60,7 @@ checker and `pnpm build` as verification gates.
     │   ├── index.astro            # landing composition
     │   ├── contact.astro
     │   ├── privacy.astro
-    │   ├── terms.astro
-    │   └── refund.astro
+    │   └── terms.astro
     ├── components/                # section + chrome components (*.astro)
     └── assets/                    # leftover SVGs (mostly unused)
 ```
@@ -252,7 +251,8 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 ### Pages
 
 - Every page wraps content in `BaseLayout` with `title` + `description`.
-- Legal pages (`privacy`, `terms`, `refund`) are long static content — keep English-only unless asked otherwise.
+- Legal pages (`privacy`, `terms`) are long static content — keep English-only unless asked otherwise.
+- The footer links only to Terms, Privacy, and Contact. There is no refund page; Terms states the no-refund policy.
 
 ### Pricing CTAs
 

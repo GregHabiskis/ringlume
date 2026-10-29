@@ -21,12 +21,10 @@ describe('pricing CTAs', () => {
 		expect(source).toContain('href="/terms"');
 		expect(source).toContain('Privacy Policy');
 		expect(source).toContain('href="/privacy"');
-		expect(source).toContain('Refund Policy');
-		expect(source).toContain('href="/refund"');
-		expect(source).toContain('100% refund on subscription charges');
-		expect(source).toContain('50% on the Service Setup Fee');
 		expect(source).toContain('+ $1,200 one-time Service Setup Fee');
 		expect(source).not.toContain('Voice AI Setup Fee');
+		expect(source).not.toContain('/refund');
+		expect(source).not.toMatch(/refund/i);
 	});
 
 	it('has no payment provider wiring left in the section', async () => {

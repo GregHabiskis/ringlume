@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+---
+
+<BaseLayout
+  title="Thanks | Ringlume"
+  description="Thanks for contacting Ringlume."
+  noindex
+>
+  <main class="scrim min-h-screen flex items-center justify-center px-4 py-20">
+    <div
+      class="glass glass-regular grain rounded-2xl p-8 sm:p-10 max-w-md w-full text-center"
+    >
+      <a href="/" class="inline-block mb-6">
+        <picture>
+          <source srcset="/images/logo-240.webp" type="image/webp" />
+          <img
+            src="/images/logo-240.png"
+            alt="Ringlume"
+            width="240"
+            height="96"
+            class="h-9 w-auto mx-auto"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </picture>
+      </a>
+
+      <p class="text-fg-1 text-lg font-semibold">
+        Thanks, we've got your message and will be in touch soon.
+      </p>
+
+      <a
+        href="https://cal.com/ringlume/meeting"
+        class="btn btn-primary mt-6"
+      >
+        Book a call
+      </a>
+
+      <div class="mt-4">
+        <a
+          href="/"
+          class="text-sm text-brand-text underline underline-offset-2 transition-colors hover:text-fg-1"
+        >
+          Back to home
+        </a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>

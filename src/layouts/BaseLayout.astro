@@ -4,12 +4,14 @@ import '../styles/global.css'
 interface Props {
   title?: string
   description?: string
+  noindex?: boolean
 }
 
 const {
   title = 'Ringlume',
   description =
     'A virtual receptionist for service businesses that answers calls, qualifies leads, and books appointments 24/7.',
+  noindex = false,
 } = Astro.props
 ---
 
@@ -21,6 +23,7 @@ const {
     <meta name="description" content={description} />
     <meta name="color-scheme" content="dark" />
     <meta name="generator" content={Astro.generator} />
+    {noindex && <meta name="robots" content="noindex" />}
     <link
       rel="preload"
       href="/fonts/comfortaa-latin.woff2"

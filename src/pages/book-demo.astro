@@ -24,64 +24,8 @@ import { DEMO_FREE_MINUTES } from '../lib/offer'
         </p>
       </div>
 
-      <div
-        class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_31.5rem] gap-6 lg:gap-8 items-start"
-      >
+      <div class="max-w-3xl mx-auto">
         <DemoRequestForm />
-
-        <aside aria-labelledby="what-happens-next">
-          <h2
-            id="what-happens-next"
-            class="text-lg font-semibold text-fg-1 mb-4"
-          >
-            What happens next
-          </h2>
-
-          <ol class="space-y-3">
-            <li
-              class="glass glass-fill glass-regular grain rounded-2xl p-4 flex items-start gap-3"
-            >
-              <span
-                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/15 text-sm font-semibold text-brand-text"
-                aria-hidden="true"
-              >
-                1
-              </span>
-              <span class="text-sm leading-relaxed text-fg-2">
-                Send us your details.
-              </span>
-            </li>
-
-            <li
-              class="glass glass-fill glass-regular grain rounded-2xl p-4 flex items-start gap-3"
-            >
-              <span
-                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/15 text-sm font-semibold text-brand-text"
-                aria-hidden="true"
-              >
-                2
-              </span>
-              <span class="text-sm leading-relaxed text-fg-2">
-                We build a voice agent around your business.
-              </span>
-            </li>
-
-            <li
-              class="glass glass-fill glass-regular grain rounded-2xl p-4 flex items-start gap-3"
-            >
-              <span
-                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/15 text-sm font-semibold text-brand-text"
-                aria-hidden="true"
-              >
-                3
-              </span>
-              <span class="text-sm leading-relaxed text-fg-2">
-                You get a private link by email. Test it free for up to
-                {DEMO_FREE_MINUTES} minutes.
-              </span>
-            </li>
-          </ol>
-        </aside>
       </div>
     </div>
   </main>

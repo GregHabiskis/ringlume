@@ -6,30 +6,27 @@ const srcDir = new URL('../../', import.meta.url)
 const read = (path: string) => readFile(new URL(path, srcDir), 'utf8')
 
 describe('/book-demo', () => {
-	it('keeps the page header, subline, and demo-first layout', async () => {
+	it('keeps the page header, subline, and a centered demo form', async () => {
 		const source = await read('pages/book-demo.astro')
 
 		expect(source).toContain('Get Your Free Personalized Demo')
 		expect(source).toContain("we'll email you a private link")
 		expect(source).toContain('free for up to {DEMO_FREE_MINUTES} minutes')
-		expect(source.match(/\{DEMO_FREE_MINUTES\}/g)).toHaveLength(3)
+		expect(source.match(/\{DEMO_FREE_MINUTES\}/g)).toHaveLength(2)
 		expect(source).toContain('<DemoRequestForm />')
-		expect(source).toContain('What happens next')
-		expect(source).toContain('Send us your details.')
-		expect(source).toContain('We build a voice agent around your business.')
-		expect(source).toContain('Test it free for up to')
-		expect(source).toContain(
-			'lg:grid-cols-[minmax(0,1fr)_31.5rem]',
-		)
-		expect(source).toContain('items-start')
+		expect(source).toContain('<div class="max-w-3xl mx-auto">')
 	})
 
-	it('puts the form before the context block in the DOM', async () => {
+	it('removes the repeated next-steps block', async () => {
 		const source = await read('pages/book-demo.astro')
 
-		expect(source.indexOf('<DemoRequestForm />')).toBeLessThan(
-			source.indexOf('<aside'),
+		expect(source).not.toContain('What happens next')
+		expect(source).not.toContain('Send us your details.')
+		expect(source).not.toContain(
+			'We build a voice agent around your business.',
 		)
+		expect(source).not.toContain('<aside')
+		expect(source).not.toContain('lg:grid-cols-[minmax(0,1fr)_31.5rem]')
 	})
 
 	it('makes no setup-time or production claim', async () => {

@@ -218,6 +218,8 @@ const currentAttr = (href: string) =>
 </style>
 
 <script>
+  import { getAnchorTarget, prepareAnchorLayout } from '../lib/anchor-navigation'
+
   const toggle = document.getElementById('mobile-menu-toggle')
   const menu = document.getElementById('mobile-menu')
 
@@ -231,7 +233,7 @@ const currentAttr = (href: string) =>
       setMenu(menu.classList.contains('hidden'))
     })
 
-    // Any drawer link closes it, including same-page anchors (#features)
+    // Any drawer link closes it, including same-page section anchors
     // where no page reload would clear the state.
     menu.addEventListener('click', (e) => {
       if (e.target instanceof Element && e.target.closest('a')) {
@@ -320,11 +322,12 @@ const currentAttr = (href: string) =>
 
   // Scroll-spy (index only, signalled by data-spy on the nav): ONE
   // IntersectionObserver maps section position on the page to the active
-  // link. DOM order and nav order differ — Demo sits before Pricing and
-  // FAQ on the page but after them in the nav — so the mapping is an
-  // explicit table, not a walk of the nav. Bands without a link (the
-  // FOMO strip) keep the previous active link.
+  // link. Use an explicit mapping for page sections and their links.
+  // Bands without a link (the FOMO strip) keep the previous active link.
   if (nav?.hasAttribute('data-spy')) {
+    // Prepare direct fragment visits as well as clicks within the homepage.
+    prepareAnchorLayout(getAnchorTarget(window.location.hash))
+
     const allLinks = Array.from(
       document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'),
     )
@@ -394,137 +397,55 @@ const currentAttr = (href: string) =>
     })
     for (const { el } of pairs) observer.observe(el)
 
-    // A click marks the target right away and locks the spy so smooth
-    // scrolling cannot flicker the pill through intermediate sections.
-    // scrollend clears the lock; the timer is the fallback where
-    // scrollend is missing or a same-URL navigation never scrolls.
-    //
-    // Anchor landing: a native fragment scroll resolves its destination
-    // ONCE, from the layout as it is at click time. Below-the-fold
-    // sections are still content-visibility placeholders then; when they
-    // render mid-flight the target moves and the scroll stops a section
-    // or two short (Pricing landing on Features / Live Demo). So every
-    // in-page anchor click is tracked and the scroll is re-issued from
-    // live layout until the target really sits under the header. Manual
-    // scrolling (wheel / touch / scroll keys) abandons the correction
-    // immediately, and an 8s deadline guarantees the scroll ends.
-    let pendingEl: HTMLElement | null = null
-    let pendingTimer = 0
-    let pendingDeadline = 0
-
-    const anchorHash = (href: string | null): string | null => {
-      if (!href) return null
-      if (href.startsWith('/#') && href.length > 2) return href.slice(1)
-      if (href.startsWith('#') && href.length > 1) return href
-      return null
-    }
-
-    const targetY = (el: HTMLElement): number => {
-      const offset = parseFloat(getComputedStyle(el).scrollMarginTop) || 0
-      return Math.max(
-        0,
-        Math.round(el.getBoundingClientRect().top + window.scrollY - offset),
-      )
-    }
-
-    const endPending = () => {
-      clearTimeout(pendingTimer)
-      pendingEl = null
-      locked = false
-      sync()
-    }
-
-    const settleAnchor = () => {
-      const el = pendingEl
-      if (!el || !el.isConnected) {
-        endPending()
-        return
-      }
-      const y = targetY(el)
-      const diff = Math.abs(window.scrollY - y)
-      if (diff <= 3) {
-        endPending()
-        return
-      }
-      if (Date.now() >= pendingDeadline) {
-        window.scrollTo({ top: y, behavior: 'instant' })
-        endPending()
-        return
-      }
-      const reduced = window.matchMedia(
-        '(prefers-reduced-motion: reduce)',
-      ).matches
-      window.scrollTo({ top: y, behavior: reduced ? 'instant' : 'smooth' })
-      clearTimeout(pendingTimer)
-      pendingTimer = window.setTimeout(settleAnchor, 2500)
-    }
-
-    const armAnchor = (el: HTMLElement) => {
-      pendingEl = el
-      pendingDeadline = Date.now() + 8000
-      clearTimeout(pendingTimer)
-      pendingTimer = window.setTimeout(settleAnchor, 3500)
-    }
-
-    const abandonAnchor = () => {
-      if (!pendingEl) return
-      clearTimeout(pendingTimer)
-      pendingEl = null
-      locked = false
-      sync()
-    }
-
+    // Lock only the active-link indicator during native smooth scrolling.
+    // This fallback changes highlighting, never the page's scroll position.
     const unlock = () => {
-      if (pendingEl) return // anchor still settling: keep the pill frozen
+      clearTimeout(lockTimer)
       locked = false
+      sync()
     }
     if ('onscrollend' in window)
-      window.addEventListener('scrollend', () => {
-        if (pendingEl) settleAnchor()
-        else locked = false
-      })
-    window.addEventListener('wheel', abandonAnchor, { passive: true })
-    window.addEventListener('touchmove', abandonAnchor, { passive: true })
-    window.addEventListener('keydown', (event) => {
-      if (
-        [
-          'ArrowUp',
-          'ArrowDown',
-          'PageUp',
-          'PageDown',
-          'Home',
-          'End',
-          ' ',
-          'Spacebar',
-        ].includes(event.key)
-      )
-        abandonAnchor()
-    })
-    for (const link of allLinks) {
-      link.addEventListener('click', () => {
-        const href = link.getAttribute('href')
-        if (href) {
-          applyActive(href)
-          locked = true
-          clearTimeout(lockTimer)
-          lockTimer = window.setTimeout(unlock, 2000)
-        }
-      })
-    }
-    // Any other in-page anchor (hero CTAs) freezes the spy
-    // during its scroll too — no flicker through intermediate sections —
-    // and gets the same landing correction as the nav links.
+      window.addEventListener('scrollend', unlock)
+
     document.addEventListener('click', (event) => {
-      const target = event.target as Element | null
-      const hash = anchorHash(
-        target?.closest?.('a')?.getAttribute('href') ?? null,
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
       )
-      if (!hash) return
+        return
+      const link =
+        event.target instanceof Element
+          ? event.target.closest<HTMLAnchorElement>('a[href]')
+          : null
+      if (
+        !link ||
+        link.hasAttribute('download') ||
+        (link.target && link.target !== '_self')
+      )
+        return
+
+      const url = new URL(link.href, window.location.href)
+      if (
+        url.origin !== window.location.origin ||
+        url.pathname !== window.location.pathname ||
+        url.search !== window.location.search
+      )
+        return
+      const target = getAnchorTarget(url.hash)
+      if (!target) return
+
+      // Expand intervening placeholders before the browser's default action.
+      // Do not preventDefault or issue a second programmatic scroll.
+      prepareAnchorLayout(target)
+      const pair = pairs.find(({ el }) => el === target || el.contains(target))
+      if (pair) applyActive(pair.href)
       locked = true
       clearTimeout(lockTimer)
       lockTimer = window.setTimeout(unlock, 2000)
-      const el = document.querySelector<HTMLElement>(hash)
-      if (el) armAnchor(el)
     })
   }
 </script>

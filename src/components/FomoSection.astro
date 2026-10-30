@@ -21,15 +21,16 @@ import MissedCallCalculator from './MissedCallCalculator.astro'
 
     <MissedCallCalculator />
 
+    <!-- Keep repeated stat cards visible and blur-free while scrolling. -->
     <div
       class="mx-auto mt-10 grid max-w-4xl grid-cols-1 gap-6 md:mt-12 md:grid-cols-2"
     >
       <div
-        class="glass glass-regular grain reveal specular rounded-2xl p-8 transition-shadow duration-300 lift-hover"
+        class="glass glass-fill glass-regular grain rounded-2xl p-8"
       >
         <div class="mb-8 flex items-center justify-between">
           <span class="chip chip-danger">
-            <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-current"></span>
+            <span class="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true"></span>
             High Risk
           </span>
         </div>
@@ -42,11 +43,11 @@ import MissedCallCalculator from './MissedCallCalculator.astro'
       </div>
 
       <div
-        class="glass glass-regular grain reveal specular rounded-2xl p-8 transition-shadow duration-300 lift-hover"
+        class="glass glass-fill glass-regular grain rounded-2xl p-8"
       >
         <div class="mb-8 flex items-center justify-between">
           <span class="chip chip-warn">
-            <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-current"></span>
+            <span class="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true"></span>
             Lead Leakage
           </span>
         </div>

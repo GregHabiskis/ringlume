@@ -33,9 +33,9 @@ pnpm preview          # serve dist/
 
 After meaningful UI/CSS changes, always run `pnpm build` and confirm it succeeds.
 
-Vitest covers pricing CTAs, FAQ content, and the Retell config guardrails.
-There is no lint or dedicated typecheck script in `package.json`; run Astro's
-checker and `pnpm build` as verification gates.
+Vitest covers forms, demo-first CTAs, offer facts, FAQ content, legal-page
+guardrails, and Retell config. Run `pnpm test`, `pnpm check` (Astro's checker),
+and `pnpm build` as verification gates. There is no lint script.
 
 ---
 
@@ -59,6 +59,10 @@ checker and `pnpm build` as verification gates.
     ├── pages/
     │   ├── index.astro            # landing composition
     │   ├── contact.astro
+    │   ├── contact/thanks.astro    # noindex message confirmation
+    │   ├── book-demo.astro        # personalized demo request
+    │   ├── book-demo/thanks.astro # noindex demo confirmation
+    │   ├── faq.astro
     │   ├── privacy.astro
     │   └── terms.astro
     ├── components/                # section + chrome components (*.astro)
@@ -83,8 +87,10 @@ BaseLayout
 
 Reuse this pattern for new marketing pages: layout → chrome → sections.
 
-There is **no floating contact FAB**: `ContactWidget.astro` was deleted. Contact
-channels are plain links in the header, footer, CTA section, and `/contact` page.
+There is **no floating contact FAB**: `ContactWidget.astro` was deleted.
+Channels (WhatsApp and support@ringlume.com) live on `/contact` only.
+Footer and CtaSection link to `/contact`, with no direct channel links.
+Existing legal-page contact lists remain unchanged except for the removed channel.
 
 ---
 
@@ -252,12 +258,58 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 
 - Every page wraps content in `BaseLayout` with `title` + `description`.
 - Legal pages (`privacy`, `terms`) are long static content — keep English-only unless asked otherwise.
-- The footer links only to Terms, Privacy, and Contact. There is no refund page; Terms states the no-refund policy.
+- Legal pages are otherwise untouched: only the approved setup-time clause and
+  channel removal were authorized. Do not renumber existing sections or rewrite
+  other legal wording without explicit approval. The setup clause is 7.1 under
+  Service Availability & Uptime, anchored at `/terms#setup-time`.
+- The footer links to Free Demo, Terms, Privacy, and Contact. There is no refund page; Terms states the no-refund policy.
+
+### Demo-first conversion and offer facts
+
+- Primary conversion: `/book-demo`, a personalized demo request. Header CTA:
+  **Free Demo**. Hero/pricing/CtaSection CTA: **Get Your Free Demo**.
+- Secondary conversion: homepage `#demo`, the generic live Retell demo.
+  Header navigation says **Live Demo**, hero says **Try the Live Demo**.
+  The Pricing nav anchor remains `/#pricing`.
+- `src/lib/offer.ts` is the single source for offer facts, `SUPPORTED_STACK`,
+  and `CAL_BOOKING_URL`. Meeting links appear only on `/book-demo/thanks`
+  and inside the Terms setup clause.
+- Demo delivery: **within 1 hour** by email from form submission, any time of
+  day. Show this only below the demo form button and on `/book-demo/thanks`.
+- Demo allowance: **free for up to 10 minutes**, from `DEMO_FREE_MINUTES`.
+  Hero stat is `{DEMO_FREE_MINUTES} Min / Free Demo`; its other stat stays
+  `24/7 / Always Working`.
+- Production agent target: **within 12 hours** with preferred tools, starting
+  only after a conversation and confirmed requirements. This figure belongs
+  only in the Terms clause and existing setup FAQ answer, never in plan cards,
+  hero, CTAs, metadata, or `/book-demo`.
+- **Go live in an afternoon** must have **under best circumstances** beside
+  it, or the full explanation in Terms/FAQ. The pricing disclosure is below
+  the cards, with a 12px qualifier linking to `/terms#setup-time`.
+- Preferred tools are recommendations, not requirements or guaranteed native
+  integrations. Existing PBX/custom CRM setups are more complex and take
+  longer; give no time figure for them. Setup times are targets, not guarantees.
+- `src/data/faqs.ts` feeds the FAQ component. `faqs.md` is a docs-only mirror,
+  checked by tests but not consumed by site generation.
+
+### Static Netlify forms
+
+- `DemoRequestForm.astro` uses `src/lib/demo-form.ts` for the website pattern
+  and stable referral choices. Its six fields submit as `demo-request` to
+  `/book-demo/thanks`.
+- `ContactForm.astro` has two required fields, email and message, and submits
+  as `contact-message` to `/contact/thanks`.
+- Preserve POST, hidden `form-name`, and the `bot-field` honeypot. Field names
+  are stable Netlify schema keys. No AJAX, client scripts, or captcha.
+- Thanks pages use `BaseLayout noindex`, a home-linked logo, no Header/Footer,
+  and the existing scene backdrop. No sitemap or robots.txt currently exists.
+- Forms work on a Netlify deploy, not localhost. Make.com delivery, notifications,
+  and the voice-platform duration cap are owner tasks outside this repository.
 
 ### Pricing CTAs
 
 - Plans live in `Pricing.astro` frontmatter.
-- All four CTAs are `<a href="https://cal.com/ringlume/meeting">Contact Sales</a>`
+- All four CTAs are `<a href="/book-demo">Get Your Free Demo</a>`
   elements carrying `data-plan` and an `aria-describedby` link to the legal
   notice under the button. There is no payment or checkout integration.
 - The only script in the section is the Monthly/Annually display toggle.
@@ -265,7 +317,6 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 ### Contact
 
 - WhatsApp: `https://wa.me/8801951284128`
-- Telegram: `https://t.me/fshahariar`
 - Email: `support@ringlume.com`
 
 ### Retell voice demo
@@ -325,7 +376,9 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
      Test with extensions/ad blockers disabled; the widget loads from
      `dashboard.retellai.com` + `api.retellai.com`.
 
-Keep contact channels consistent across Footer, CtaSection, Contact page, and widget.
+Keep the channel details on `/contact` unchanged. Footer and CtaSection link
+to `/contact`; neither contains WhatsApp or email links. The retired messaging
+channel is removed, including its legal-page mentions.
 
 ---
 
@@ -375,7 +428,9 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 | ------------------------------ | ---------------------------------------------------------- |
 | Change hero copy               | `src/components/Hero.astro`                                |
 | Change pricing copy            | `src/components/Pricing.astro`                             |
-| Change sales meeting link      | `src/components/Pricing.astro` (CTA `href`)                |
+| Change meeting URL / offer facts | `src/lib/offer.ts`                                      |
+| Demo request fields / choices | `DemoRequestForm.astro` + `src/lib/demo-form.ts`             |
+| Contact message fields        | `src/components/ContactForm.astro`                         |
 | Nav links                      | `src/components/Header.astro`                              |
 | Footer / legal links           | `src/components/Footer.astro`                              |
 | Brand colors / fonts           | `src/styles/global.css` `@theme` + `@font-face`            |
@@ -404,7 +459,7 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 
 ## Known pitfalls
 
-1. **`package.json` name** is still `all-in-one-system` — cosmetic; not a monorepo.
+1. **`package.json` name** is `ringlume`; this is not a monorepo.
 2. **`public/Ringlume-Logo-No-Background.png`** is large; UI must use `/images/logo-*` variants.
 3. **Unicode-range minify bug** — see Typography section.
 4. **No browser automation** — visual/regression checks are manual + production PSI.

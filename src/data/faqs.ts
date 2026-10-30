@@ -1,3 +1,10 @@
+import {
+	formatList,
+	PRODUCTION_MAX,
+	SETUP_QUALIFIER,
+	SUPPORTED_STACK,
+} from '../lib/offer'
+
 export type FaqId =
 	| 'busy-calls'
 	| 'urgent-calls'
@@ -144,8 +151,10 @@ export const faqItems: FaqItem[] = [
 		id: 'setup-time',
 		question: 'How long does setup take?',
 		paragraphs: [
-			'Ringlume currently advertises a typical setup time of approximately 24–48 hours.',
-			'The receptionist is set up around your business, services, FAQs, booking rules, how calls should be handled, and when your team should be involved.',
+			`Setup time depends on the tools you use. Setup is smoothest and quickest, often an afternoon ${SETUP_QUALIFIER}, when you use ${formatList(SUPPORTED_STACK.phone)} for phone service, ${formatList(SUPPORTED_STACK.calendar)} for the calendar, ${formatList(SUPPORTED_STACK.booking)} for booking appointments, and a well-known CRM such as ${formatList(SUPPORTED_STACK.crm)}.`,
+			`With these tools, our aim is to take the production agent live within ${PRODUCTION_MAX}. The ${PRODUCTION_MAX} start after we have talked with you and you have confirmed what the agent needs to do.`,
+			`If you need to keep an existing PBX system or use a custom CRM, integration is more complex and takes longer. The ${PRODUCTION_MAX} does not apply.`,
+			'These tools are recommendations, not requirements. Setup times are targets, not guarantees.',
 		],
 	},
 	{
@@ -168,7 +177,7 @@ export const faqItems: FaqItem[] = [
 				before: 'Contact us through our ',
 				linkText: 'Contact page',
 				href: '/contact',
-				after: " or any of our listed contact channels. We'll upgrade your plan within a few hours and charge the prorated difference for the remainder of your current billing period.",
+				after: " or any of our listed contact channels. We'll upgrade your plan and charge the prorated difference for the remainder of your current billing period.",
 			},
 		],
 		paragraphs: [

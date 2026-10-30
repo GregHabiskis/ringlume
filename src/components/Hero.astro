@@ -1,5 +1,6 @@
 ---
 import { getRetellConfig } from '../lib/retell-config'
+import { DEMO_FREE_MINUTES } from '../lib/offer'
 
 const retell = getRetellConfig()
 ---
@@ -38,15 +39,15 @@ const retell = getRetellConfig()
 
       <!-- CTA Buttons -->
       <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-        <a href="#pricing" class="btn btn-primary reveal" style="--reveal-delay: 140ms">
-          Get Started Today
+        <a href="/book-demo" class="btn btn-primary reveal" style="--reveal-delay: 140ms">
+          Get Your Free Demo
         </a>
         <a
           href={retell ? '#demo' : '#capabilities'}
           class="btn btn-secondary reveal"
           style="--reveal-delay: 200ms"
         >
-          {retell ? 'Try a Demo' : 'Explore Features'}
+          {retell ? 'Try the Live Demo' : 'Explore Features'}
         </a>
       </div>
 
@@ -56,8 +57,10 @@ const retell = getRetellConfig()
         style="--reveal-delay: 260ms"
       >
         <div class="flex-1 text-center">
-          <div class="stat-number gradient-green-text font-bold">48 Hrs</div>
-          <div class="text-sm text-fg-3">Setup Time</div>
+          <div class="stat-number gradient-green-text font-bold">
+            {DEMO_FREE_MINUTES} Min
+          </div>
+          <div class="text-sm text-fg-3">Free Demo</div>
         </div>
         <span class="stat-divider" aria-hidden="true"></span>
         <div class="flex-1 text-center">

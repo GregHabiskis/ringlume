@@ -6,8 +6,18 @@ Static marketing site for Ringlume, a Voice AI receptionist product.
 - **Styling:** Tailwind CSS v4
 - **Package manager:** pnpm
 - **Hosting:** Netlify
-- **No CMS, no database, no payment integration:** plan CTAs link to a sales
-  meeting instead of a checkout
+- **No CMS, no database, no payment integration:** plan CTAs link to
+  `/book-demo` for a free personalized demo, not a checkout
+
+## Forms and offer facts
+
+`/book-demo` submits the six-field `demo-request` Netlify form to
+`/book-demo/thanks`. `/contact` submits the email/message `contact-message`
+form to `/contact/thanks`. Both thanks pages are noindex.
+
+Offer constants and the meeting URL live in `src/lib/offer.ts`.
+Demo delivery automation and the call-duration limit are managed by the owner,
+outside this repository. Form submissions must be tested on a Netlify deploy.
 
 ## Quick commands
 

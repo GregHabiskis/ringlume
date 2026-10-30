@@ -4,14 +4,16 @@ import { describe, expect, it } from 'vitest'
 const footerSourceUrl = new URL('../Footer.astro', import.meta.url)
 
 describe('footer', () => {
-	it('links only to Terms, Privacy, and Contact', async () => {
+	it('links to Free Demo, Terms, Privacy, and Contact', async () => {
 		const source = await readFile(footerSourceUrl, 'utf8')
 
+		expect(source).toContain("label: 'Free Demo', href: '/book-demo'")
 		expect(source).toContain("label: 'Terms', href: '/terms'")
 		expect(source).toContain("label: 'Privacy', href: '/privacy'")
 		expect(source).toContain("label: 'Contact', href: '/contact'")
 		expect(source).not.toContain('/refund')
 		expect(source).not.toContain('Navigation')
+		expect(source).not.toMatch(/telegram|t\.me|fshahariar/i)
 	})
 
 	it('keeps the logo, slogan, and copyright', async () => {

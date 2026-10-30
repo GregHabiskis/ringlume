@@ -2,6 +2,7 @@
 const currentYear = new Date().getFullYear()
 
 const footerLinks = [
+  { label: 'Free Demo', href: '/book-demo' },
   { label: 'Terms', href: '/terms' },
   { label: 'Privacy', href: '/privacy' },
   { label: 'Contact', href: '/contact' },
@@ -34,7 +35,7 @@ const footerLinks = [
         </p>
       </div>
 
-      <nav aria-label="Footer" class="flex items-center justify-center gap-8">
+      <nav aria-label="Footer" class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-8">
         {footerLinks.map((link) => (
           <a
             href={link.href}

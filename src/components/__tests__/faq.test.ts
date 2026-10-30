@@ -1,9 +1,11 @@
 import { readFile } from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
 import { faqItems } from '../../data/faqs'
+import { PRODUCTION_MAX, SUPPORTED_STACK } from '../../lib/offer'
 
 const faqSourceUrl = new URL('../FAQ.astro', import.meta.url)
 const dataSourceUrl = new URL('../../data/faqs.ts', import.meta.url)
+const markdownSourceUrl = new URL('../../data/faqs.md', import.meta.url)
 const homepageSourceUrl = new URL('../../pages/index.astro', import.meta.url)
 const faqPageSourceUrl = new URL('../../pages/faq.astro', import.meta.url)
 const headerSourceUrl = new URL('../Header.astro', import.meta.url)
@@ -38,7 +40,8 @@ describe('FAQ content', () => {
 
 		expect(source).toContain('How do I upgrade my subscription plan?')
 		expect(source).toContain("href: '/contact'")
-		expect(source).toContain('within a few hours')
+		expect(source).toContain("We'll upgrade your plan and charge the prorated difference")
+		expect(source).not.toContain('within a few hours')
 		expect(source).toContain('How do I cancel my subscription plan?')
 		expect(source).toContain("href: '/contact'")
 		expect(source).toContain('Cancellation takes effect at the end of your current billing period')
@@ -103,6 +106,26 @@ describe('FAQ content', () => {
 		expect(faqComponentSource).toContain('href="/faq"')
 		expect(faqComponentSource).toContain('View all FAQs')
 		expect(headerSource).toContain("{ label: 'FAQ', href: '/faq' }")
-		expect(headerSource).toContain('{navLinks.map((link) => (')
+	})
+
+	it('states the setup timeline and preferred tools accurately', async () => {
+		const setup = faqItems.find((faq) => faq.id === 'setup-time')
+		const text = setup?.paragraphs?.join(' ') ?? ''
+		const markdown = await readFile(markdownSourceUrl, 'utf8')
+
+		expect(text).toMatch(/under best circumstances/i)
+		expect(text).toContain('often an afternoon')
+		expect(text).toContain(PRODUCTION_MAX)
+		expect(text).toContain('PBX')
+		expect(text).toContain('custom CRM')
+		expect(text).toContain('targets, not guarantees')
+
+		for (const tools of Object.values(SUPPORTED_STACK)) {
+			for (const tool of tools) expect(text).toContain(tool)
+		}
+
+		expect(text).not.toContain('24–48')
+		expect(markdown).not.toContain('24–48')
+		expect(markdown).toContain('targets, not guarantees')
 	})
 })

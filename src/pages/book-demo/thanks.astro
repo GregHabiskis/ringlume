@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { CAL_BOOKING_URL, DEMO_DELIVERY_MAX } from '../../lib/offer'
+---
+
+<BaseLayout
+  title="Demo Request Received | Ringlume"
+  description="Your personalized Ringlume demo is on its way."
+  noindex
+>
+  <main class="scrim min-h-screen flex items-center justify-center px-4 py-20">
+    <div
+      class="glass glass-regular grain rounded-2xl p-8 sm:p-10 max-w-md w-full text-center"
+    >
+      <a href="/" class="inline-block mb-6">
+        <picture>
+          <source srcset="/images/logo-240.webp" type="image/webp" />
+          <img
+            src="/images/logo-240.png"
+            alt="Ringlume"
+            width="240"
+            height="96"
+            class="h-9 w-auto mx-auto"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </picture>
+      </a>
+
+      <p class="text-fg-1 text-lg font-semibold">
+        Request received. We're building your demo and will email the link
+        within {DEMO_DELIVERY_MAX}.
+      </p>
+
+      <a href="/#demo" class="btn btn-primary mt-6">
+        Try the live demo while you wait
+      </a>
+
+      <div class="mt-4">
+        <a
+          href={CAL_BOOKING_URL}
+          class="text-sm text-brand-text underline underline-offset-2 transition-colors hover:text-fg-1"
+        >
+          Prefer to talk? Book a call
+        </a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>

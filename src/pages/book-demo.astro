@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import Header from '../components/Header.astro'
+import DemoRequestForm from '../components/DemoRequestForm.astro'
+import Footer from '../components/Footer.astro'
+import { DEMO_FREE_MINUTES } from '../lib/offer'
+---
+
+<BaseLayout
+  title="Get Your Free Personalized Demo | Ringlume"
+  description={`Request a free personalized demo of a Ringlume voice agent built for your business. Test it free for up to ${DEMO_FREE_MINUTES} minutes.`}
+>
+  <Header />
+
+  <main class="scrim min-h-screen pt-24 pb-20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h1 class="text-h1 font-bold text-fg-1 mb-6">
+          Get Your Free Personalized Demo
+        </h1>
+        <p class="text-lead text-fg-3">
+          Tell us about your business and we'll email you a private link to test
+          a voice agent built for it, free for up to {DEMO_FREE_MINUTES} minutes.
+        </p>
+      </div>
+
+      <div
+        class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_31.5rem] gap-6 lg:gap-8 items-start"
+      >
+        <DemoRequestForm />
+
+        <aside aria-labelledby="what-happens-next">
+          <h2
+            id="what-happens-next"
+            class="text-lg font-semibold text-fg-1 mb-4"
+          >
+            What happens next
+          </h2>
+
+          <ol class="space-y-3">
+            <li
+              class="glass glass-fill glass-regular grain rounded-2xl p-4 flex items-start gap-3"
+            >
+              <span
+                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/15 text-sm font-semibold text-brand-text"
+                aria-hidden="true"
+              >
+                1
+              </span>
+              <span class="text-sm leading-relaxed text-fg-2">
+                Send us your details.
+              </span>
+            </li>
+
+            <li
+              class="glass glass-fill glass-regular grain rounded-2xl p-4 flex items-start gap-3"
+            >
+              <span
+                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/15 text-sm font-semibold text-brand-text"
+                aria-hidden="true"
+              >
+                2
+              </span>
+              <span class="text-sm leading-relaxed text-fg-2">
+                We build a voice agent around your business.
+              </span>
+            </li>
+
+            <li
+              class="glass glass-fill glass-regular grain rounded-2xl p-4 flex items-start gap-3"
+            >
+              <span
+                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/15 text-sm font-semibold text-brand-text"
+                aria-hidden="true"
+              >
+                3
+              </span>
+              <span class="text-sm leading-relaxed text-fg-2">
+                You get a private link by email. Test it free for up to
+                {DEMO_FREE_MINUTES} minutes.
+              </span>
+            </li>
+          </ol>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>

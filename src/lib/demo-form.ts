@@ -1,8 +1,9 @@
 // Netlify keys submission columns by these option values, so keep them stable.
 export const REFERRAL_OPTIONS = [
 	'Google search',
-	'Social media',
-	'Facebook group',
+	'Facebook',
+	'X/Twitter',
+	'YouTube',
 	'Referral from someone',
 	'AI assistant (ChatGPT, Claude, etc.)',
 	'Other',

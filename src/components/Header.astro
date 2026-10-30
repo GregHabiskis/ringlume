@@ -2,7 +2,7 @@
 const navLinks = [
   { label: 'Home', href: '/' },
   { label: 'Features', href: '/#capabilities' },
-  { label: 'Try a Demo', href: '/#demo' },
+  { label: 'Live Demo', href: '/#demo' },
   { label: 'Pricing', href: '/#pricing' },
   { label: 'FAQ', href: '/faq' },
   { label: 'Contact', href: '/contact' },
@@ -69,10 +69,10 @@ const currentAttr = (href: string) =>
 
     <div class="flex items-center gap-2">
       <a
-        href="/#pricing"
+        href="/book-demo"
         class="btn btn-primary hidden whitespace-nowrap px-5 py-2.5 text-[13px] md:inline-flex lg:px-6 lg:text-sm"
       >
-        Get Started
+        Free Demo
       </a>
 
       <!-- Mobile Menu Button -->
@@ -112,8 +112,8 @@ const currentAttr = (href: string) =>
         {link.label}
       </a>
     ))}
-    <a href="/#pricing" class="btn btn-primary mt-3 w-full text-sm">
-      Get Started
+    <a href="/book-demo" class="btn btn-primary mt-3 w-full text-sm">
+      Free Demo
     </a>
   </div>
 </div>
@@ -403,7 +403,7 @@ const currentAttr = (href: string) =>
     // ONCE, from the layout as it is at click time. Below-the-fold
     // sections are still content-visibility placeholders then; when they
     // render mid-flight the target moves and the scroll stops a section
-    // or two short (Pricing landing on Features / Try a Demo). So every
+    // or two short (Pricing landing on Features / Live Demo). So every
     // in-page anchor click is tracked and the scroll is re-issued from
     // live layout until the target really sits under the header. Manual
     // scrolling (wheel / touch / scroll keys) abandons the correction
@@ -511,7 +511,7 @@ const currentAttr = (href: string) =>
         }
       })
     }
-    // Any other in-page anchor (Get Started, hero CTAs) freezes the spy
+    // Any other in-page anchor (hero CTAs) freezes the spy
     // during its scroll too — no flicker through intermediate sections —
     // and gets the same landing correction as the nav links.
     document.addEventListener('click', (event) => {

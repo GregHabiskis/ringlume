@@ -76,15 +76,19 @@ Some businesses may use Ringlume as their primary receptionist, while others use
 The goal is to let your team spend more time on work that requires human attention while Ringlume handles routine phone tasks.
 
 ## How long does setup take?
-Ringlume currently advertises a typical setup time of approximately 24–48 hours.
+Setup time depends on the tools you use. Setup is smoothest and quickest, often an afternoon under best circumstances, when you use a VoIP number from Ringlume, Twilio, or Telnyx for phone service, Google Calendar for the calendar, Cal.com or Calendly for booking appointments, and a well-known CRM such as HubSpot, Salesforce, Zoho CRM, or GoHighLevel.
 
-The receptionist is set up around your business, services, FAQs, booking rules, how calls should be handled, and when your team should be involved.
+With these tools, our aim is to take the production agent live within 12 hours. The 12 hours start after we have talked with you and you have confirmed what the agent needs to do.
+
+If you need to keep an existing PBX system or use a custom CRM, integration is more complex and takes longer. The 12 hours does not apply.
+
+These tools are recommendations, not requirements. Setup times are targets, not guarantees.
 
 ## How much does Ringlume cost?
 Ringlume offers plans for different call volumes and the tasks you want it to handle. See our [pricing](/#pricing) for current plans and included features, or book a demo if you're unsure which setup is the right fit for your business.
 
 ## How do I upgrade my subscription plan?
-Contact us through our [Contact page](/contact) or any of our listed contact channels. We'll upgrade your plan within a few hours and charge the prorated difference for the remainder of your current billing period.
+Contact us through our [Contact page](/contact) or any of our listed contact channels. We'll upgrade your plan and charge the prorated difference for the remainder of your current billing period.
 
 You'll receive a confirmation email once the upgrade is complete.
 

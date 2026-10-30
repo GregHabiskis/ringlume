@@ -1,21 +1,24 @@
 ---
+import { SETUP_FAST_PHRASE, SETUP_QUALIFIER } from '../lib/offer'
+
 const plans = [
   {
     name: 'Basic',
     monthlyDisplay: '$299',
     annualMonthlyDisplay: '$249',
     annualBillingDisplay: 'Billed $2,990 annually',
-    description: 'Perfect for small businesses getting started with a virtual receptionist',
+    setupFee: '$800',
+    description: 'For solo entrepreneurs',
     features: [
-      '600 Call Minutes/month',
-      '24/7 Call Answering',
-      'Setup Using Your Business Information',
-      'Appointment Booking (1 Calendar)',
-      '1 Customer Management Integration',
-      'Daily Call Reports',
+      'Receptionist Agent',
+      '600 Phone Call Mins/month',
+      'Up to 50 calls at once',
+      'Live Transfer to Your Team',
       '1 Free Phone Number',
+      '1 Calendar & CRM Integration',
+      'Daily Call Recordings & Reports',
     ],
-    cta: 'Contact Sales',
+    cta: 'Get Your Free Demo',
     popular: false,
   },
   {
@@ -23,52 +26,62 @@ const plans = [
     monthlyDisplay: '$599',
     annualMonthlyDisplay: '$499',
     annualBillingDisplay: 'Billed $5,990 annually',
-    description: 'Built for growing businesses that need advanced capabilities',
+    setupFee: '$1,000',
+    description: 'For growing businesses',
     features: [
-      '1,200 Call Minutes/month',
-      'Everything in Basic',
+      'Lead Follow-up Agent',
+      '1,200 Phone Call Mins/month',
+      'Up to 100 calls at once',
       'Live Transfer to Your Team',
+      '3 Free Phone Number',
+      'Custom Integrations',
+      'Daily Call Recordings & Reports',
       'Multilingual Support',
-      'Meta/Facebook Lead Integration',
-      'Daily Call Recordings & Written Records',
-      '3 Free Phone Numbers',
     ],
-    cta: 'Contact Sales',
-    popular: false,
+    cta: 'Get Your Free Demo',
+    popular: true,
   },
   {
     name: 'Plus',
     monthlyDisplay: '$999',
     annualMonthlyDisplay: '$832',
     annualBillingDisplay: 'Billed $9,990 annually',
-    description: 'Most popular for scaling teams that need more power',
+    setupFee: '$1,200',
+    description: 'For busy offices',
     features: [
-      '2,400 Call Minutes/month',
-      'Everything in Pro',
-      'Scheduled Outbound Call Campaigns',
-      'Multi-Location Workspace Management',
-      'Customer Management & Calendar Integrations',
+      'Customer Support Agent',
+      '2,400 Phone Call Mins/month',
+      'Up to 200 calls at once',
+      'Live Transfer to Your Team',
+      '5 Free Phone Number',
+      'Custom Integrations',
+      'Daily Call Recordings & Reports',
+      'Multilingual Support',
       'Priority Email & Chat Support',
-      '5 Free Phone Numbers',
     ],
-    cta: 'Contact Sales',
-    popular: true,
+    cta: 'Get Your Free Demo',
+    popular: false,
   },
   {
     name: 'Max',
     monthlyDisplay: '$1,999',
     annualMonthlyDisplay: '$1,666',
     annualBillingDisplay: 'Billed $19,990 annually',
-    description: 'For enterprises that need maximum capacity and customization',
+    setupFee: '$1,200',
+    description: 'For enterprises',
     features: [
-      '5,000 Call Minutes/month',
-      'Everything in Plus',
+      'All Three Agents',
+      '5,000 Phone Call Mins/month',
+      'Up to 300 calls at once',
+      'Live Transfer to Your Team',
+      '5 Free Phone Number',
+      'Custom Integrations',
+      'Daily Call Recordings & Reports',
+      'Multilingual Support',
+      'Dedicated Priority Support',
       'Enterprise Compliance (HIPAA, GDPR, SOC 2)',
-      'Ongoing Call Quality Improvements',
-      'Custom Integrations & Developer Access',
-      'Dedicated Priority Support & Setup Assistance',
     ],
-    cta: 'Contact Sales',
+    cta: 'Get Your Free Demo',
     popular: false,
   },
 ]
@@ -157,7 +170,10 @@ const plans = [
               </div>
             </div>
             <p class="pricing-billing text-sm text-fg-3 mt-1">Billed monthly</p>
-            <p class="text-xs text-fg-3 mt-1">+ $1,200 one-time Service Setup Fee</p>
+            <p class="text-xs text-fg-3 mt-1">
+            + {plan.setupFee} one-time Service Setup Fee
+            </p>
+            <p class="text-xs text-fg-3 mt-1">$0.20 / min overage</p>
           </div>
 
           <!-- Features -->
@@ -176,7 +192,7 @@ const plans = [
 
           <!-- CTA Button -->
           <a
-            href="https://cal.com/ringlume/meeting"
+            href="/book-demo"
             data-plan={plan.name.toLowerCase()}
             aria-describedby={`cta-legal-notice-${plan.name.toLowerCase()}`}
             class={`btn w-full justify-center ${plan.popular ? 'btn-primary' : 'btn-secondary'}`}
@@ -193,14 +209,26 @@ const plans = [
       ))}
     </div>
 
-    <!-- Trust Text -->
+    <!-- Trust Text + subtle setup disclosure (no heading: keeps the outline) -->
     <div class="mt-12 text-center space-y-2">
       <p class="text-sm text-fg-3">
-        No hidden fees. Cancel anytime. Setup in 24–48 hours. Minutes reset monthly.
+        No hidden fees. Cancel anytime. Minutes reset monthly.
       </p>
       <p class="text-sm text-fg-3">
         Extra usage: $0.20/min.
       </p>
+      <div class="mx-auto max-w-md pt-2">
+        <p class="font-display text-base text-fg-1">{SETUP_FAST_PHRASE}</p>
+        <p class="mt-1 text-xs text-fg-3">
+          <a
+            href="/terms#setup-time"
+            aria-label="Setup time details in our Terms"
+            class="no-underline underline-offset-2 transition-colors hover:text-fg-1 hover:underline focus-visible:underline"
+          >
+            {SETUP_QUALIFIER}
+          </a>
+        </p>
+      </div>
     </div>
   </div>
 </section>

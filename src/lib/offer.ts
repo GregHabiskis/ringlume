@@ -1,6 +1,4 @@
 // Public offer facts. Change these here, never inline in components.
-export const SETUP_FAST_PHRASE = 'Go live in an afternoon'
-export const SETUP_QUALIFIER = 'under best circumstances'
 export const DEMO_DELIVERY_MAX = '1 hour'
 export const PRODUCTION_MAX = '12 hours'
 export const DEMO_FREE_MINUTES = 10
@@ -16,8 +14,7 @@ export const SUPPORTED_STACK = {
 	crm: ['HubSpot', 'Salesforce', 'Zoho CRM', 'GoHighLevel'],
 } as const
 
-// "A, B, or C" (and "A or B" for two items) so the Terms and FAQ read
-// the same wherever the stack is listed.
+// "A, B, or C" (and "A or B" for two items) for the Terms' preferred tool lists.
 export function formatList(items: readonly string[]): string {
 	if (items.length <= 1) return items.join('')
 	if (items.length === 2) return items.join(' or ')

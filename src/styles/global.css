@@ -223,7 +223,7 @@
 
 /* ------------------------------------------------------------
    Backdrop "Signal": fixed and static. Near-black base + one soft
-   green spotlight at top centre + a masked dot grid, so the glass
+   green spotlight at top centre + a persistent dot grid, so the glass
    has real detail to refract. The hero paints its own ripple rings.
    ------------------------------------------------------------ */
 
@@ -241,19 +241,17 @@
 	);
 }
 
-/* ~1px dots, 28px pitch, ~7% white, radial mask fading to the edges */
+/* Subtle 1px dots across the whole viewport, shared by every page. */
 .scene::after {
 	content: '';
 	position: absolute;
 	inset: 0;
 	background-image: radial-gradient(
 		circle,
-		rgba(255, 255, 255, 0.07) 1px,
+		rgba(255, 255, 255, 0.09) 1px,
 		transparent 1.4px
 	);
 	background-size: 28px 28px;
-	-webkit-mask-image: radial-gradient(ellipse 78% 70% at 50% 42%, #000 30%, transparent 100%);
-	mask-image: radial-gradient(ellipse 78% 70% at 50% 42%, #000 30%, transparent 100%);
 }
 
 /* ------------------------------------------------------------
@@ -352,6 +350,23 @@
 	}
 }
 
+/* One clear material for the homepage demo, flow, calculator, and closing CTA.
+   Background alpha only: text and controls remain fully opaque. */
+.glass.glass-card {
+	--glass-fill: color-mix(in srgb, var(--bg-alt) 40%, transparent);
+	--glass-fill-2: var(--glass-fill);
+	--glass-filter: none;
+	--line: color-mix(in srgb, var(--fg-3) 12%, transparent);
+	--line-strong: color-mix(in srgb, var(--fg-3) 24%, transparent);
+	border: 1px solid color-mix(in srgb, var(--fg-3) 20%, transparent);
+	background: var(--glass-fill);
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+	box-shadow:
+		inset 0 1px 0 color-mix(in srgb, var(--fg-3) 6%, transparent),
+		var(--shadow-contact);
+}
+
 /* Grain overlay: .grain also establishes the containing block so the
    ::after never escapes to an ancestor when no `relative` utility is set. */
 .grain {
@@ -383,7 +398,8 @@
 /* Reduced transparency / high contrast: near-opaque, no blur */
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
 	.glass,
-	.glass-fill {
+	.glass-fill,
+	.glass.glass-card {
 		--glass-fill: rgba(8, 11, 18, 0.94);
 		--glass-fill-2: rgba(8, 11, 18, 0.94);
 		--glass-filter: none;
@@ -391,6 +407,10 @@
 		box-shadow:
 			inset 0 0 0 1px var(--line-strong),
 			var(--shadow-contact);
+	}
+
+	.glass.glass-card {
+		border-color: var(--fg-3);
 	}
 
 	.grain::after {
@@ -402,15 +422,10 @@
    Section helpers
    ------------------------------------------------------------ */
 
-/* Scrim keeps scene colour visible while protecting small text */
-.scrim {
-	background-color: var(--bg-base);
-	background-color: color-mix(in srgb, var(--bg-base) 76%, transparent);
-}
-
+/* Sections share the dark scene without hiding its dots. */
+.scrim,
 .scrim-soft {
-	background-color: var(--bg-base);
-	background-color: color-mix(in srgb, var(--bg-base) 45%, transparent);
+	background-color: transparent;
 }
 
 /* ------------------------------------------------------------
@@ -728,4 +743,3 @@
 
 }
 /* end @layer components */
-

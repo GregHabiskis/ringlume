@@ -1,0 +1,72 @@
+---
+import { PLANS, formatPrice } from '../lib/pricing'
+
+const annualMedianWage = 38010
+const monthlyMedianWage = Math.round(annualMedianWage / 12)
+const basic = PLANS[0]
+---
+
+<section
+	class="scrim content-auto py-16 lg:py-24"
+	aria-labelledby="comparison-heading"
+>
+	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+		<div
+			class="comparison-layout grid gap-10 border-y border-line py-12 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-20 lg:py-16"
+		>
+			<div>
+				<h2
+					id="comparison-heading"
+					class="reveal-text max-w-xl text-h2 font-bold text-fg-1"
+				>
+					More call coverage.<br /><span class="text-brand-text"
+						>Less hiring overhead.</span
+					>
+				</h2>
+				<p class="mt-5 max-w-lg text-base leading-relaxed text-fg-3">
+					U.S. median receptionist wage: {formatPrice(annualMedianWage)}/year.
+				</p>
+			</div>
+			<div>
+				<div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+					<span class="wage-amount font-semibold text-fg-1"
+						>{formatPrice(monthlyMedianWage)}</span
+					>
+					<span class="text-sm text-fg-3">/ month in wages alone</span>
+				</div>
+				<div class="mt-5 h-2 rounded-full bg-fg-1/10" aria-hidden="true"></div>
+				<p class="mt-6 text-sm text-fg-2">
+					Ringlume Basic: <span class="font-semibold text-brand-text"
+						>{formatPrice(basic.monthly)}/month</span
+					> + {formatPrice(basic.setupFee)} setup.
+				</p>
+				<p class="mt-2 text-xs text-fg-3">
+					{basic.minutes} minutes/month. Extra minutes: ${
+						basic.overagePerMinute.toFixed(2)
+					} each.
+				</p>
+				<p class="mt-5 text-xs leading-relaxed text-fg-3">
+					Source: <a
+						href="https://www.onetonline.org/link/summary/43-4171.00#WagesEmployment"
+						class="underline underline-offset-4 hover:text-fg-1"
+						>O*NET OnLine, 2025 BLS median wage</a
+					>. Ringlume does not replace in-person duties. Not guaranteed savings.
+					<a
+						href="/terms#estimates"
+						class="underline underline-offset-4 hover:text-fg-1"
+						>Comparison details</a
+					>.
+				</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.wage-amount {
+		font-size: clamp(3rem, 2.5rem + 2vw, 4.75rem);
+		line-height: 1;
+		letter-spacing: -0.06em;
+		font-variant-numeric: tabular-nums;
+	}
+</style>

@@ -8,6 +8,11 @@ import {
   PRODUCTION_MAX,
   SUPPORTED_STACK,
 } from '../lib/offer'
+import { PLANS } from '../lib/pricing'
+
+const overageRates = PLANS.map(
+  (plan) => `${plan.name}: $${plan.overagePerMinute.toFixed(2)}/minute`,
+).join('; ')
 ---
 
 <BaseLayout
@@ -19,7 +24,7 @@ import {
   <main class="scrim min-h-screen pt-24 pb-20">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <h1 class="text-h1 font-bold text-fg-1 mb-4">Terms & Conditions</h1>
-      <p class="text-fg-3 mb-12">Last Updated: October 30, 2026</p>
+      <p class="text-fg-3 mb-12">Last Updated: October 31, 2026</p>
 
       <div class="glass glass-thick grain max-w-none space-y-10 rounded-[32px] p-6 sm:p-10 lg:p-14">
 
@@ -63,6 +68,16 @@ import {
             active subscription plan and may be updated or modified by Ringlume from time
             to time to improve functionality and service quality.
           </p>
+          <h3 id="service-details" class="scroll-mt-24 text-lg font-semibold text-fg-1 mt-8 mb-3">
+            2.1 Configuration and Integrations
+          </h3>
+          <p class="text-fg-2 leading-relaxed">
+            Your phone setup, calendar, CRM, and any special compliance requirements
+            are reviewed before setup. Custom integrations depend on the tools and
+            agreed scope. No compliance certification or regulated workflow is
+            guaranteed by choosing a plan. Preferred tools and setup targets are
+            explained in <a href="#setup-time" class="text-brand-text underline underline-offset-2">section 7.1</a>.
+          </p>
         </section>
 
         <!-- 3. Subscription Terms & Billing -->
@@ -95,6 +110,39 @@ import {
             <strong class="text-fg-1">No refunds.</strong> All fees, including subscription
             charges and the one-time Service Setup Fee, are non-refundable, except where a
             refund is required by applicable law.
+          </p>
+          <h3 id="billing-details" class="scroll-mt-24 text-lg font-semibold text-fg-1 mt-8 mb-3">
+            3.1 Minutes, Annual Billing, and Plan Changes
+          </h3>
+          <p class="text-fg-2 leading-relaxed">
+            Included minutes reset monthly. Extra call-minute rates are
+            {overageRates}. Annual subscriptions are charged
+            at the full annual total shown on the Pricing page; displayed monthly
+            equivalents are approximate, not monthly charges.
+          </p>
+          <p class="text-fg-2 leading-relaxed mt-4">
+            Request upgrades or cancellation through our
+            <a href="/contact" class="text-brand-text underline underline-offset-2">Contact page</a>.
+            Upgrades are charged at the prorated difference for the rest of the
+            current billing period. Cancellation takes effect at the end of the
+            current billing period. We confirm changes by email.
+          </p>
+          <h3 id="estimates" class="scroll-mt-24 text-lg font-semibold text-fg-1 mt-8 mb-3">
+            3.2 Illustrative Estimates and Wage Comparisons
+          </h3>
+          <p class="text-fg-2 leading-relaxed">
+            The missed-call calculator multiplies missed calls per week by the
+            assumed booking rate, booking value, repeat-visit multiplier, and 52
+            weeks. Monthly estimates divide that result by 12. These are illustrative
+            assumptions, not promised bookings or revenue. Actual recovered revenue
+            depends on call volume, lead quality, scheduling capacity, and other factors.
+          </p>
+          <p class="text-fg-2 leading-relaxed mt-4">
+            The wage comparison divides the cited U.S. annual median receptionist
+            wage by 12 and rounds to the nearest dollar. Wages exclude benefits and
+            payroll taxes and do not cover 24/7 staffing. Ringlume handles phone
+            calls and scheduling, not in-person reception or every administrative
+            duty. This comparison does not guarantee savings.
           </p>
         </section>
         <!-- 4. Intellectual Property & Licensing -->

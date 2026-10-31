@@ -5,12 +5,14 @@ interface Props {
 	faqIds?: readonly FaqId[]
 	headingLevel?: 'h1' | 'h2'
 	showAllLink?: boolean
+	compact?: boolean
 }
 
 const {
 	faqIds,
 	headingLevel = 'h2',
 	showAllLink = false,
+	compact = false,
 } = Astro.props
 
 const faqs = faqIds
@@ -22,107 +24,168 @@ const faqs = faqIds
 
 <section
 	id="faq"
-	class="scrim scroll-mt-16 overflow-hidden py-20 content-auto lg:scroll-mt-20 lg:py-32"
+	class:list={[
+		'scrim scroll-mt-16 overflow-hidden py-20 content-auto lg:scroll-mt-20 lg:py-32',
+		compact && 'faq-compact',
+	]}
 	aria-labelledby="faq-heading"
 	data-faq
 >
-	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-		<header class="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
-			{headingLevel === 'h1' ? (
-				<h1 id="faq-heading" class="text-h2 font-bold text-fg-1">
-					Frequently Asked <span class="gradient-green-text">Questions</span>
-				</h1>
-			) : (
-				<h2 id="faq-heading" class="text-h2 font-bold text-fg-1">
-					Frequently Asked <span class="gradient-green-text">Questions</span>
-				</h2>
-			)}
+	<div
+		class:list={[
+			'mx-auto max-w-7xl px-4 sm:px-6 lg:px-8',
+			compact && 'faq-layout',
+		]}
+	>
+		<header
+			class:list={[
+				'mx-auto mb-12 max-w-3xl text-center sm:mb-16',
+				compact && 'faq-intro',
+			]}
+		>
+			{
+				headingLevel === 'h1' ? (
+					<h1 id="faq-heading" class="text-h2 font-bold text-fg-1">
+						Frequently Asked <span class="gradient-green-text">Questions</span>
+					</h1>
+				) : (
+					<h2 id="faq-heading" class="text-h2 font-bold text-fg-1">
+						Frequently Asked <span class="gradient-green-text">Questions</span>
+					</h2>
+				)
+			}
 		</header>
 
-		<div class="glass glass-thick grain mx-auto max-w-4xl overflow-hidden rounded-3xl">
-			{faqs.map((faq) => {
-				const questionId = `faq-question-${faq.id}`
-				const answerId = `faq-answer-${faq.id}`
+		<div
+			class:list={[
+				'mx-auto w-full max-w-4xl overflow-hidden',
+				compact ? 'faq-list' : 'glass glass-thick grain rounded-3xl',
+			]}
+		>
+			{
+				faqs.map((faq) => {
+					const questionId = `faq-question-${faq.id}`
+					const answerId = `faq-answer-${faq.id}`
 
-				return (
-					<div class="faq-item border-b border-line last:border-b-0" data-faq-item>
-						<h3 class="m-0">
-							<button
-								type="button"
-								id={questionId}
-								class="flex min-h-16 w-full min-w-0 items-center justify-between gap-4 px-5 py-5 text-left text-base font-semibold leading-relaxed text-fg-1 transition-colors hover:bg-fg-1/[0.04] sm:px-7 sm:py-6 sm:text-lg"
-								aria-expanded="false"
-								aria-controls={answerId}
-								data-faq-trigger
-							>
-								<span class="min-w-0 break-words">{faq.question}</span>
-								<svg
-									class="h-5 w-5 flex-none text-brand-text transition-transform duration-200 motion-reduce:transition-none"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									aria-hidden="true"
-									data-faq-icon
-								>
-									<path d="M12 5v14M5 12h14" />
-								</svg>
-							</button>
-						</h3>
-
+					return (
 						<div
-							id={answerId}
-							class="faq-answer"
-							data-faq-answer
-							data-open="false"
-							hidden
+							class="faq-item border-b border-line last:border-b-0"
+							data-faq-item
 						>
-							<div class="min-h-0 overflow-hidden px-5 pb-6 pr-14 text-sm leading-relaxed text-fg-2 sm:px-7 sm:pb-7 sm:pr-16 sm:text-base">
-								{faq.linkedParagraphs?.map((paragraph) => (
-									<p class="mb-4 last:mb-0">
-										{paragraph.before}
-										<a
-											href={paragraph.href}
-											class="text-brand-text underline underline-offset-2 hover:opacity-80"
-										>
-											{paragraph.linkText}
-										</a>
-										{paragraph.after}
-									</p>
-								))}
+							<h3 class="m-0">
+								<button
+									type="button"
+									id={questionId}
+									class="flex min-h-16 w-full min-w-0 items-center justify-between gap-4 px-5 py-5 text-left text-base font-semibold leading-relaxed text-fg-1 transition-colors hover:bg-fg-1/[0.04] sm:px-7 sm:py-6 sm:text-lg"
+									aria-expanded="false"
+									aria-controls={answerId}
+									data-faq-trigger
+								>
+									<span class="min-w-0 break-words">{faq.question}</span>
+									<svg
+										class="h-5 w-5 flex-none text-brand-text transition-transform duration-200 motion-reduce:transition-none"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										stroke-linecap="round"
+										aria-hidden="true"
+										data-faq-icon
+									>
+										<path d="M12 5v14M5 12h14" />
+									</svg>
+								</button>
+							</h3>
 
-								{faq.paragraphs?.map((paragraph) => (
-									<p class="mb-4 last:mb-0">{paragraph}</p>
-								))}
+							<div
+								id={answerId}
+								class="faq-answer"
+								data-faq-answer
+								data-open="false"
+								hidden
+							>
+								<div class="min-h-0 overflow-hidden px-5 pb-6 pr-14 text-sm leading-relaxed text-fg-2 sm:px-7 sm:pb-7 sm:pr-16 sm:text-base">
+									{faq.linkedParagraphs?.map((paragraph) => (
+										<p class="mb-4 last:mb-0">
+											{paragraph.before}
+											<a
+												href={paragraph.href}
+												class="text-brand-text underline underline-offset-2 hover:opacity-80"
+											>
+												{paragraph.linkText}
+											</a>
+											{paragraph.after}
+										</p>
+									))}
 
-								{faq.list && (
-									<ul class="mt-4 list-disc space-y-2 pl-5 marker:text-brand-text">
-										{faq.list.map((item) => <li>{item}</li>)}
-									</ul>
-								)}
+									{faq.paragraphs?.map((paragraph) => (
+										<p class="mb-4 last:mb-0">{paragraph}</p>
+									))}
+
+									{faq.list && (
+										<ul class="mt-4 list-disc space-y-2 pl-5 marker:text-brand-text">
+											{faq.list.map((item) => (
+												<li>{item}</li>
+											))}
+										</ul>
+									)}
+								</div>
 							</div>
 						</div>
-					</div>
-				)
-			})}
+					)
+				})
+			}
 		</div>
 
-		{showAllLink && (
-			<div class="mt-8 text-center">
-				<a
-					href="/faq"
-					class="btn btn-primary"
-				>
-					View all FAQs
-					<span aria-hidden="true">&rarr;</span>
-				</a>
-			</div>
-		)}
+		{
+			showAllLink && (
+				<div class:list={['mt-8 text-center', compact && 'faq-more']}>
+					<a
+						href="/faq"
+						class:list={['btn', compact ? 'btn-secondary' : 'btn-primary']}
+					>
+						View all FAQs
+						<span aria-hidden="true">&rarr;</span>
+					</a>
+				</div>
+			)
+		}
 	</div>
 </section>
 
 <style>
+	.faq-compact {
+		padding-block: 4rem;
+	}
+	.faq-intro {
+		margin: 0 0 2rem;
+		text-align: left;
+	}
+	.faq-list {
+		border-top: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
+	}
+	.faq-more {
+		text-align: left;
+	}
+	@media (min-width: 1024px) {
+		.faq-compact {
+			padding-block: 6rem;
+		}
+		.faq-layout {
+			display: grid;
+			grid-template-columns: 0.8fr 1.2fr;
+			column-gap: 5rem;
+			align-items: start;
+		}
+		.faq-intro {
+			grid-row: span 2;
+		}
+		.faq-more {
+			grid-column: 2;
+		}
+	}
+
 	.faq-answer {
 		display: grid;
 		grid-template-rows: 0fr;

@@ -2,128 +2,242 @@
 import { getRetellConfig } from '../lib/retell-config'
 
 const retell = getRetellConfig()
-
-const tryAsking = [
-	'What do your plans cost?',
-	'Book me in for Tuesday at 3pm',
-	'Do you cover my area?',
-]
 ---
 
 {
 	retell && (
-		<section
+		<aside
 			id="demo"
-			class="gradient-bg-muted relative scroll-mt-16 overflow-hidden py-20 content-auto lg:scroll-mt-20 lg:py-32"
+			class="voice-console glass glass-fill glass-regular glass-card relative scroll-mt-24 overflow-hidden rounded-[2rem]"
+			aria-labelledby="demo-heading"
 			data-retell-public-key={retell.voicePublicKey}
 			data-retell-agent-id={retell.voiceAgentId}
 			data-retell-recaptcha-key={retell.recaptchaKey}
 		>
-			<div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-				<div class="mx-auto max-w-3xl text-center">
-					<p class="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/40 px-4 py-1.5 text-[11px] font-bold tracking-[0.2em] text-white uppercase">
-						<span
-							class="h-1.5 w-1.5 animate-pulse rounded-full bg-white"
-							aria-hidden="true"
-						/>
-						Live demo
-					</p>
-
-					<h2 class="reveal-text mb-6 text-h2 font-bold text-white">
-						Hear it live.
-					</h2>
-
-					<p class="mb-10 text-base text-white/80 sm:text-lg">
-						Talk to Ringlume's Virtual receptionist right here on the page. It
-						answers questions, books appointments, and qualifies leads, the
-						same agent that picks up when your customers call.
-					</p>
-
-					<button
-						type="button"
-						data-demo-open
-						class="inline-flex items-center gap-3 rounded-full border border-white/20 bg-[#111419] px-8 py-4 text-base font-semibold text-white transition-all hover:border-white/35 hover:bg-[#1a1e24] disabled:opacity-60"
-					>
-						<svg
-							class="h-5 w-5 shrink-0"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-							aria-hidden="true"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"
-							/>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"
-							/>
-						</svg>
-						<span data-demo-label>Talk to the demo</span>
-					</button>
-
-					<p class="mt-4 text-sm text-white/70">
-						Opens a live voice call in your browser. Your microphone will be
-						asked for permission.
-					</p>
-
-					<p class="mt-5 text-sm text-white/70">
-						Want one built for your business?
-						<a
-							href="/book-demo"
-							class="font-semibold text-white underline underline-offset-4 transition-colors hover:text-white/80"
-						>
-							Get your free personalized demo
-						</a>
-					</p>
-
-					<div class="mt-10 flex flex-wrap items-center justify-center gap-3">
-						<span
-							class="text-xs font-bold tracking-[0.2em] text-white/70 uppercase"
-							set:text="Try asking"
-						/>
-						{tryAsking.map((prompt) => (
+			<div class="flex items-center justify-between gap-4 border-b border-line px-6 py-5 sm:px-8">
+				<h2 id="demo-heading" class="font-sans text-sm font-semibold text-fg-1">
+					Live voice demo
+				</h2>
+				<span class="flex items-center gap-2 text-xs text-fg-3">
+					<span class="h-1.5 w-1.5 rounded-full bg-brand" aria-hidden="true" />
+					Try it yourself
+				</span>
+			</div>
+			<div class="signal-stage" aria-hidden="true">
+				<div class="hero-rings">
+					<>
+						<span class="hero-ring" />
+						<span class="hero-ring" />
+						<span class="hero-ring" />
+					</>
+				</div>
+				<div class="signal-lens">
+					<div class="signal-core">
+						{[14, 25, 38, 21, 46, 30, 18].map((height, index) => (
 							<span
-								class="rounded-full border border-white/15 bg-black/40 px-4 py-2 text-sm text-white/90"
-								set:text={prompt}
+								style={`height: ${height}px; --wave-delay: ${index * -0.23}s; --wave-duration: ${1.6 + (index % 3) * 0.3}s`}
 							/>
 						))}
 					</div>
 				</div>
 			</div>
-		</section>
+			<div class="relative px-6 pb-7 text-center sm:px-8 sm:pb-8">
+				<p class="mb-5 text-sm text-fg-2">
+					A real conversation. Not a recording.
+				</p>
+				<button
+					type="button"
+					data-demo-open
+					class="btn btn-primary w-full disabled:opacity-60"
+					aria-describedby="demo-call-help"
+				>
+					<svg
+						width="18"
+						height="18"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.7"
+						stroke-linecap="round"
+						viewBox="0 0 24 24"
+						aria-hidden="true"
+					>
+						<path d="M8 3H5a2 2 0 0 0-2 2c0 8.8 7.2 16 16 16a2 2 0 0 0 2-2v-3l-5-2-2 2a13 13 0 0 1-6-6l2-2-2-5Z" />
+					</svg>
+					<span data-demo-label>Try it now</span>
+				</button>
+				<p id="demo-call-help" class="mt-3 text-xs leading-relaxed text-fg-3">
+					Opens the call panel. Microphone required to speak.
+				</p>
+				<p class="mt-4 text-xs text-fg-3">
+					Try asking: &ldquo;Can I book an appointment?&rdquo;
+				</p>
+				<p data-demo-status role="status" class="mt-3 text-sm text-fg-2" />
+				<noscript>
+					<p class="mt-3 text-sm text-fg-3">
+						Enable JavaScript to use the live demo.
+					</p>
+				</noscript>
+			</div>
+			<div class="border-t border-line px-5 py-4 text-center">
+				<a
+					href="/book-demo"
+					class="text-xs text-fg-3 underline underline-offset-4 hover:text-fg-1"
+				>
+					Get your free personalized demo
+				</a>
+			</div>
+		</aside>
 	)
 }
 
 <style>
-	/*
-		The "Live demo" dot pulses forever, and this section keeps `content-auto`
-		(content-visibility: auto) so it stays out of the initial style/layout
-		budget. Those two facts fight: an always-running animation inside a
-		content-visibility subtree stops the renderer from skipping that subtree,
-		so it re-ran style recalculation for it on every frame, 3.1s of 3.9s (82%)
-		of the page's main-thread burn in a 6s window under 4x CPU throttle.
-
-		Three fixes were measured; only the last one ships:
-		  - Pulses on a pseudo-element instead: no gain (+268ms), the animation is
-		    still inside the skipped subtree.
-		  - Drop `content-auto` from this section: burn gone (-2,528ms median of 5
-		    paired runs), but the section is then laid out at load and Lighthouse
-		    mobile regressed in 5 runs (TBT 407 -> 522ms, FCP 1921 -> 2003ms,
-		    SI 5133 -> 5330ms, score 84 -> 80) while every section below #demo
-		    shifted down 537px (6,296 -> 6,833px scroll height). Rejected.
-		  - Drive the pulse from scroll position: burn -2,792ms, subtree stays
-		    skippable, markup and lab numbers unchanged. Ships below.
-		`animation-timeline` is Chromium/WebKit-only for now; engines without it
-		discard the declaration and keep the original time-based blink.
-	*/
-	.animate-pulse {
-		animation-timeline: view();
+	.signal-stage {
+		position: relative;
+		display: grid;
+		height: 245px;
+		place-items: center;
+		overflow: hidden;
+	}
+	.signal-lens {
+		position: relative;
+		display: grid;
+		width: 174px;
+		aspect-ratio: 1;
+		place-items: center;
+		border-radius: 50%;
+	}
+	.signal-lens::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: conic-gradient(
+			from 25deg,
+			var(--glass-edge-lo),
+			var(--brand-deep),
+			var(--bg-alt),
+			var(--brand-bright),
+			var(--glass-edge-hi),
+			var(--bg-alt),
+			var(--glass-edge-lo)
+		);
+		box-shadow:
+			inset 0 1px 2px var(--fg-2),
+			inset 0 -2px 8px var(--brand-deep),
+			0 16px 32px -20px var(--brand-ink);
+		animation: signal-orbit 18s linear infinite;
+	}
+	.signal-core {
+		position: relative;
+		display: flex;
+		width: 146px;
+		aspect-ratio: 1;
+		align-items: center;
+		justify-content: center;
+		gap: 5px;
+		border-radius: 50%;
+		background: linear-gradient(
+			145deg,
+			color-mix(in srgb, var(--fg-1) 14%, var(--bg-alt)),
+			var(--bg-base) 65%
+		);
+		box-shadow:
+			inset 0 1px 1px var(--glass-edge-hi),
+			inset 0 -1px 1px var(--brand-deep);
+	}
+	.signal-core span {
+		width: 4px;
+		border-radius: 10px;
+		background: linear-gradient(var(--fg-1), var(--brand));
+		transform-origin: center;
+		animation: signal-wave var(--wave-duration) ease-in-out var(--wave-delay)
+			infinite;
+	}
+	@keyframes signal-orbit {
+		to {
+			transform: rotate(1turn);
+		}
+	}
+	@keyframes signal-wave {
+		0%,
+		100% {
+			transform: scaleY(0.4);
+			opacity: 0.75;
+		}
+		30% {
+			transform: scaleY(1);
+			opacity: 1;
+		}
+		60% {
+			transform: scaleY(0.55);
+			opacity: 0.85;
+		}
+		80% {
+			transform: scaleY(0.8);
+			opacity: 1;
+		}
+	}
+	.hero-rings {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+	.hero-ring {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 300px;
+		height: 300px;
+		margin: -150px;
+		border: 1px solid var(--brand);
+		border-radius: 50%;
+		opacity: 0;
+		animation: ring-expand 8s linear infinite;
+	}
+	.hero-ring:nth-child(2) {
+		animation-delay: -2.7s;
+	}
+	.hero-ring:nth-child(3) {
+		animation-delay: -5.4s;
+	}
+	@keyframes ring-expand {
+		0% {
+			transform: scale(0.55);
+			opacity: 0;
+		}
+		20% {
+			opacity: 0.2;
+		}
+		100% {
+			transform: scale(1.6);
+			opacity: 0;
+		}
+	}
+	:global(html.is-paused) .hero-ring,
+	:global(html.is-paused) .signal-lens::before,
+	:global(html.is-paused) .signal-core span {
+		animation-play-state: paused;
+	}
+	@media (min-width: 640px) {
+		.signal-stage {
+			height: 265px;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.signal-lens::before,
+		.signal-core span {
+			animation: none;
+		}
+		.hero-ring {
+			animation: none;
+			opacity: 0.12;
+		}
+		.hero-ring:nth-child(2) {
+			transform: scale(1.25);
+		}
+		.hero-ring:nth-child(3) {
+			transform: scale(1.5);
+		}
 	}
 </style>
 
@@ -131,8 +245,8 @@ const tryAsking = [
 	const RETELL_SCRIPT_ID = 'retell-widget'
 	const RETELL_SRC = 'https://dashboard.retellai.com/retell-widget-v2.js'
 	const RETELL_TITLE = "Talk to Ringlume's Virtual receptionist"
-	const RETELL_FAB_TEXT = 'Try our Virtual receptionist'
-	const OPEN_LABEL = 'Talk to the demo'
+	const RETELL_FAB_TEXT = 'Try it now'
+	const OPEN_LABEL = 'Try it now'
 	const BUSY_LABEL = 'Connecting…'
 	const MAX_WAIT_MS = 8000
 
@@ -140,10 +254,7 @@ const tryAsking = [
 	// Keep this in sync with that list: on any other origin
 	// POST /v3/create-web-call returns 401 and the widget fails silently
 	// (panel opens, timer stays 00:00, agent never speaks).
-	const ALLOWED_ORIGINS = [
-		'https://ringlume.com',
-		'https://www.ringlume.com',
-	]
+	const ALLOWED_ORIGINS = ['https://ringlume.com', 'https://www.ringlume.com']
 
 	const CLOSED_FAB_SELECTOR =
 		'button[aria-label="Open Assistant"], button[title="Assistant"]'
@@ -276,7 +387,8 @@ const tryAsking = [
 		tag.dataset.componentColor = '#269635'
 		tag.dataset.showAiPopup = 'true'
 		tag.dataset.showAiPopupTime = '8'
-		tag.dataset.popupMessage = "Hi! I'm Ringlume's Virtual receptionist. Ask me anything."
+		tag.dataset.popupMessage =
+			"Hi! I'm Ringlume's Virtual receptionist. Ask me anything."
 
 		if (config.recaptchaKey) {
 			const recaptcha = document.createElement('script')
@@ -290,6 +402,7 @@ const tryAsking = [
 			'error',
 			() => {
 				injected = false
+				tag.remove()
 			},
 			{ once: true },
 		)
@@ -337,21 +450,30 @@ const tryAsking = [
 
 		opening = true
 		setBusy(button, true)
+		const status = document.querySelector<HTMLElement>('[data-demo-status]')
+		if (status) status.textContent = ''
 		warnIfOriginNotAllowed()
 
 		try {
 			inject(config)
 			const fab = await waitForFab()
 			if (fab && !isOpen()) fab.click()
+			if (!fab && !isOpen() && status) {
+				status.textContent =
+					'The demo could not load. Please try again or request a personalized demo below.'
+			}
+		} catch {
+			if (status)
+				status.textContent = 'The demo could not load. Please try again.'
 		} finally {
 			opening = false
 			setBusy(button, false)
 		}
 	}
 
-	document.querySelectorAll<HTMLButtonElement>('[data-demo-open]').forEach(
-		(button) => {
+	document
+		.querySelectorAll<HTMLButtonElement>('[data-demo-open]')
+		.forEach((button) => {
 			button.addEventListener('click', () => void openDemo(button))
-		},
-	)
+		})
 </script>

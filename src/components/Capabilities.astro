@@ -1,118 +1,82 @@
 ---
 import CapabilityCard from './CapabilityCard.astro'
 
-const capabilities = [
+const steps = [
 	{
-		kind: 'call' as const,
-		icon: 'call' as const,
-		title: 'Never miss a call',
-		description:
-			'A natural-sounding virtual receptionist answers instantly after hours, during busy periods, and whenever your team cannot.',
-		layoutClass: 'md:col-span-2 lg:col-span-3 lg:row-span-2',
+		step: 1,
+		kind: 'answer',
+		title: 'Answers the call.',
+		description: 'Greets callers with your business name, even after hours.',
 	},
 	{
-		kind: 'booking' as const,
-		icon: 'booking' as const,
-		title: 'Books appointments',
+		step: 2,
+		kind: 'capture',
+		title: 'Understands the request.',
 		description:
-			'Finds the right time and adds it directly to your calendar.',
-		layoutClass: 'lg:col-span-3',
+			'Uses your business info to answer questions and collect the right details.',
 	},
 	{
-		kind: 'follow-up' as const,
-		icon: 'follow-up' as const,
-		title: 'Follows up automatically',
+		step: 3,
+		kind: 'action',
+		title: 'Takes the next step.',
 		description:
-			'Sends reminders, follows up with potential customers, and keeps them updated at the right time.',
-		layoutClass: 'lg:col-span-3',
+			'Books an estimate, transfers the call, or takes a message, following your rules.',
 	},
-	{
-		kind: 'knowledge' as const,
-		icon: 'knowledge' as const,
-		title: 'Knows your business',
-		description:
-			'Uses your website, services, pricing, FAQs, and approved business information to answer customer questions.',
-		layoutClass: 'lg:col-span-2',
-	},
-	{
-		kind: 'handoff' as const,
-		icon: 'handoff' as const,
-		title: 'Knows when to hand off',
-		description:
-			'Transfers urgent, sensitive, or high-value calls to the right person.',
-		layoutClass: 'lg:col-span-2',
-	},
-	{
-		kind: 'reporting' as const,
-		icon: 'reporting' as const,
-		title: 'Everything stays visible',
-		description:
-			'Get call summaries, written call records, customer-record updates, and support for multiple languages automatically.',
-		layoutClass: 'md:col-span-2 lg:col-span-2',
-	},
-]
+] as const
 ---
 
 <section
 	id="capabilities"
-	class="scrim content-auto scroll-mt-16 overflow-hidden py-20 lg:scroll-mt-20 lg:py-32"
-	data-capabilities-section
+	class="scrim content-auto scroll-mt-24 py-16 lg:py-24"
+	aria-labelledby="capabilities-heading"
 >
 	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-		<header class="mb-14 max-w-3xl sm:mb-16 lg:mb-20">
-			<p class="eyebrow mb-5 flex items-center gap-2">
-				<span class="h-1.5 w-1.5 rounded-full bg-brand" aria-hidden="true"></span>
-				Every call, handled
-			</p>
-			<h2 class="reveal-text text-balance text-h2 font-bold text-fg-1">
-				Your best receptionist.<br />
-				<span class="text-brand-text">Available 24/7.</span>
+		<header class="mb-8 lg:mb-10">
+			<h2
+				id="capabilities-heading"
+				class="reveal-text max-w-3xl text-h2 font-bold text-fg-1"
+			>
+				From first ring<br /><span class="text-brand-text"
+					>to the right next step.</span
+				>
 			</h2>
-			<p class="mt-6 max-w-2xl text-base leading-relaxed text-fg-3 sm:text-lg">
-				Answers calls, books appointments, follows up, and keeps your team informed without
-				putting customers on hold.
-			</p>
+			<p class="mt-4 text-xs text-fg-3">Illustrative tree-care call flow</p>
 		</header>
 
-		<div class="grid grid-cols-1 gap-5 md:auto-rows-[minmax(220px,auto)] md:grid-cols-2 lg:grid-cols-6 lg:gap-6">
-			{capabilities.map((capability, index) => (
-				<CapabilityCard {...capability} index={index} />
-			))}
+		<ol
+			class="grid gap-10 md:grid-cols-3 md:gap-6 lg:gap-7"
+			role="list"
+			aria-label="How Ringlume handles a call"
+		>
+			{steps.map((step) => <CapabilityCard {...step} />)}
+		</ol>
+
+		<div class="mt-9 flex items-start gap-4 border-t border-line pt-7 sm:mt-10">
+			<div
+				class="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-brand/10 text-brand-text"
+				aria-hidden="true"
+			>
+				<svg
+					width="20"
+					height="20"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<path d="M8 3h8l4 4v14H4V3h4Zm8 0v5h4M8 12h8m-8 4h5"></path>
+				</svg>
+			</div>
+			<div>
+				<h3 class="font-sans text-sm font-semibold text-fg-1">
+					Your team gets the details.
+				</h3>
+				<p class="mt-2 text-sm leading-relaxed text-fg-3">
+					Who called, what they need, and the next steps, in a call summary.
+				</p>
+			</div>
 		</div>
 	</div>
 </section>
-
-<script>
-	const section = document.querySelector('[data-capabilities-section]')
-	const cards = section?.querySelectorAll('[data-capability-card]') ?? []
-	const prefersReducedMotion = window.matchMedia(
-		'(prefers-reduced-motion: reduce)',
-	).matches
-
-	if (
-		section &&
-		!prefersReducedMotion &&
-		'IntersectionObserver' in window
-	) {
-		cards.forEach((card) => card.classList.add('reveal-pending'))
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				if (!entries.some((entry) => entry.isIntersecting)) return
-
-				cards.forEach((card, index) => {
-					card.classList.remove('reveal-pending')
-					card.classList.add('reveal-visible')
-					window.setTimeout(
-						() => card.classList.remove('reveal-visible'),
-						550 + index * 65,
-					)
-				})
-				observer.disconnect()
-			},
-			{ rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
-		)
-
-		observer.observe(section)
-	}
-</script>

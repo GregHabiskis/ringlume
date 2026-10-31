@@ -4,61 +4,38 @@ import { describe, expect, it } from 'vitest'
 const sourceUrl = new URL('../FomoSection.astro', import.meta.url)
 const readSource = () => readFile(sourceUrl, 'utf8')
 
-const statCardTags = (source: string) =>
-	[...source.matchAll(/<div\b[^>]*\bclass="([^"]*)"[^>]*>/g)]
-		.filter((match) => match[1].split(/\s+/).includes('glass'))
-
-describe('FOMO stat cards', () => {
-	it('keeps both cards and the calculator in static markup', async () => {
+describe('missed-call section', () => {
+	it('keeps the working calculator under an addressable FOMO section', async () => {
 		const source = await readSource()
-
-		expect(statCardTags(source)).toHaveLength(2)
-		expect(source).toContain('62%')
-		expect(source).toContain('Unanswered Calls')
-		expect(source).toContain('80%')
-		expect(source).toContain('Instant Lead Decay')
+		expect(source).toContain('id="fomo"')
+		expect(source).toContain('aria-labelledby="fomo-heading"')
 		expect(source).toContain('<MissedCallCalculator />')
 	})
 
-	it('uses the existing blur-free glass fill on both cards', async () => {
-		const cards = statCardTags(await readSource())
-		expect(cards).toHaveLength(2)
-
-		for (const card of cards) {
-			expect(card[1].split(/\s+/)).toEqual(
-				expect.arrayContaining(['glass-fill', 'glass-regular', 'grain']),
-			)
-		}
+	it('does not present unsourced statistics or guaranteed revenue losses', async () => {
+		const source = await readSource()
+		expect(source).not.toContain('62%')
+		expect(source).not.toContain('80%')
+		expect(source).not.toMatch(/gone forever|right now|Instant Lead Decay/)
+		expect(source).toContain('potential revenue')
 	})
 
-	it('keeps cards visible without reveal or animated hover layers', async () => {
+	it('keeps the section static and defers its below-the-fold layout', async () => {
 		const source = await readSource()
-		const cards = statCardTags(source)
-		expect(cards).toHaveLength(2)
-
-		for (const card of cards) {
-			const classes = card[1].split(/\s+/)
-			for (const effect of [
-				'reveal',
-				'reveal-text',
-				'specular',
-				'lift-hover',
-				'transition-shadow',
-			]) {
-				expect(classes).not.toContain(effect)
-			}
-		}
-
+		expect(source).toContain('content-auto')
+		expect(source).not.toContain('<script')
+		expect(source).not.toContain('client:')
 		expect(source).not.toContain('animate-pulse')
 	})
 
-	it('does not defer or lazy-load the section or add client scripts', async () => {
-		const source = await readSource()
-		const sectionTag = source.match(/<section\b[^>]*>/)?.[0] ?? ''
-
-		expect(sectionTag).not.toContain('content-auto')
-		expect(source).not.toContain('loading="lazy"')
-		expect(source).not.toContain('<script')
-		expect(source).not.toContain('client:')
+	it('keeps the calculator blur-free, with its default result rendered on the server', async () => {
+		const source = await readFile(
+			new URL('../MissedCallCalculator.astro', import.meta.url),
+			'utf8',
+		)
+		expect(source).toContain('glass glass-fill glass-regular')
+		expect(source).toContain('formatCurrency(result.annual)')
+		expect(source).toContain('Estimate only, not guaranteed revenue.')
+		expect(source).toContain('href="/terms#estimates"')
 	})
 })

@@ -1,0 +1,169 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+import Pricing from '../components/Pricing.astro'
+import { PLANS, formatPrice } from '../lib/pricing'
+
+const rows = [
+	{
+		label: 'Monthly subscription',
+		values: PLANS.map((plan) => `${formatPrice(plan.monthly)} / month`),
+	},
+	{
+		label: 'Annual subscription',
+		values: PLANS.map((plan) => `${formatPrice(plan.annualTotal)} / year`),
+	},
+	{
+		label: 'One-time Service Setup Fee',
+		values: PLANS.map((plan) => formatPrice(plan.setupFee)),
+	},
+	{
+		label: 'Call minutes each month',
+		values: PLANS.map((plan) => plan.minutes.toLocaleString('en-US')),
+	},
+	{
+		label: 'Additional call minutes',
+		values: PLANS.map(
+			(plan) => `$${plan.overagePerMinute.toFixed(2)} / minute`,
+		),
+	},
+	{ label: 'Agent included', values: PLANS.map((plan) => plan.agents) },
+	{
+		label: 'Simultaneous calls, up to',
+		values: PLANS.map((plan) => String(plan.concurrentCalls)),
+	},
+	{
+		label: 'Phone numbers included',
+		values: PLANS.map((plan) => String(plan.phoneNumbers)),
+	},
+	{
+		label: 'Calendar & CRM connections',
+		values: PLANS.map((plan) => plan.integrations),
+	},
+	{ label: 'Live call transfers', values: PLANS.map(() => 'Included') },
+	{
+		label: 'Daily call recordings & reports',
+		values: PLANS.map(() => 'Included'),
+	},
+	{
+		label: 'Multilingual support',
+		values: PLANS.map((plan) =>
+			plan.multilingual ? 'Included' : 'Not included',
+		),
+	},
+	{ label: 'Support', values: PLANS.map((plan) => plan.support) },
+]
+---
+
+<BaseLayout
+	title="Pricing | Ringlume"
+	description="Compare Ringlume’s Basic, Pro, Plus, and Max plans. See monthly and annual prices, included call minutes, setup fees, and usage rates."
+>
+	<Header />
+	<main class="pt-32 lg:pt-40">
+		<Pricing detailed />
+		<section
+			id="plan-comparison"
+			class="scrim content-auto scroll-mt-24 pb-20 lg:pb-28"
+			aria-labelledby="plan-comparison-heading"
+		>
+			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				<h2 id="plan-comparison-heading" class="text-h2 font-bold text-fg-1">
+					Compare plans.
+				</h2>
+				<p
+					id="comparison-help"
+					class="mt-4 text-sm leading-relaxed text-fg-3 sm:sr-only"
+				>
+					Swipe to compare on mobile.
+				</p>
+				<div
+					class="glass glass-fill glass-regular mt-8 overflow-x-auto rounded-3xl"
+					tabindex="0"
+					role="region"
+					aria-label="Plan comparison"
+					aria-describedby="comparison-help"
+				>
+					<table
+						class="plan-table w-full min-w-[900px] table-fixed border-separate border-spacing-0 text-left text-sm"
+					>
+						<caption class="sr-only"
+							>Ringlume plan prices, allowances, and features</caption
+						>
+						<colgroup
+							><col class="comparison-label-column" /><col span="4" /></colgroup
+						>
+						<thead
+							><tr class="border-b border-line"
+								><th scope="col" class="p-5 font-semibold text-fg-1"
+									>What’s included</th
+								>{
+									PLANS.map((plan) => (
+										<th scope="col" class="p-5 font-semibold text-fg-1">
+											{plan.name}
+										</th>
+									))
+								}</tr
+							></thead
+						>
+						<tbody
+							>{
+								rows.map((row) => (
+									<tr class="border-b border-line last:border-b-0">
+										<th scope="row" class="p-5 font-medium text-fg-2">
+											{row.label}
+										</th>
+										{row.values.map((value) => (
+											<td class="p-5 leading-relaxed text-fg-3">{value}</td>
+										))}
+									</tr>
+								))
+							}</tbody
+						>
+					</table>
+				</div>
+				<p class="mt-6 text-sm text-fg-3">
+					Billing, setup, and service details: <a
+						href="/terms#billing-details"
+						class="underline underline-offset-4 hover:text-fg-1"
+						>Terms of Service</a
+					>.
+				</p>
+				<div
+					class="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between"
+				>
+					<a href="/book-demo" class="btn btn-primary">Get Your Free Demo</a>
+				</div>
+			</div>
+		</section>
+	</main>
+	<Footer />
+</BaseLayout>
+
+<style>
+	.comparison-label-column {
+		width: 24%;
+	}
+	.plan-table :is(th, td) {
+		border-bottom: 1px solid var(--line);
+	}
+	.plan-table tbody tr:last-child :is(th, td) {
+		border-bottom: 0;
+	}
+	@media (width < 40rem) {
+		.comparison-label-column {
+			width: 10rem;
+		}
+		.plan-table tr > :first-child {
+			position: sticky;
+			left: 0;
+			z-index: 1;
+			background: var(--bg-alt);
+			box-shadow: 1px 0 0 var(--line-strong);
+		}
+		.plan-table thead tr > :first-child {
+			z-index: 2;
+		}
+	}
+</style>

@@ -1,7 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
 import { faqItems } from '../../data/faqs'
-import { PRODUCTION_MAX, SUPPORTED_STACK } from '../../lib/offer'
 
 const faqSourceUrl = new URL('../FAQ.astro', import.meta.url)
 const dataSourceUrl = new URL('../../data/faqs.ts', import.meta.url)
@@ -40,19 +39,23 @@ describe('FAQ content', () => {
 
 		expect(source).toContain('How do I upgrade my subscription plan?')
 		expect(source).toContain("href: '/contact'")
-		expect(source).toContain("We'll upgrade your plan and charge the prorated difference")
+		expect(source).toContain(
+			'to request an upgrade. We’ll confirm the change by email.',
+		)
 		expect(source).not.toContain('within a few hours')
 		expect(source).toContain('How do I cancel my subscription plan?')
 		expect(source).toContain("href: '/contact'")
-		expect(source).toContain('Cancellation takes effect at the end of your current billing period')
+		expect(source).toContain(
+			'Cancellation takes effect at the end of your current billing period',
+		)
 	})
 
-	it('links pricing FAQ visitors to the pricing section', async () => {
+	it('links pricing FAQ visitors directly to the pricing page', async () => {
 		const source = await readFile(dataSourceUrl, 'utf8')
 
 		expect(source).toContain('See our ')
-		expect(source).toContain("href: '/#pricing'")
-		expect(source).toContain('book a demo')
+		expect(source).toContain("href: '/pricing'")
+		expect(source).toContain('for prices, minutes, and setup fees.')
 		expect(source).not.toContain('See the pricing above')
 	})
 
@@ -78,7 +81,8 @@ describe('FAQ content', () => {
 		const source = await readFile(homepageSourceUrl, 'utf8')
 		const homepageQuestions = expectedQuestions.filter(
 			(question) =>
-				question !== "Can Ringlume answer calls when we're busy or unavailable?" &&
+				question !==
+					"Can Ringlume answer calls when we're busy or unavailable?" &&
 				question !== 'Can Ringlume book appointments automatically?' &&
 				question !== 'Can important calls be transferred to a real person?' &&
 				question !== 'How long does setup take?' &&
@@ -90,42 +94,56 @@ describe('FAQ content', () => {
 		expect(source).toContain("'live-transfer'")
 		expect(source).toContain("'setup-time'")
 		expect(source).toContain("'pricing'")
-		expect(source).toContain('<FAQ faqIds={homepageFaqIds} showAllLink />')
-		homepageQuestions.forEach((question) => expect(source).not.toContain(question))
+		expect(source).toContain(
+			'<FAQ faqIds={homepageFaqIds} showAllLink compact />',
+		)
+		homepageQuestions.forEach((question) =>
+			expect(source).not.toContain(question),
+		)
 	})
 
 	it('links the homepage preview and header to the full FAQ page', async () => {
-		const [faqPageSource, faqComponentSource, headerSource] = await Promise.all([
-			readFile(faqPageSourceUrl, 'utf8'),
-			readFile(faqSourceUrl, 'utf8'),
-			readFile(headerSourceUrl, 'utf8'),
-		])
+		const [faqPageSource, faqComponentSource, headerSource] = await Promise.all(
+			[
+				readFile(faqPageSourceUrl, 'utf8'),
+				readFile(faqSourceUrl, 'utf8'),
+				readFile(headerSourceUrl, 'utf8'),
+			],
+		)
 
-		expect(faqPageSource).toContain('title="Frequently Asked Questions | Ringlume"')
+		expect(faqPageSource).toContain(
+			'title="Frequently Asked Questions | Ringlume"',
+		)
 		expect(faqPageSource).toContain('<FAQ headingLevel="h1" />')
 		expect(faqComponentSource).toContain('href="/faq"')
 		expect(faqComponentSource).toContain('View all FAQs')
 		expect(headerSource).toContain("{ label: 'FAQ', href: '/faq' }")
 	})
 
-	it('states the setup timeline and preferred tools accurately', async () => {
+	it('links to setup details instead of repeating technical lists and time claims', async () => {
 		const setup = faqItems.find((faq) => faq.id === 'setup-time')
-		const text = setup?.paragraphs?.join(' ') ?? ''
-		const markdown = await readFile(markdownSourceUrl, 'utf8')
+		expect(setup?.linkedParagraphs?.[0].href).toBe('/terms#setup-time')
+		const source = await readFile(dataSourceUrl, 'utf8')
+		expect(source).not.toMatch(
+			/afternoon|under best circumstances|PRODUCTION_MAX|SUPPORTED_STACK|PBX/,
+		)
+	})
 
-		expect(text).toMatch(/under best circumstances/i)
-		expect(text).toContain('often an afternoon')
-		expect(text).toContain(PRODUCTION_MAX)
-		expect(text).toContain('PBX')
-		expect(text).toContain('custom CRM')
-		expect(text).toContain('targets, not guarantees')
-
-		for (const tools of Object.values(SUPPORTED_STACK)) {
-			for (const tool of tools) expect(text).toContain(tool)
+	it('keeps each answer brief and the docs mirror in sync', async () => {
+		const markdown = (await readFile(markdownSourceUrl, 'utf8'))
+			.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+			.replace(/\s+/g, ' ')
+		for (const faq of faqItems) {
+			const paragraphs = [
+				...(faq.paragraphs ?? []),
+				...(faq.linkedParagraphs ?? []).map(
+					(part) => part.before + part.linkText + part.after,
+				),
+				...(faq.list ?? []),
+			]
+			expect(paragraphs.join(' ').split(/\s+/).length).toBeLessThanOrEqual(40)
+			expect(markdown).toContain(faq.question)
+			for (const paragraph of paragraphs) expect(markdown).toContain(paragraph)
 		}
-
-		expect(text).not.toContain('24–48')
-		expect(markdown).not.toContain('24–48')
-		expect(markdown).toContain('targets, not guarantees')
 	})
 })

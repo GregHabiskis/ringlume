@@ -26,7 +26,7 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 ---
 
 <div
-	class="glass glass-regular grain reveal mx-auto max-w-4xl rounded-3xl p-4 sm:p-6 md:p-8"
+	class="glass glass-fill glass-regular glass-card mx-auto max-w-7xl rounded-3xl p-4 sm:p-6 md:p-8"
 	data-missed-calculator
 	role="group"
 	aria-label="Missed revenue calculator"
@@ -36,7 +36,7 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 			class="min-w-0 md:col-start-2 md:row-start-1 md:border-l md:border-line md:pl-8"
 		>
 			<div
-				class="calc-output-card glass-fill relative overflow-hidden rounded-2xl border p-4 sm:p-5"
+				class="calc-output-card relative overflow-hidden rounded-2xl border border-line p-4 sm:p-5"
 			>
 				<p class="calc-label">Potential missed revenue</p>
 				<p class="mt-1.5">
@@ -68,8 +68,8 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 				</div>
 
 				<p class="calc-footnote mt-4">
-					Estimate only. Actual recovered revenue depends on call volume, lead
-					quality, scheduling capacity, and more.
+					Estimate only, not guaranteed revenue.
+					<a href="/terms#estimates" class="underline underline-offset-4 hover:text-fg-1">How it’s calculated</a>.
 				</p>
 
 				<p
@@ -647,16 +647,6 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 </script>
 
 <style>
-	.calc-output-card {
-		border-color: var(--line-strong);
-		border-color: color-mix(in srgb, var(--brand) 20%, transparent);
-		background-image: linear-gradient(
-			180deg,
-			color-mix(in srgb, var(--fg-1) 4%, transparent),
-			transparent 45%
-		);
-	}
-
 	.calc-label {
 		color: var(--fg-2);
 		font-size: 0.8125rem;
@@ -715,8 +705,6 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 
 	.calc-panel {
 		min-width: 0;
-		background-color: var(--bg-alt);
-		background-color: color-mix(in srgb, var(--bg-alt) 72%, transparent);
 	}
 
 	.calc-field {

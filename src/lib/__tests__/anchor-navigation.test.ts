@@ -23,9 +23,9 @@ describe('anchor target resolution', () => {
 		const getElementById = vi.fn(() => target)
 		vi.stubGlobal('document', { getElementById })
 
-		expect(getAnchorTarget('#pricing')).toBe(target)
+		expect(getAnchorTarget('#demo')).toBe(target)
 		expect(getAnchorTarget('#live%2Ddemo')).toBe(target)
-		expect(getElementById).toHaveBeenCalledWith('pricing')
+		expect(getElementById).toHaveBeenCalledWith('demo')
 		expect(getElementById).toHaveBeenCalledWith('live-demo')
 	})
 

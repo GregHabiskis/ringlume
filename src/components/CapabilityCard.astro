@@ -1,319 +1,156 @@
 ---
-type CapabilityKind =
-	| 'call'
-	| 'booking'
-	| 'follow-up'
-	| 'knowledge'
-	| 'handoff'
-	| 'reporting'
-
 interface Props {
-	kind: CapabilityKind
+	step: number
+	kind: 'answer' | 'capture' | 'action'
 	title: string
 	description: string
-	icon: CapabilityKind
-	layoutClass: string
-	index: number
 }
 
-const { kind, title, description, icon, layoutClass, index } = Astro.props
-
-const iconPaths: Record<CapabilityKind, string> = {
-	call: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.04 11.04 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />',
-	booking: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />',
-	'follow-up': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13 5l7 7-7 7M5 5l7 7-7 7" />',
-	knowledge: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 5.5A2.5 2.5 0 016.5 3H11v16H6.5A2.5 2.5 0 004 21.5v-16zM20 5.5A2.5 2.5 0 0017.5 3H13v16h4.5a2.5 2.5 0 012.5 2.5v-16z" />',
-	handoff: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />',
-	reporting: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 17v-5m3 5V7m3 10v-3M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />',
-}
+const { step, kind, title, description } = Astro.props
 ---
 
-<article
-	class:list={[
-		'capability-card glass glass-fill glass-regular grain specular group relative isolate flex h-full flex-col overflow-hidden rounded-[28px] p-6 sm:p-8',
-		kind === 'call' && 'capability-card-primary',
-		layoutClass,
-	]}
-	style={`--reveal-delay: ${index * 65}ms`}
-	data-capability-card
->
-	<div class="relative z-10 flex h-full flex-col">
-		<div class="mb-5 flex items-center justify-between">
-			<div
-				class="capability-icon flex h-10 w-10 items-center justify-center rounded-xl border border-line bg-black/30 text-brand-text"
-			>
-				<svg
-					class="h-5 w-5"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-					aria-hidden="true"
-					set:html={iconPaths[icon]}
-				/>
-			</div>
+<li class="flow-step relative grid min-w-0" data-call-step={kind}>
+	<h3
+		class="flex min-h-14 items-center gap-3 font-sans text-lg font-semibold leading-snug tracking-tight text-fg-1"
+	>
+		<span
+			class="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-line text-xs font-medium tabular-nums text-brand-text"
+			aria-hidden="true">{String(step).padStart(2, '0')}</span
+		>
+		<span>{title}</span>
+	</h3>
+	<p class="mt-2 mb-5 text-sm leading-relaxed text-fg-3">{description}</p>
 
-			{kind === 'call' && (
-				<span class="inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/10 px-3 py-1 text-[11px] font-semibold text-brand-text">
-					<span
-						class="status-pulse h-1.5 w-1.5 rounded-full bg-brand"
-						style="--pulse-scale: 3"
-					></span>
-					Always on
-				</span>
-			)}
-		</div>
-
-		<h3 class:list={['font-semibold tracking-tight text-fg-1', kind === 'call' ? 'text-2xl sm:text-3xl' : 'text-xl']}>
-			{title}
-		</h3>
-		<p class:list={['mt-3 max-w-xl leading-relaxed text-fg-3', kind === 'call' ? 'text-base' : 'text-sm']}>
-			{description}
-		</p>
-
-		{kind === 'call' && (
-			<div
-				class="call-panel relative mt-8 rounded-2xl border border-line bg-black/30 p-5 sm:mt-auto sm:p-6"
-				role="img"
-				aria-label="Incoming call from a new customer, answered by Ringlume's virtual receptionist in 1.2 seconds"
-			>
-				<div class="flex items-center justify-between gap-4">
-					<div class="flex min-w-0 items-center gap-3">
-						<div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/40 text-sm font-bold text-fg-1">NC</div>
-						<div class="min-w-0">
-							<p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-text">Incoming call</p>
-							<p class="mt-1 truncate text-sm font-semibold text-fg-1">New customer</p>
-						</div>
-					</div>
-					<span class="shrink-0 rounded-full border border-brand/25 bg-brand/10 px-2.5 py-1 text-[10px] font-semibold text-brand-text">
-						Answered in 1.2s
-					</span>
-				</div>
-
-				<div class="mt-5 flex flex-wrap items-end justify-between gap-3 pb-1 sm:mt-6 sm:flex-nowrap sm:gap-5 sm:pb-0">
-					<div class="waveform flex h-9 shrink-0 items-center gap-1" aria-hidden="true">
-						<span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-					</div>
-					<div class="inline-flex min-w-0 max-w-full items-center gap-2 text-xs font-medium text-fg-3">
-						<span class="status-pulse h-2 w-2 shrink-0 rounded-full bg-brand"></span>
-						<span class="min-w-0 break-words">The receptionist is speaking</span>
-					</div>
-				</div>
-			</div>
-		)}
-
-		{kind === 'booking' && (
-			<div class="mt-auto pt-7" aria-label="Appointment booking confirmation">
-				<div class="rounded-2xl border border-line bg-black/30 p-4">
-					<div class="flex items-center gap-3">
-						<div class="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-brand/10 text-brand-text">
-							<span class="text-[9px] font-bold uppercase">Tue</span>
-							<span class="text-sm font-bold leading-none">18</span>
-						</div>
-						<div>
-							<p class="text-sm font-semibold text-fg-1">Consultation booked</p>
-							<p class="mt-1 text-xs text-fg-3">Tue, 10:30 AM</p>
-						</div>
-						<svg class="ml-auto h-5 w-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+	<div
+		class="flow-preview glass glass-fill glass-regular glass-card rounded-3xl p-5"
+	>
+		{
+			kind === 'answer' && (
+				<>
+					<p class="mb-4 flex items-center gap-2 text-xs font-semibold text-fg-1">
+						<svg
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.5"
+							aria-hidden="true"
+						>
+							<path d="M8 3H5a2 2 0 0 0-2 2c0 8.8 7.2 16 16 16a2 2 0 0 0 2-2v-3l-5-2-2 2a13 13 0 0 1-6-6l2-2-2-5Z" />
 						</svg>
+						AI receptionist
+					</p>
+					<div class="rounded-2xl rounded-tl-sm border border-line bg-surface-1/40 px-4 py-3 text-sm leading-relaxed text-fg-2">
+						“Example Tree Care. How can I help?”
 					</div>
-				</div>
-			</div>
-		)}
-
-		{kind === 'follow-up' && (
-			<ol class="mt-auto flex flex-wrap items-center gap-2 pt-7 text-xs" aria-label="After-call follow-up steps">
-				<li class="rounded-lg border border-line bg-black/30 px-3 py-2 text-fg-2">Form submitted</li>
-				<li class="text-brand" aria-hidden="true">&rarr;</li>
-				<li class="rounded-lg border border-brand/25 bg-brand/10 px-3 py-2 text-brand-text">Ringlume calls</li>
-				<li class="text-brand" aria-hidden="true">&rarr;</li>
-				<li class="rounded-lg border border-line bg-black/30 px-3 py-2 text-fg-2">Appointment confirmed</li>
-			</ol>
-		)}
-
-		{kind === 'knowledge' && (
-			<ul class="mt-auto flex flex-wrap gap-2 pt-7" aria-label="Business information sources">
-				{['Website', 'Pricing', 'FAQs', 'Services'].map((source) => (
-					<li class="rounded-full border border-line bg-black/30 px-3 py-1.5 text-xs font-medium text-fg-3">{source}</li>
-				))}
-			</ul>
-		)}
-
-		{kind === 'handoff' && (
-			<div class="mt-auto pt-7" aria-label="Call transfer in progress">
-				<div class="flex items-center gap-3 rounded-xl border border-line bg-black/30 p-3.5">
-					<span class="status-pulse h-2 w-2 shrink-0 rounded-full bg-brand"></span>
-					<div class="min-w-0">
-						<p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-3">Live transfer</p>
-						<p class="mt-1 truncate text-sm font-medium text-fg-1">Transferring to Sarah &middot; Sales</p>
+					<div class="mt-3 ml-5 rounded-2xl rounded-tr-sm border border-brand/20 bg-brand/10 px-4 py-3 text-sm leading-relaxed text-fg-2">
+						“I’d like an estimate for oak removal.”
 					</div>
-				</div>
-			</div>
-		)}
+				</>
+			)
+		}
 
-		{kind === 'reporting' && (
-			<ul class="mt-auto space-y-2 pt-7" aria-label="After-call updates">
-				{['Written record ready', 'Customer record updated', 'Multilingual'].map((status) => (
-					<li class="flex items-center justify-between rounded-lg border border-line bg-black/30 px-3 py-2 text-xs text-fg-3">
-						<span>{status}</span>
-						<svg class="h-4 w-4 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-						</svg>
-					</li>
-				))}
-			</ul>
-		)}
+		{
+			kind === 'capture' && (
+				<>
+					<p class="mb-4 text-xs font-semibold text-fg-1">Request details</p>
+					<dl class="space-y-3 text-xs">
+						{[
+							['Tree work', 'Oak removal'],
+							['Property', 'Address captured'],
+							['Contact', 'Name & phone captured'],
+						].map(([label, value]) => (
+							<div class="border-b border-line pb-3 last:border-b-0 last:pb-0">
+								<dt class="text-fg-3">{label}</dt>
+								<dd class="mt-1 flex items-center gap-2 font-medium text-fg-1">
+									<span
+										class="h-1 w-1 shrink-0 rounded-full bg-brand"
+										aria-hidden="true"
+									/>
+									{value}
+								</dd>
+							</div>
+						))}
+					</dl>
+				</>
+			)
+		}
+
+		{
+			kind === 'action' && (
+				<>
+					<p class="mb-4 text-xs font-semibold text-fg-1">
+						Based on your rules
+					</p>
+					<ul class="space-y-3" role="list" aria-label="Possible next steps">
+						{[
+							['Available time', 'Book an estimate'],
+							['Needs your team', 'Transfer the call'],
+							['Can’t connect', 'Take a message'],
+						].map(([condition, action]) => (
+							<li class="flex items-start gap-3 border-b border-line pb-3 last:border-b-0 last:pb-0">
+								<span class="mt-1 text-brand-text" aria-hidden="true">
+									&rarr;
+								</span>
+								<div>
+									<p class="text-xs text-fg-3">{condition}</p>
+									<p class="mt-1 text-xs font-medium text-fg-1">{action}</p>
+								</div>
+							</li>
+						))}
+					</ul>
+				</>
+			)
+		}
 	</div>
-</article>
+
+	{
+		kind !== 'action' && (
+			<svg
+				class="flow-connector text-fg-3"
+				width="16"
+				height="16"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M5 12h14m-6-6 6 6-6 6" />
+			</svg>
+		)
+	}
+</li>
 
 <style>
-	.capability-card {
-		transition:
-			transform 300ms ease,
-			border-color 300ms ease,
-			background-color 300ms ease,
-			box-shadow 300ms ease,
-			opacity 500ms ease;
-		transition-delay: 0ms;
+	.flow-step {
+		grid-template-rows: auto 1fr auto;
 	}
-
-	.capability-card:hover {
-		transform: translateY(-3px);
-		box-shadow:
-			inset 1px 1px 0 0 var(--glass-edge-hi),
-			inset -1px -1px 0 0 var(--glass-edge-lo),
-			inset 0 1px 0 var(--glass-specular),
-			var(--shadow-contact),
-			var(--shadow-lift);
+	.flow-preview {
+		min-height: 280px;
 	}
-
-	.capability-icon {
-		transition:
-			transform 300ms ease,
-			background-color 300ms ease;
-	}
-
-	.capability-card:hover .capability-icon {
-		transform: translateY(-1px);
-		background-color: color-mix(in srgb, var(--brand) 10%, transparent);
-	}
-
-	.capability-card.reveal-pending {
-		opacity: 0;
-		transform: translateY(14px);
-	}
-
-	.capability-card.reveal-visible {
-		opacity: 1;
-		transform: translateY(0);
-		transition-delay: var(--reveal-delay, 0ms);
-	}
-
-	.capability-card.reveal-visible:hover {
-		transform: translateY(-3px);
-	}
-
-	.call-panel {
-		box-shadow: inset 0 1px 0 var(--glass-specular);
-	}
-
-	.waveform span {
-		display: block;
-		width: 3px;
-		height: 26px;
-		border-radius: 9999px;
-		background: linear-gradient(to top, #34c759, #6eeb83);
-		transform-origin: center;
-		animation: waveform 1.15s ease-in-out infinite;
-	}
-
-	.waveform span:nth-child(2),
-	.waveform span:nth-child(8) {
-		animation-delay: -0.85s;
-	}
-
-	.waveform span:nth-child(3),
-	.waveform span:nth-child(7) {
-		animation-delay: -0.6s;
-	}
-
-	.waveform span:nth-child(4),
-	.waveform span:nth-child(6) {
-		animation-delay: -0.35s;
-	}
-
-	.waveform span:nth-child(5) {
-		animation-delay: -0.1s;
-	}
-
-	/* Pulsing halo, opacity + transform only.
-	   Animating `box-shadow` on the dot itself is a non-composited animation:
-	   it forces a full style recalc every frame (measured ~2.7s of main-thread
-	   work per 6s under 4x CPU throttle). The halo now lives on a pseudo-element
-	   that the compositor can move without touching style. The pseudo is painted
-	   in the brand colour, so overlapping the solid dot changes nothing. */
-	.status-pulse {
-		position: relative;
-	}
-
-	.status-pulse::after {
-		content: '';
+	.flow-connector {
 		position: absolute;
-		inset: 0;
-		border-radius: 50%;
+		bottom: -28px;
+		left: calc(50% - 8px);
+		transform: rotate(90deg);
 		pointer-events: none;
-		background: rgba(76, 217, 100, 0.35);
-		animation: status-pulse 1.8s ease-out infinite;
 	}
-
-	@keyframes waveform {
-		0%,
-		100% {
-			transform: scaleY(0.28);
-			opacity: 0.55;
-		}
-		50% {
-			transform: scaleY(1);
-			opacity: 1;
-		}
-	}
-
-	@keyframes status-pulse {
-		0% {
-			transform: scale(1);
-			opacity: 1;
-		}
-		70%,
-		100% {
-			/* 8px dot + 6px spread = 20px outer -> scale 2.5.
-			   The 6px badge dot overrides this to 3 (6px + 6px spread = 18px). */
-			transform: scale(var(--pulse-scale, 2.5));
-			opacity: 0;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.capability-card,
-		.capability-icon {
-			transition: none;
-		}
-
-		.capability-card,
-		.capability-card.reveal-pending,
-		.capability-card.reveal-visible,
-		.capability-card:hover,
-		.capability-card.reveal-visible:hover {
-			opacity: 1;
+	@media (min-width: 768px) {
+		.flow-connector {
+			top: 20px;
+			right: -20px;
+			bottom: auto;
+			left: auto;
 			transform: none;
 		}
-
-		.capability-card:hover .capability-icon {
-			transform: none;
-		}
-
-		.waveform span,
-		.status-pulse::after {
-			animation: none;
+	}
+	@media (min-width: 1024px) {
+		.flow-connector {
+			right: -22px;
 		}
 	}
 </style>

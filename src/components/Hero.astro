@@ -1,270 +1,73 @@
 ---
+import DemoSection from './DemoSection.astro'
 import { getRetellConfig } from '../lib/retell-config'
 import { DEMO_FREE_MINUTES } from '../lib/offer'
 
 const retell = getRetellConfig()
 ---
 
-<section class="scrim-soft relative overflow-hidden pt-32 pb-20 lg:pt-40 lg:pb-32">
-  <!-- Hero ripple rings: concentric outlines expanding from behind the
-       headline. Transform + opacity only, no blur, clipped and inert. -->
-  <div class="hero-rings" aria-hidden="true">
-    <span class="hero-ring"></span>
-    <span class="hero-ring"></span>
-    <span class="hero-ring"></span>
-    <span class="hero-ring"></span>
-    <span class="hero-ring"></span>
-  </div>
-
-  <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-4xl text-center">
-      <!-- Headline -->
-      <h1 class="reveal-text mb-6 text-h1 font-bold text-fg-1">
-        <span class="sr-only">A Receptionist Who Never Sleeps.</span>
-        <span aria-hidden="true">
-          A Receptionist <br class="md:hidden" />
-          Who Never <br class="md:hidden" />
-          <span class="rotating-text">
-            <span class="word active gradient-green-text">Sleeps.</span>
-            <span class="word gradient-green-text">Quits.</span>
-            <span class="word gradient-green-text">Calls in Sick.</span>
-          </span>
-        </span>
-      </h1>
-
-      <!-- Subheadline -->
-      <p class="reveal-text mx-auto mb-10 max-w-3xl text-lead text-fg-3" style="--reveal-delay: 80ms">
-        Ringlume answers calls, qualifies leads, and books appointments for service businesses, 24/7.
-      </p>
-
-      <!-- CTA Buttons -->
-      <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-        <a href="/book-demo" class="btn btn-primary reveal" style="--reveal-delay: 140ms">
-          Get Your Free Demo
-        </a>
-        <a
-          href={retell ? '#demo' : '#capabilities'}
-          class="btn btn-secondary reveal"
-          style="--reveal-delay: 200ms"
-        >
-          {retell ? 'Try the Live Demo' : 'Explore Features'}
-        </a>
-      </div>
-
-      <!-- Trust strip: one in-flow glass bar, two equal columns -->
-      <div
-        class="stat-strip glass glass-regular grain reveal mx-auto mt-10 flex w-full max-w-[520px] items-stretch rounded-2xl px-4 py-4"
-        style="--reveal-delay: 260ms"
-      >
-        <div class="flex-1 text-center">
-          <div class="stat-number gradient-green-text font-bold">
-            {DEMO_FREE_MINUTES} Min
-          </div>
-          <div class="text-sm text-fg-3">Free Demo</div>
-        </div>
-        <span class="stat-divider" aria-hidden="true"></span>
-        <div class="flex-1 text-center">
-          <div class="stat-number gradient-green-text font-bold">24/7</div>
-          <div class="text-sm text-fg-3">Always Working</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<section
+	class="home-hero scrim-soft overflow-hidden"
+	aria-labelledby="hero-heading"
+>
+	<div
+		class:list={[
+			'mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:gap-16 lg:px-8',
+			retell && 'lg:grid-cols-[1.15fr_1fr]',
+		]}
+	>
+		<div class="hero-copy">
+			<h1 id="hero-heading" class="hero-heading font-bold text-fg-1">
+				You handle the trees.<br />
+				<span class="text-brand-text">We handle the calls.</span>
+			</h1>
+			<p class="mt-6 max-w-lg text-lead text-fg-3">
+				AI call answering for arborists. Capture leads and book estimates while
+				you’re on the job.
+			</p>
+			<div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+				<a href="/book-demo" class="btn btn-primary">Get Your Free Demo</a>
+			</div>
+			<dl
+				class="hero-facts mt-9 flex items-center gap-7 border-t border-line pt-6 max-sm:gap-0 max-sm:text-center sm:gap-10"
+			>
+				<div class="max-sm:flex-1">
+					<dt class="text-xs text-fg-3">Free Demo</dt>
+					<dd class="mt-1 text-xl font-semibold text-fg-1">
+						{DEMO_FREE_MINUTES} Min
+					</dd>
+				</div>
+				<div
+					class="border-l border-line pl-7 max-sm:flex-1 max-sm:pl-0 sm:pl-10"
+				>
+					<dt class="text-xs text-fg-3">Always Working</dt>
+					<dd class="mt-1 text-xl font-semibold text-fg-1">24/7</dd>
+				</div>
+			</dl>
+		</div>
+		<DemoSection />
+	</div>
 </section>
 
-<style is:global>
-  .rotating-text {
-    display: inline-grid;
-    vertical-align: bottom;
-  }
+<style>
+	.home-hero {
+		padding-block: 8rem 4rem;
+	}
 
-  .word {
-    grid-area: 1 / 1;
-    opacity: 0;
-    transform: translateY(100%);
-    transition: transform 0.5s ease, opacity 0.5s ease;
-    white-space: nowrap;
-  }
+	.hero-heading {
+		font-size: clamp(2.05rem, 1.4rem + 2.7vw, 3.65rem);
+		line-height: 1.16;
+		letter-spacing: -0.045em;
+		text-wrap: balance;
+	}
 
-  .word.active {
-    opacity: 1;
-    transform: translateY(0);
-  }
+	.hero-facts {
+		max-width: 28rem;
+	}
 
-  .word.leave {
-    opacity: 0;
-    transform: translateY(-100%);
-  }
-
-  /* Stat strip: two columns, one fading hairline between them */
-  .stat-number {
-    font-size: clamp(1.5rem, 4vw + 0.6rem, 2rem);
-    line-height: 1.2;
-  }
-
-  .stat-divider {
-    width: 1px;
-    align-self: stretch;
-    margin-block: 0.35rem;
-    background: linear-gradient(
-      to bottom,
-      transparent,
-      rgba(255, 255, 255, 0.3) 40%,
-      rgba(255, 255, 255, 0.3) 60%,
-      transparent
-    );
-  }
-
-  /* Hero ripple rings: concentric outlines expanding from behind the
-     headline. Transform + opacity only, no filter, no backdrop-filter. */
-  .hero-rings {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-  }
-
-  .hero-ring {
-    position: absolute;
-    top: 34%;
-    left: 50%;
-    width: min(820px, 130vw);
-    aspect-ratio: 1;
-    margin-block-start: calc(min(820px, 130vw) / -2);
-    margin-inline-start: calc(min(820px, 130vw) / -2);
-    border: 1px solid var(--brand);
-    border-radius: 9999px;
-    opacity: 0;
-    animation: ring-expand var(--ring-dur, 7s) linear var(--ring-delay, 0s)
-      infinite;
-  }
-
-  .hero-ring:nth-child(1) {
-    --ring-dur: 7s;
-    --ring-delay: -1s;
-  }
-
-  .hero-ring:nth-child(2) {
-    --ring-dur: 8.5s;
-    --ring-delay: -6s;
-  }
-
-  .hero-ring:nth-child(3) {
-    --ring-dur: 6s;
-    --ring-delay: -3s;
-  }
-
-  .hero-ring:nth-child(4) {
-    --ring-dur: 9s;
-    --ring-delay: -7.5s;
-  }
-
-  .hero-ring:nth-child(5) {
-    --ring-dur: 7.5s;
-    --ring-delay: -4.5s;
-  }
-
-  @keyframes ring-expand {
-    0% {
-      transform: scale(0.16);
-      opacity: 0;
-    }
-    12% {
-      opacity: 0.24;
-    }
-    72% {
-      opacity: 0.12;
-    }
-    100% {
-      transform: scale(1.15);
-      opacity: 0;
-    }
-  }
-
-  /* Pause with the shared visibilitychange hook in BaseLayout */
-  html.is-paused .hero-ring {
-    animation-play-state: paused;
-  }
-
-  @media (max-width: 768px) {
-    .hero-ring:nth-child(n + 4) {
-      display: none;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero-ring {
-      animation: none;
-      opacity: 0.16;
-    }
-
-    .hero-ring:nth-child(1) {
-      transform: scale(0.3);
-    }
-
-    .hero-ring:nth-child(2) {
-      transform: scale(0.5);
-    }
-
-    .hero-ring:nth-child(3) {
-      transform: scale(0.7);
-    }
-
-    .hero-ring:nth-child(4) {
-      transform: scale(0.9);
-    }
-
-    .hero-ring:nth-child(5) {
-      transform: scale(1.1);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .word.active,
-    .word.leave {
-      transition: none;
-    }
-  }
+	@media (min-width: 1024px) {
+		.home-hero {
+			padding-block: 10rem 6rem;
+		}
+	}
 </style>
-
-<script>
-  (function () {
-    const rotatingText = document.querySelector('.rotating-text');
-    if (!rotatingText) return;
-
-    const words = rotatingText.querySelectorAll('.word');
-    if (words.length < 2) return;
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (!prefersReducedMotion) {
-      let currentIndex = 0;
-      const total = words.length;
-      const DISPLAY_MS = 2800;
-      const ANIMATION_MS = 500;
-
-      function rotateWord() {
-        const current = words[currentIndex];
-        const nextIndex = (currentIndex + 1) % total;
-        const next = words[nextIndex];
-
-        current.classList.remove('active');
-        current.classList.add('leave');
-        next.classList.add('active');
-
-        setTimeout(() => {
-          current.classList.remove('leave');
-        }, ANIMATION_MS);
-
-        currentIndex = nextIndex;
-      }
-
-      const start = () => setInterval(rotateWord, DISPLAY_MS);
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(start, { timeout: 2000 });
-      } else {
-        setTimeout(start, 1);
-      }
-    }
-  })();
-</script>

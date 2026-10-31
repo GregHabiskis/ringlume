@@ -10,7 +10,7 @@ describe('/book-demo', () => {
 		const source = await read('pages/book-demo.astro')
 
 		expect(source).toContain('Get Your Free Personalized Demo')
-		expect(source).toContain("we'll email you a private link")
+		expect(source).toContain('A demo built for your business')
 		expect(source).toContain('free for up to {DEMO_FREE_MINUTES} minutes')
 		expect(source.match(/\{DEMO_FREE_MINUTES\}/g)).toHaveLength(2)
 		expect(source).toContain('<DemoRequestForm />')
@@ -22,9 +22,7 @@ describe('/book-demo', () => {
 
 		expect(source).not.toContain('What happens next')
 		expect(source).not.toContain('Send us your details.')
-		expect(source).not.toContain(
-			'We build a voice agent around your business.',
-		)
+		expect(source).not.toContain('We build a voice agent around your business.')
 		expect(source).not.toContain('<aside')
 		expect(source).not.toContain('lg:grid-cols-[minmax(0,1fr)_31.5rem]')
 	})
@@ -48,11 +46,11 @@ describe('/book-demo/thanks', () => {
 		expect(source).toContain('within {DEMO_DELIVERY_MAX}')
 		expect(source.match(/\{DEMO_DELIVERY_MAX\}/g)).toHaveLength(1)
 		expect(source).toContain('href="/#demo"')
-		expect(source).toContain('Try the live demo while you wait')
+		expect(source).toContain('Try it now')
 		expect(source).toContain('href={CAL_BOOKING_URL}')
 		expect(source).toContain('Prefer to talk? Book a call')
-		expect(source).not.toContain("import Header")
-		expect(source).not.toContain("import Footer")
+		expect(source).not.toContain('import Header')
+		expect(source).not.toContain('import Footer')
 	})
 })
 
@@ -65,8 +63,8 @@ describe('/contact/thanks', () => {
 		expect(source).toContain('href="/book-demo"')
 		expect(source).toContain('Get your free demo')
 		expect(source).not.toContain('cal.com')
-		expect(source).not.toContain("import Header")
-		expect(source).not.toContain("import Footer")
+		expect(source).not.toContain('import Header')
+		expect(source).not.toContain('import Footer')
 	})
 })
 
@@ -76,7 +74,7 @@ describe('/contact', () => {
 
 		expect(source).toContain('<ContactForm />')
 		expect(source).toContain('Contact Us')
-		expect(source).toContain(
+		expect(source).not.toContain(
 			"Have questions about our virtual receptionist service? We're here to help.",
 		)
 		expect(source).toContain('href="https://wa.me/8801951284128"')
@@ -84,9 +82,7 @@ describe('/contact', () => {
 		expect(source).toContain(
 			'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6',
 		)
-		expect(source).toContain(
-			'lg:grid-cols-[minmax(0,1fr)_31.5rem]',
-		)
+		expect(source).toContain('lg:grid-cols-[minmax(0,1fr)_31.5rem]')
 		expect(source).toContain('items-start')
 		expect(source).not.toMatch(/telegram|https?:\/\/t\.me|fshahariar/i)
 	})

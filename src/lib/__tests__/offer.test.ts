@@ -5,15 +5,11 @@ import {
 	DEMO_FREE_MINUTES,
 	formatList,
 	PRODUCTION_MAX,
-	SETUP_FAST_PHRASE,
-	SETUP_QUALIFIER,
 	SUPPORTED_STACK,
 } from '../offer'
 
 describe('offer facts', () => {
 	it('keeps the approved wording and numbers', () => {
-		expect(SETUP_FAST_PHRASE).toBe('Go live in an afternoon')
-		expect(SETUP_QUALIFIER).toBe('under best circumstances')
 		expect(DEMO_DELIVERY_MAX).toBe('1 hour')
 		expect(PRODUCTION_MAX).toBe('12 hours')
 		expect(DEMO_FREE_MINUTES).toBe(10)

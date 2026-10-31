@@ -1,273 +1,246 @@
 ---
-import { SETUP_FAST_PHRASE, SETUP_QUALIFIER } from '../lib/offer'
+import { PLANS, formatPrice } from '../lib/pricing'
 
-const plans = [
-  {
-    name: 'Basic',
-    monthlyDisplay: '$299',
-    annualMonthlyDisplay: '$249',
-    annualBillingDisplay: 'Billed $2,990 annually',
-    setupFee: '$800',
-    description: 'For solo entrepreneurs',
-    features: [
-      'Receptionist Agent',
-      '600 Phone Call Mins/month',
-      'Up to 50 calls at once',
-      'Live Transfer to Your Team',
-      '1 Free Phone Number',
-      '1 Calendar & CRM Integration',
-      'Daily Call Recordings & Reports',
-    ],
-    cta: 'Get Your Free Demo',
-    popular: false,
-  },
-  {
-    name: 'Pro',
-    monthlyDisplay: '$599',
-    annualMonthlyDisplay: '$499',
-    annualBillingDisplay: 'Billed $5,990 annually',
-    setupFee: '$1,000',
-    description: 'For growing businesses',
-    features: [
-      'Lead Follow-up Agent',
-      '1,200 Phone Call Mins/month',
-      'Up to 100 calls at once',
-      'Live Transfer to Your Team',
-      '3 Free Phone Number',
-      'Custom Integrations',
-      'Daily Call Recordings & Reports',
-      'Multilingual Support',
-    ],
-    cta: 'Get Your Free Demo',
-    popular: true,
-  },
-  {
-    name: 'Plus',
-    monthlyDisplay: '$999',
-    annualMonthlyDisplay: '$832',
-    annualBillingDisplay: 'Billed $9,990 annually',
-    setupFee: '$1,200',
-    description: 'For busy offices',
-    features: [
-      'Customer Support Agent',
-      '2,400 Phone Call Mins/month',
-      'Up to 200 calls at once',
-      'Live Transfer to Your Team',
-      '5 Free Phone Number',
-      'Custom Integrations',
-      'Daily Call Recordings & Reports',
-      'Multilingual Support',
-      'Priority Email & Chat Support',
-    ],
-    cta: 'Get Your Free Demo',
-    popular: false,
-  },
-  {
-    name: 'Max',
-    monthlyDisplay: '$1,999',
-    annualMonthlyDisplay: '$1,666',
-    annualBillingDisplay: 'Billed $19,990 annually',
-    setupFee: '$1,200',
-    description: 'For enterprises',
-    features: [
-      'All Three Agents',
-      '5,000 Phone Call Mins/month',
-      'Up to 300 calls at once',
-      'Live Transfer to Your Team',
-      '5 Free Phone Number',
-      'Custom Integrations',
-      'Daily Call Recordings & Reports',
-      'Multilingual Support',
-      'Dedicated Priority Support',
-      'Enterprise Compliance (HIPAA, GDPR, SOC 2)',
-    ],
-    cta: 'Get Your Free Demo',
-    popular: false,
-  },
-]
+interface Props {
+	detailed?: boolean
+}
+
+const { detailed = false } = Astro.props
+const Heading = detailed ? 'h1' : 'h2'
+const detailsLink = detailed
+	? { href: '#plan-comparison', label: 'Compare every feature' }
+	: { href: '/pricing', label: 'Explore full pricing' }
 ---
 
+<section
+	class:list={[
+		'scrim content-auto',
+		detailed ? 'pb-16 lg:pb-24' : 'py-16 lg:py-24',
+	]}
+	aria-labelledby="pricing-heading"
+>
+	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+		<header class="mb-8 grid gap-5 lg:grid-cols-2 lg:items-end lg:gap-16">
+			<Heading
+				id="pricing-heading"
+				class="reveal-text max-w-xl text-h2 font-bold text-fg-1"
+			>
+				A plan for your<br /><span class="text-brand-text"
+					>next stage of growth.</span
+				>
+			</Heading>
+			<p
+				class="max-w-lg text-base leading-relaxed text-fg-3 lg:justify-self-end"
+			>
+				Try a free demo before choosing your plan.
+			</p>
+		</header>
 
-<section id="pricing" class="scrim content-auto relative scroll-mt-16 overflow-hidden py-20 lg:scroll-mt-20 lg:py-32">
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Section Header -->
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <h2 class="reveal-text text-h2 font-bold text-fg-1 mb-6">
-        Simple, Transparent <span class="gradient-green-text">Pricing</span>
-      </h2>
-      <p class="text-lead text-fg-3">
-        Choose the plan that fits your business. Upgrade or downgrade anytime.
-      </p>
-    </div>
+		<div
+			class:list={[
+				'mb-6 flex flex-wrap items-center justify-between gap-4',
+				!detailed && 'max-sm:flex-col max-sm:justify-center max-sm:text-center',
+			]}
+		>
+			<p class="text-xs text-fg-3">Prices in USD.</p>
+			<div
+				class="glass glass-fill glass-regular inline-flex rounded-full p-1"
+				role="group"
+				aria-label="Billing period"
+			>
+				<button
+					type="button"
+					id="monthly-btn"
+					aria-pressed="true"
+					class="pricing-toggle toggle-active min-h-11 rounded-full px-4 text-xs font-semibold"
+					>Monthly</button
+				>
+				<button
+					type="button"
+					id="annual-btn"
+					aria-pressed="false"
+					class="pricing-toggle toggle-inactive min-h-11 rounded-full px-4 text-xs font-semibold"
+					>Annually <span class="ml-1">Save ~17%</span></button
+				>
+			</div>
+		</div>
 
-    <!-- Billing Toggle -->
-    <div class="flex justify-center mb-12">
-      <div class="glass glass-fill grain rounded-full p-1.5 inline-flex items-center">
-        <button
-          type="button"
-          id="monthly-btn"
-          aria-pressed="true"
-          class="pricing-toggle px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 toggle-active"
-        >
-          Monthly
-        </button>
-        <button
-          type="button"
-          id="annual-btn"
-          aria-pressed="false"
-          class="pricing-toggle px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 toggle-inactive relative"
-        >
-          Annually
-          <span class="absolute -top-2.5 -right-3 bg-gradient-to-r from-red-700 to-pink-700 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-lg">
-            Save ~17%
-          </span>
-        </button>
-      </div>
-    </div>
+		<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+			{
+				PLANS.map((plan) => (
+					<article
+						class:list={[
+							'plan-card glass glass-fill glass-regular flex min-w-0 flex-col rounded-3xl p-5 lg:p-6',
+							plan.recommended && 'plan-recommended',
+						]}
+					>
+						<div class="flex min-h-7 items-center justify-between gap-2">
+							<h3 class="font-sans text-lg font-semibold text-fg-1">
+								{plan.name}
+							</h3>
+							{plan.recommended && (
+								<span class="rounded-full bg-brand/15 px-2.5 py-1 text-xs font-semibold text-brand-text">
+									Recommended
+								</span>
+							)}
+						</div>
+						<p class="mt-1 text-xs text-fg-3">{plan.description}</p>
+						<div class="mt-6" data-pricing-display>
+							<p class="flex items-baseline gap-1 whitespace-nowrap">
+								<span
+									class="pricing-tilde hidden text-lg text-fg-3"
+									aria-hidden="true"
+								>
+									~
+								</span>
+								<span
+									class="pricing-amount text-4xl font-semibold tracking-tighter text-fg-1"
+									data-monthly-display={formatPrice(plan.monthly)}
+									data-annual-monthly-display={formatPrice(plan.annualMonthly)}
+									data-annual-billing-display={`Billed ${formatPrice(plan.annualTotal)} annually`}
+								>
+									{formatPrice(plan.monthly)}
+								</span>
+								<span class="text-xs text-fg-3">/ mo</span>
+							</p>
+							<p
+								class="pricing-billing mt-2 text-xs text-fg-3"
+								aria-live="polite"
+							>
+								Billed monthly
+							</p>
+							<p class="mt-2 text-xs leading-relaxed text-fg-3">
+								+ {formatPrice(plan.setupFee)} one-time Service Setup Fee
+							</p>
+							<p class="mt-1 text-xs text-fg-3">
+								${plan.overagePerMinute.toFixed(2)} / min overage
+							</p>
+						</div>
+						<ul class="my-6 space-y-3 border-t border-line pt-5">
+							{plan.benefits.map((benefit) => (
+								<li class="flex items-start gap-2 text-sm leading-relaxed text-fg-2">
+									<svg
+										width="14"
+										height="18"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.8"
+										class="shrink-0 text-brand-text"
+										aria-hidden="true"
+									>
+										<path d="m5 12 4 4L19 6" />
+									</svg>
+									{benefit}
+								</li>
+							))}
+						</ul>
+						<a
+							href="/book-demo"
+							data-plan={plan.name.toLowerCase()}
+							aria-describedby={`cta-legal-notice-${plan.name.toLowerCase()}`}
+							class:list={[
+								'btn mt-auto w-full px-3 text-sm',
+								plan.recommended ? 'btn-primary' : 'btn-secondary',
+							]}
+						>
+							Get Your Free Demo
+						</a>
+						<p
+							id={`cta-legal-notice-${plan.name.toLowerCase()}`}
+							class="mt-3 text-xs leading-relaxed text-fg-3"
+						>
+							Subject to our{' '}
+							<a
+								href="/terms"
+								class="underline underline-offset-2 hover:text-fg-1"
+							>
+								Terms of Service
+							</a>{' '}
+							and{' '}
+							<a
+								href="/privacy"
+								class="underline underline-offset-2 hover:text-fg-1"
+							>
+								Privacy Policy
+							</a>
+							.
+						</p>
+					</article>
+				))
+			}
+		</div>
 
-    <!-- Pricing Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-      {plans.map((plan) => (
-        <div class={`pricing-card glass glass-fill glass-regular grain specular rounded-3xl p-6 sm:p-8 relative ${plan.popular ? 'pricing-card-popular' : plan.name === 'Max' ? 'border-2 border-amber-500/40 hover:border-amber-500/60' : ''}`}>
-          <!-- Popular Badge -->
-          {plan.popular && (
-            <div class="absolute -top-4 left-1/2 -translate-x-1/2">
-              <span class="bg-brand text-brand-ink px-5 py-1.5 rounded-full text-xs font-bold shadow-lg">
-                Most Popular
-              </span>
-            </div>
-          )}
-
-          <!-- Premium Badge -->
-          {plan.name === 'Max' && (
-            <div class="absolute -top-4 left-1/2 -translate-x-1/2">
-              <span class="bg-gradient-to-r from-amber-400 to-orange-500 text-amber-950 px-5 py-1.5 rounded-full text-xs font-bold shadow-lg">
-                Premium
-              </span>
-            </div>
-          )}
-
-          <!-- Plan Name -->
-          <div class="mb-6 text-center">
-            <h3 class="text-xl font-bold text-fg-1 mb-2">{plan.name}</h3>
-            <p class="text-sm text-fg-3">{plan.description}</p>
-          </div>
-
-          <!-- Price -->
-          <div class="mb-8 text-center" data-pricing-display>
-            <div class="flex justify-center">
-              <div class="relative inline-flex items-baseline">
-                <span
-                  class="pricing-tilde absolute right-full mr-1 hidden text-5xl font-bold text-fg-3"
-                  aria-hidden="true"
-                >~</span>
-                <span
-                  class="pricing-amount text-5xl font-bold text-fg-1"
-                  data-monthly-display={plan.monthlyDisplay}
-                  data-annual-monthly-display={plan.annualMonthlyDisplay}
-                  data-annual-billing-display={plan.annualBillingDisplay}
-                >{plan.monthlyDisplay}</span>
-              </div>
-            </div>
-            <p class="pricing-billing text-sm text-fg-3 mt-1">Billed monthly</p>
-            <p class="text-xs text-fg-3 mt-1">
-            + {plan.setupFee} one-time Service Setup Fee
-            </p>
-            <p class="text-xs text-fg-3 mt-1">$0.20 / min overage</p>
-          </div>
-
-          <!-- Features -->
-          <div class="space-y-3.5 mb-8">
-            {plan.features.map((feature) => (
-              <div class="flex items-start gap-3">
-                <div class={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-brand`}>
-                  <svg class="w-3 h-3 text-brand-ink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <span class="text-sm text-fg-2">{feature}</span>
-              </div>
-            ))}
-          </div>
-
-          <!-- CTA Button -->
-          <a
-            href="/book-demo"
-            data-plan={plan.name.toLowerCase()}
-            aria-describedby={`cta-legal-notice-${plan.name.toLowerCase()}`}
-            class={`btn w-full justify-center ${plan.popular ? 'btn-primary' : 'btn-secondary'}`}
-          >
-            {plan.cta}
-          </a>
-
-          <p id={`cta-legal-notice-${plan.name.toLowerCase()}`} class="mt-3 text-center text-[11px] leading-relaxed text-fg-3">
-            By continuing, you agree to our
-            <a href="/terms" class="text-brand-text underline underline-offset-2 hover:opacity-80">Terms of Service</a> and
-            <a href="/privacy" class="text-brand-text underline underline-offset-2 hover:opacity-80">Privacy Policy</a>.
-          </p>
-        </div>
-      ))}
-    </div>
-
-    <!-- Trust Text + subtle setup disclosure (no heading: keeps the outline) -->
-    <div class="mt-12 text-center space-y-2">
-      <p class="text-sm text-fg-3">
-        No hidden fees. Cancel anytime. Minutes reset monthly.
-      </p>
-      <p class="text-sm text-fg-3">
-        Extra usage: $0.20/min.
-      </p>
-      <div class="mx-auto max-w-md pt-2">
-        <p class="font-display text-base text-fg-1">{SETUP_FAST_PHRASE}</p>
-        <p class="mt-1 text-xs text-fg-3">
-          <a
-            href="/terms#setup-time"
-            aria-label="Setup time details in our Terms"
-            class="no-underline underline-offset-2 transition-colors hover:text-fg-1 hover:underline focus-visible:underline"
-          >
-            {SETUP_QUALIFIER}
-          </a>
-        </p>
-      </div>
-    </div>
-  </div>
+		<div
+			class:list={[
+				'mt-7 flex flex-col gap-5 border-b border-line pb-8 sm:flex-row sm:items-start sm:justify-between',
+				!detailed && 'max-sm:items-center max-sm:text-center',
+			]}
+		>
+			<div>
+				<p class="text-xs leading-relaxed text-fg-3">
+					Cancel anytime. Minutes reset monthly.
+				</p>
+			</div>
+			<a
+				href={detailsLink.href}
+				class="inline-flex min-h-11 items-center gap-3 text-sm font-semibold text-fg-1 underline underline-offset-8 hover:text-brand-text"
+				>{detailsLink.label}<span aria-hidden="true">&rarr;</span></a
+			>
+		</div>
+	</div>
 </section>
 
+<style>
+	.plan-card {
+		--glass-edge-hi: color-mix(in srgb, var(--fg-1) 16%, transparent);
+	}
+	.plan-recommended {
+		border-color: color-mix(in srgb, var(--brand) 45%, transparent);
+		background: linear-gradient(
+			160deg,
+			color-mix(in srgb, var(--brand) 8%, var(--bg-alt)),
+			var(--bg-alt) 60%
+		);
+	}
+	@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+		.plan-recommended {
+			background: var(--bg-alt);
+		}
+	}
+</style>
+
 <script>
-  const monthlyBtn = document.getElementById('monthly-btn')
-  const annualBtn = document.getElementById('annual-btn')
+	const monthlyBtn = document.getElementById('monthly-btn')
+	const annualBtn = document.getElementById('annual-btn')
 
-  monthlyBtn?.addEventListener('click', () => setBillingPeriod(false))
-  annualBtn?.addEventListener('click', () => setBillingPeriod(true))
+	monthlyBtn?.addEventListener('click', () => setBillingPeriod(false))
+	annualBtn?.addEventListener('click', () => setBillingPeriod(true))
 
-  function setBillingPeriod(annual: boolean) {
-    updateDisplay(annual)
-    monthlyBtn?.classList.toggle('toggle-active', !annual)
-    monthlyBtn?.classList.toggle('toggle-inactive', annual)
-    monthlyBtn?.setAttribute('aria-pressed', String(!annual))
-    annualBtn?.classList.toggle('toggle-active', annual)
-    annualBtn?.classList.toggle('toggle-inactive', !annual)
-    annualBtn?.setAttribute('aria-pressed', String(annual))
-  }
+	function setBillingPeriod(annual: boolean) {
+		monthlyBtn?.classList.toggle('toggle-active', !annual)
+		monthlyBtn?.classList.toggle('toggle-inactive', annual)
+		monthlyBtn?.setAttribute('aria-pressed', String(!annual))
+		annualBtn?.classList.toggle('toggle-active', annual)
+		annualBtn?.classList.toggle('toggle-inactive', !annual)
+		annualBtn?.setAttribute('aria-pressed', String(annual))
 
-  function updateDisplay(annual: boolean) {
-    const tildes = document.querySelectorAll('.pricing-tilde')
-    const amounts = document.querySelectorAll<HTMLElement>('.pricing-amount')
-    amounts.forEach(el => {
-      const attr = annual ? 'annualMonthlyDisplay' : 'monthlyDisplay'
-      el.textContent = el.dataset[attr] || '--'
-
-      const container = el.closest('[data-pricing-display]')
-      const billing = container?.querySelector('.pricing-billing')
-      if (billing) {
-        billing.textContent = annual
-          ? (el.dataset.annualBillingDisplay || 'Billed annually')
-          : 'Billed monthly'
-      }
-    })
-
-    tildes.forEach(el => {
-      el.classList.toggle('hidden', !annual)
-    })
-  }
+		document
+			.querySelectorAll<HTMLElement>('.pricing-amount')
+			.forEach((amount) => {
+				amount.textContent = annual
+					? (amount.dataset.annualMonthlyDisplay ?? '')
+					: (amount.dataset.monthlyDisplay ?? '')
+				const billing = amount
+					.closest('[data-pricing-display]')
+					?.querySelector('.pricing-billing')
+				if (billing)
+					billing.textContent = annual
+						? (amount.dataset.annualBillingDisplay ?? '')
+						: 'Billed monthly'
+			})
+		document
+			.querySelectorAll('.pricing-tilde')
+			.forEach((tilde) => tilde.classList.toggle('hidden', !annual))
+	}
 </script>

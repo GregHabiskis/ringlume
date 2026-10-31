@@ -16,11 +16,11 @@ describe('footer', () => {
 		expect(source).not.toMatch(/telegram|t\.me|fshahariar/i)
 	})
 
-	it('keeps the logo, slogan, and copyright', async () => {
+	it('keeps the logo and copyright without a repeated marketing slogan', async () => {
 		const source = await readFile(footerSourceUrl, 'utf8')
 
 		expect(source).toContain('logo-320-trimmed.webp')
-		expect(source).toContain(
+		expect(source).not.toContain(
 			'Managed virtual receptionist and call handling for service businesses.',
 		)
 		expect(source).toContain('All rights reserved.')

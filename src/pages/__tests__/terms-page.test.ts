@@ -28,7 +28,7 @@ describe('terms', () => {
 		expect(source).toContain('7. Service Availability & Uptime')
 		// The clause is a sub-clause, so the existing numbering is untouched.
 		expect(source).toContain('8. Limitation of Liability')
-		expect(source).toContain('Last Updated: October 30, 2026')
+		expect(source).toContain('Last Updated: October 31, 2026')
 		expect(source).toContain('{PRODUCTION_MAX}')
 		expect(source).toContain('href={CAL_BOOKING_URL}')
 		expect(source).toContain('href="/contact"')
@@ -36,6 +36,31 @@ describe('terms', () => {
 		expect(source).toContain('custom')
 		expect(source).toContain('targets, not guarantees')
 		expect(source).not.toContain('24–48')
+	})
+
+	it('holds the relocated billing, integration and estimate explanations without renumbering existing sections', async () => {
+		const source = (await readTerms()).replace(/\s+/g, ' ')
+		for (const id of [
+			'service-details',
+			'billing-details',
+			'estimates',
+			'setup-time',
+		]) {
+			expect(source).toContain(`id="${id}"`)
+		}
+		expect(source).toContain(
+			'No compliance certification or regulated workflow is guaranteed',
+		)
+		expect(source).toContain('agreed scope')
+		expect(source).toContain('Included minutes reset monthly')
+		expect(source).toContain('plan.overagePerMinute.toFixed(2)')
+		expect(source).toContain('{overageRates}')
+		expect(source).toContain('monthly equivalents are approximate')
+		expect(source).toContain('prorated difference')
+		expect(source).toContain('Actual recovered revenue depends on call volume')
+		expect(source).toContain('Wages exclude benefits and payroll taxes')
+		expect(source).toContain('8. Limitation of Liability')
+		expect(source).toContain('12. Contact Information')
 	})
 
 	it('renders every supported tool from the shared stack', async () => {
@@ -46,7 +71,10 @@ describe('terms', () => {
 		for (const group of ['phone', 'calendar', 'booking', 'crm'] as const) {
 			const expression = `{formatList(SUPPORTED_STACK.${group})}`
 			expect(rendered).toContain(expression)
-			rendered = rendered.replace(expression, formatList(SUPPORTED_STACK[group]))
+			rendered = rendered.replace(
+				expression,
+				formatList(SUPPORTED_STACK[group]),
+			)
 		}
 
 		for (const tools of Object.values(SUPPORTED_STACK)) {

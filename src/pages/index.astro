@@ -4,7 +4,7 @@ import Header from '../components/Header.astro'
 import Hero from '../components/Hero.astro'
 import FomoSection from '../components/FomoSection.astro'
 import Capabilities from '../components/Capabilities.astro'
-import DemoSection from '../components/DemoSection.astro'
+import ReceptionistComparison from '../components/ReceptionistComparison.astro'
 import Pricing from '../components/Pricing.astro'
 import FAQ from '../components/FAQ.astro'
 import CtaSection from '../components/CtaSection.astro'
@@ -12,29 +12,29 @@ import Footer from '../components/Footer.astro'
 import type { FaqId } from '../data/faqs'
 
 const homepageFaqIds = [
-  'busy-calls',
-  'appointments',
-  'live-transfer',
-  'setup-time',
-  'pricing',
+	'busy-calls',
+	'appointments',
+	'live-transfer',
+	'setup-time',
+	'pricing',
 ] as const satisfies readonly FaqId[]
 ---
 
 <BaseLayout
-  title="Ringlume"
-  description="A virtual receptionist for service businesses that answers calls, qualifies leads, and books appointments 24/7."
+	title="Ringlume"
+	description="An AI receptionist for arborists. Ringlume answers calls, captures tree-care leads, and books estimates 24/7. Hear the live demo and explore plans."
 >
-  <Header />
+	<Header />
 
-  <main>
-    <Hero />
-    <FomoSection />
-    <Capabilities />
-    <DemoSection />
-    <Pricing />
-    <FAQ faqIds={homepageFaqIds} showAllLink />
-    <CtaSection />
-  </main>
+	<main>
+		<Hero />
+		<Capabilities />
+		<ReceptionistComparison />
+		<Pricing />
+		<FomoSection />
+		<FAQ faqIds={homepageFaqIds} showAllLink compact />
+		<CtaSection />
+	</main>
 
-  <Footer />
+	<Footer />
 </BaseLayout>

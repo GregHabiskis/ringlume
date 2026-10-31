@@ -63,6 +63,7 @@ and `pnpm build` as verification gates. There is no lint script.
     │   ├── book-demo.astro        # personalized demo request
     │   ├── book-demo/thanks.astro # noindex demo confirmation
     │   ├── faq.astro
+    │   ├── pricing.astro          # detailed plan comparison
     │   ├── privacy.astro
     │   └── terms.astro
     ├── components/                # section + chrome components (*.astro)
@@ -75,11 +76,11 @@ and `pnpm build` as verification gates. There is no lint script.
 BaseLayout
   Header
   main
-    Hero
-    FomoSection
+    Hero                 # includes DemoSection (#demo), click-loaded Retell
     Capabilities
-    DemoSection        # live Retell voice demo; renders nothing when PUBLIC_RETELL_* unset
-    Pricing
+    ReceptionistComparison # cited 2025 O*NET/BLS wage benchmark, not guaranteed savings
+    Pricing              # five plain-English benefits per plan; links to /pricing
+    FomoSection          # #fomo, missed-call calculator only
     FAQ
     CtaSection
   Footer
@@ -96,7 +97,7 @@ Existing legal-page contact lists remain unchanged except for the removed channe
 
 ## Architecture rules
 
-1. **Static first.** Prefer zero client JS. Interactive bits are tiny vanilla `<script>` blocks inside `.astro` files (menu, pricing toggle, hero word rotation).
+1. **Static first.** Prefer zero client JS. Interactive bits are tiny vanilla `<script>` blocks inside `.astro` files (menu, pricing toggle, missed-call calculator). The hero headline is static.
 2. **No heavy frameworks.** Do not add React, Vue, Framer Motion, GSAP, analytics SDKs, or chat widgets unless explicitly requested.
 3. **No third-party render-blocking scripts.** The Retell demo widget (`~1.4 MB`) is injected only when someone clicks a demo CTA — never at page load.
 4. **Keep deps minimal.** The site has no payment integration, application database, account, entitlement, or webhook layer.
@@ -138,11 +139,20 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
   (translucent fill + gradient edge + backdrop blur + specular inset + shadow stack).
 - `.glass-fill` = same material **without** `backdrop-filter`; use for repeated items
   (pricing cards, capability cards). Tiers also drop blur below 768px (perf rule).
+- `.glass-card` is the shared modifier for the homepage demo, three call-flow
+  previews, calculator shell, and closing CTA. Pair with `.glass .glass-fill
+  .glass-regular`: one 40% background fill, grey borders/dividers, no white bevel,
+  grain, per-card gradients, hover tint, or backdrop filter. Text stays opaque.
+  Calculator inner panels stay clear to avoid stacking opacity. Reduced-transparency
+  and high-contrast preferences retain an opaque fallback. Do not apply this
+  modifier to header, pricing, or forms without being asked.
 - `.grain` = noise overlay; it also sets `position: relative` so the `::after` never escapes.
-- `.scrim` / `.scrim-soft` = base-color wash so small text keeps contrast over the
-  fixed `.scene` backdrop (static near-black + masked 28px dot grid + one green
-  spotlight at top centre). **Do not add orbs or drifting blobs**: the scene never
-  animates; the only ambient motion is the hero's ripple rings, paused via
+- `.scrim` / `.scrim-soft` are transparent section wrappers so the fixed `.scene`
+  remains visible on every page (static near-black + persistent 28px dot grid at
+  9% white + one green spotlight at top centre). Do not add masks or opaque section
+  washes that hide the dots. **Do not add orbs or drifting blobs**: the scene never
+  animates; ambient motion stays inside the hero demo (ripple rings, waveform,
+  and rotating glass rim), paused via
   `html.is-paused`.
 - Refraction: `.refract` only works under `html.refract` (Chromium-only, set in
   `BaseLayout` from `navigator.userAgentData`) + the `#liquid-glass` SVG filter.
@@ -160,12 +170,21 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
 - `.specular` — cursor-tracked glow (fine pointers + motion allowed; one rAF-throttled
   `pointermove` listener in `BaseLayout.astro` sets `--mx/--my`. Uses `::before` so it
   coexists with `.grain::after`)
-- `.hero-rings` / `.hero-ring` — hero-only ripple rings: concentric 1px brand outlines
+- `.hero-rings` / `.hero-ring` are scoped to the hero's `DemoSection.astro`: concentric 1px brand outlines
   expanding with `transform: scale` + opacity only (no filter, no backdrop-filter),
-  6-9s staggered loops, 3 rings at <=768px, static fixed scales under
+  three staggered 8s loops, static fixed scales under
   `prefers-reduced-motion`, paused while the tab is hidden
-- `.stat-strip` / `.stat-number` / `.stat-divider` — hero trust bar: one in-flow
-  `glass-regular` strip, two equal columns split by a fading 1px hairline
+- The demo waveform scales seven staggered bars; a separate pseudo-element
+  rotates the glass rim while the core stays upright. Animate transform/opacity
+  only, disable under reduced motion, and pause via `html.is-paused`. This is
+  decorative animation, not a real-time audio meter; no new client JS is needed.
+- Hero offer facts use a simple definition list, not nested glass cards.
+- Homepage feature previews are static tree-care examples, visibly labelled
+  illustrative. Do not present them as real customer activity or performance data.
+- Capabilities follows one ordered call flow: answer, understand/capture, then act,
+  followed by a team summary. Booking, transfer, and taking a message are alternative
+  outcomes chosen by the business's rules, not guaranteed steps on every call.
+- `FAQ compact` enables the homepage-only split layout; `/faq` keeps its full layout.
 - `@utility content-auto` — `content-visibility: auto` for below-the-fold sections
 - Shared component classes live in `@layer components`, so Tailwind utilities in markup
   always win (e.g. `hidden md:inline-flex` over `.btn`).
@@ -258,10 +277,10 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 
 - Every page wraps content in `BaseLayout` with `title` + `description`.
 - Legal pages (`privacy`, `terms`) are long static content — keep English-only unless asked otherwise.
-- Legal pages are otherwise untouched: only the approved setup-time clause and
-  channel removal were authorized. Do not renumber existing sections or rewrite
-  other legal wording without explicit approval. The setup clause is 7.1 under
-  Service Availability & Uptime, anchored at `/terms#setup-time`.
+- Do not renumber existing legal sections or rewrite unrelated legal wording
+  without explicit approval. The approved technical-detail relocation adds
+  Terms 2.1 (`#service-details`), 3.1 (`#billing-details`), and 3.2 (`#estimates`).
+  The existing setup clause remains 7.1, anchored at `/terms#setup-time`.
 - The footer links to Free Demo, Terms, Privacy, and Contact. There is no refund page; Terms states the no-refund policy.
 
 ### Demo-first conversion and offer facts
@@ -269,8 +288,11 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 - Primary conversion: `/book-demo`, a personalized demo request. Header CTA:
   **Free Demo**. Hero/pricing/CtaSection CTA: **Get Your Free Demo**.
 - Secondary conversion: homepage `#demo`, the generic live Retell demo.
-  Header navigation says **Live Demo**, hero says **Try the Live Demo**.
-  The Pricing nav anchor remains `/#pricing`.
+  All live-demo links and launcher buttons say **Try it now**. Header links to
+  the actual `#demo` card inside the hero, using native smooth scrolling with
+  header clearance. There is no duplicate live-demo CTA beside the hero copy.
+- Header Pricing links directly to `/pricing`. There is no homepage pricing
+  anchor or pricing scroll-spy mapping.
 - `src/lib/offer.ts` is the single source for offer facts, `SUPPORTED_STACK`,
   and `CAL_BOOKING_URL`. Meeting links appear only on `/book-demo/thanks`
   and inside the Terms setup clause.
@@ -281,16 +303,16 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
   `24/7 / Always Working`.
 - Production agent target: **within 12 hours** with preferred tools, starting
   only after a conversation and confirmed requirements. This figure belongs
-  only in the Terms clause and existing setup FAQ answer, never in plan cards,
-  hero, CTAs, metadata, or `/book-demo`.
-- **Go live in an afternoon** must have **under best circumstances** beside
-  it, or the full explanation in Terms/FAQ. The pricing disclosure is below
-  the cards, with a 12px qualifier linking to `/terms#setup-time`.
+  only in the Terms clause, never in FAQs, plan cards, hero, CTAs, metadata,
+  or `/book-demo`. The setup FAQ links to Terms instead of repeating details.
+- The retired setup-time slogans and qualifiers must not appear on the homepage
+  or pricing page. Keep setup targets and preferred tool lists in Terms only.
 - Preferred tools are recommendations, not requirements or guaranteed native
   integrations. Existing PBX/custom CRM setups are more complex and take
   longer; give no time figure for them. Setup times are targets, not guarantees.
-- `src/data/faqs.ts` feeds the FAQ component. `faqs.md` is a docs-only mirror,
-  checked by tests but not consumed by site generation.
+- `src/data/faqs.ts` feeds the FAQ component. `src/data/faqs.md` is a docs-only
+  mirror, checked by tests but not consumed by site generation. Keep each answer
+  short; use Terms links for technical explanations.
 
 ### Static Netlify forms
 
@@ -308,7 +330,25 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 
 ### Pricing CTAs
 
-- Plans live in `Pricing.astro` frontmatter.
+- Plan facts live in `src/lib/pricing.ts`, shared by `Pricing.astro`, the wage
+  comparison, `/pricing`, and Terms billing details. Preserve the current four prices and fees; upstream
+  Trillet agency-wide pricing is not a per-client Ringlume package cost.
+- Additional-minute rates are per-plan (`overagePerMinute`), not one global rate.
+  Agent bundles (`agents`) and card benefits must stay consistent with that same
+  shared plan data.
+- Homepage cards show five practical benefits. Technical allowances, integrations,
+  and support detail live in the `/pricing` comparison table.
+- Keep public copy short and practical. Billing mechanics, setup constraints,
+  compliance qualifications, and estimate methodology live in Terms. Prices,
+  setup fees, extra-minute rates, source citations, and essential limitations
+  remain visible where relevant.
+- `/pricing` starts with `Pricing detailed`, which renders the page's H1 without
+  a second introduction. On mobile below 640px, the comparison table's first
+  column is sticky with an opaque background; wider layouts are unchanged.
+- Annual monthly equivalents retain the existing approximate displays. Show the
+  actual annual charge beside them; never calculate the charge from the rounded display.
+- Do not assert HIPAA/GDPR/SOC 2 certification from a plan name or an upstream
+  platform claim. Compliance and regulated workflows require confirmed scope.
 - All four CTAs are `<a href="/book-demo">Get Your Free Demo</a>`
   elements carrying `data-plan` and an `aria-describedby` link to the legal
   notice under the button. There is no payment or checkout integration.
@@ -324,7 +364,7 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 - **Embedding method: Retell website widget v2 (script tag), not the
   `retell-client-js-sdk` npm package.** The bundle
   `https://dashboard.retellai.com/retell-widget-v2.js` is injected on demand by
-  `src/components/DemoSection.astro` when someone clicks **Talk to the demo**
+  `src/components/DemoSection.astro` when someone clicks **Try it now**
   (it is never loaded at page load — see performance rules). The injected tag
   must keep `id="retell-widget"`: the widget reads its config from
   `data-voice-public-key` / `data-voice-agent-id` / branding `data-*` attributes
@@ -427,7 +467,9 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 | Task                           | Where / how                                                |
 | ------------------------------ | ---------------------------------------------------------- |
 | Change hero copy               | `src/components/Hero.astro`                                |
-| Change pricing copy            | `src/components/Pricing.astro`                             |
+| Change pricing facts / copy    | `src/lib/pricing.ts` + `src/components/Pricing.astro`        |
+| Detailed plan comparison       | `src/pages/pricing.astro`                                  |
+| Wage comparison / source       | `src/components/ReceptionistComparison.astro`              |
 | Change meeting URL / offer facts | `src/lib/offer.ts`                                      |
 | Demo request fields / choices | `DemoRequestForm.astro` + `src/lib/demo-form.ts`             |
 | Contact message fields        | `src/components/ContactForm.astro`                         |

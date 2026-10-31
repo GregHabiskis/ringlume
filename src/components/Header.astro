@@ -2,8 +2,8 @@
 const navLinks = [
   { label: 'Home', href: '/' },
   { label: 'Features', href: '/#capabilities' },
-  { label: 'Live Demo', href: '/#demo' },
-  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Try it now', href: '/#demo' },
+  { label: 'Pricing', href: '/pricing' },
   { label: 'FAQ', href: '/faq' },
   { label: 'Contact', href: '/contact' },
 ]
@@ -332,10 +332,9 @@ const currentAttr = (href: string) =>
       document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'),
     )
     const sections: [selector: string, href: string][] = [
+      ['#demo', '/#demo'], // nested in the hero; takes over at its anchor position
       ['main > section:first-child', '/'], // hero → Home
       ['#capabilities', '/#capabilities'],
-      ['#demo', '/#demo'],
-      ['#pricing', '/#pricing'],
       ['#faq', '/faq'],
       ['#contact', '/contact'],
     ]
@@ -366,13 +365,18 @@ const currentAttr = (href: string) =>
     // Active = the section covering the upper-third line of the viewport
     // (34% — exactly where the observer's rootMargin band ends). The
     // sticky-header clearance (-80px) prunes sections that are already
-    // fully above the band. Sections never overlap, so the first match
-    // is the only match; no observed section on the line (e.g. the FOMO
-    // strip) means null: keep the previous active link.
+    // fully above the band. The nested demo takes precedence only once
+    // it reaches its anchor clearance, keeping Home active at page load.
+    // Unlinked sections keep the previous active link.
     function pick(): string | null {
       const line = window.innerHeight * 0.34
       for (const { el, href } of pairs) {
         const r = el.getBoundingClientRect()
+        if (
+          el.id === 'demo' &&
+          r.top > parseFloat(getComputedStyle(el).scrollMarginTop) + 1
+        )
+          continue
         if (r.top < line && r.bottom > line) return href
       }
       return null

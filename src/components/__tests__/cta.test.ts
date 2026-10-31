@@ -1,5 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
+import { PLANS } from '../../lib/pricing'
 
 const srcDir = new URL('../../', import.meta.url)
 
@@ -10,19 +11,19 @@ const component = (name: string) => read(`components/${name}.astro`)
 const sourceFiles = async () => {
 	const entries = await readdir(srcDir, { recursive: true })
 	return entries.filter(
-		(entry) =>
-			/\.(astro|ts|md)$/.test(entry) && !entry.includes('__tests__'),
+		(entry) => /\.(astro|ts|md)$/.test(entry) && !entry.includes('__tests__'),
 	)
 }
 
 describe('demo-first CTAs', () => {
-	it('points the hero at the demo request and keeps live vs personalized distinct', async () => {
+	it('keeps only the personalized-demo CTA beside the hero demo card', async () => {
 		const source = await component('Hero')
 
 		expect(source).toContain('href="/book-demo"')
 		expect(source).toContain('Get Your Free Demo')
-		expect(source).toContain("href={retell ? '#demo' : '#capabilities'}")
-		expect(source).toContain("'Try the Live Demo'")
+		expect(source).toContain('<DemoSection />')
+		expect(source).not.toContain('#demo')
+		expect(source).not.toContain('btn-secondary')
 		expect(source).not.toContain('Get Started Today')
 		expect(source).not.toContain('48 Hrs')
 		expect(source).not.toContain('Setup Time')
@@ -32,8 +33,8 @@ describe('demo-first CTAs', () => {
 		const source = await component('Hero')
 
 		expect(source).toContain('{DEMO_FREE_MINUTES} Min')
-		expect(source).toContain('>Free Demo<')
-		expect(source).toContain('>24/7<')
+		expect(source).toMatch(/>\s*Free Demo\s*</)
+		expect(source).toMatch(/>\s*24\/7\s*</)
 		expect(source).toContain('Always Working')
 		expect(source).not.toContain('>10 Min<')
 	})
@@ -41,19 +42,34 @@ describe('demo-first CTAs', () => {
 	it('renames the header demo anchor and points its CTA at /book-demo', async () => {
 		const source = await component('Header')
 
-		expect(source).toContain("{ label: 'Live Demo', href: '/#demo' }")
+		expect(source).toContain("{ label: 'Try it now', href: '/#demo' }")
+		expect(source).toContain("{ label: 'Pricing', href: '/pricing' }")
+		expect(source).not.toContain('/#pricing')
 		expect(source).toContain('href="/book-demo"')
 		expect(source).toContain('Free Demo')
 		expect(source).not.toContain('Try a Demo')
 		expect(source).not.toContain('Get Started')
 	})
 
+	it('uses Try it now for the demo button, reset label and widget launcher', async () => {
+		const source = await component('DemoSection')
+		expect(source).toContain('<span data-demo-label>Try it now</span>')
+		expect(source).toContain("const OPEN_LABEL = 'Try it now'")
+		expect(source).toContain("const RETELL_FAB_TEXT = 'Try it now'")
+	})
+
 	it('points every pricing CTA at the demo request', async () => {
 		const source = await component('Pricing')
 
-		expect(source.match(/name: '(Basic|Pro|Plus|Max)'/g)).toHaveLength(4)
-		expect(source.match(/cta: 'Get Your Free Demo'/g)).toHaveLength(4)
-		// One href inside the plans.map loop, rendered on all four cards.
+		expect(PLANS.map((plan) => plan.name)).toEqual([
+			'Basic',
+			'Pro',
+			'Plus',
+			'Max',
+		])
+		expect(source).toContain('PLANS.map((plan) => (')
+		expect(source).toContain('Get Your Free Demo')
+		// One href inside the shared plan loop, rendered on all four cards.
 		expect(source.match(/href="\/book-demo"/g)).toHaveLength(1)
 		expect(source).not.toContain('cal.com')
 		expect(source).not.toContain('Contact Sales')

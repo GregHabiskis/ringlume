@@ -6,7 +6,7 @@ const readComponent = (name: string) =>
 const readStyles = () =>
 	readFile(new URL('../../styles/global.css', import.meta.url), 'utf8')
 
-describe('uniform homepage glass cards', () => {
+describe('uniform glass cards', () => {
 	it('uses one background alpha and grey edges without dimming content', async () => {
 		const css = await readStyles()
 		const material =
@@ -33,18 +33,14 @@ describe('uniform homepage glass cards', () => {
 			'CapabilityCard',
 			'MissedCallCalculator',
 			'CtaSection',
+			'ContactForm',
 		]) {
 			const source = await readComponent(name)
 			expect(source, name).toContain(
 				'glass glass-fill glass-regular glass-card',
 			)
 		}
-		for (const name of [
-			'Header',
-			'Pricing',
-			'ContactForm',
-			'DemoRequestForm',
-		]) {
+		for (const name of ['Header', 'Pricing', 'DemoRequestForm']) {
 			expect(await readComponent(name), name).not.toContain('glass-card')
 		}
 		const [demo, flow, cta] = await Promise.all(
@@ -54,6 +50,26 @@ describe('uniform homepage glass cards', () => {
 		expect(demo).not.toContain('--glass-fill:')
 		expect(flow).not.toContain('background: linear-gradient')
 		expect(cta).not.toContain('background: linear-gradient')
+	})
+
+	it('matches FAQ and contact cards without changing the homepage FAQ preview', async () => {
+		const [faq, contact, form] = await Promise.all([
+			readComponent('FAQ'),
+			readFile(new URL('../../pages/contact.astro', import.meta.url), 'utf8'),
+			readComponent('ContactForm'),
+		])
+		expect(faq).toMatch(
+			/compact\s*\? 'faq-list'\s*: 'glass glass-fill glass-regular glass-card rounded-3xl'/,
+		)
+		expect(faq).toContain('.glass-card [data-faq-trigger]:hover')
+		expect(
+			contact.match(
+				/glass glass-fill glass-regular glass-card rounded-2xl p-8/g,
+			),
+		).toHaveLength(2)
+		expect(contact).not.toMatch(/grain|lift-hover/)
+		expect(form).toContain('glass glass-fill glass-regular glass-card')
+		expect(form).not.toContain('grain')
 	})
 
 	it('avoids stacking tinted fills inside the calculator', async () => {

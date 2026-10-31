@@ -350,7 +350,7 @@
 	}
 }
 
-/* One clear material for the homepage demo, flow, calculator, and closing CTA.
+/* Shared clear material for homepage cards, the FAQ panel, and contact cards.
    Background alpha only: text and controls remain fully opaque. */
 .glass.glass-card {
 	--glass-fill: color-mix(in srgb, var(--bg-alt) 40%, transparent);

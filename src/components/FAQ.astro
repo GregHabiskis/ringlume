@@ -59,7 +59,9 @@ const faqs = faqIds
 		<div
 			class:list={[
 				'mx-auto w-full max-w-4xl overflow-hidden',
-				compact ? 'faq-list' : 'glass glass-thick grain rounded-3xl',
+				compact
+					? 'faq-list'
+					: 'glass glass-fill glass-regular glass-card rounded-3xl',
 			]}
 		>
 			{
@@ -154,6 +156,11 @@ const faqs = faqIds
 </section>
 
 <style>
+	.glass-card [data-faq-trigger]:hover {
+		background: transparent;
+		color: var(--brand-text);
+	}
+
 	.faq-compact {
 		padding-block: 4rem;
 	}

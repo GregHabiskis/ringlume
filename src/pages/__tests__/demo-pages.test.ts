@@ -91,7 +91,9 @@ describe('/contact', () => {
 		const source = await read('pages/contact.astro')
 
 		expect(
-			source.match(/glass glass-fill glass-regular grain rounded-2xl p-8/g),
+			source.match(
+				/glass glass-fill glass-regular glass-card rounded-2xl p-8/g,
+			),
 		).toHaveLength(2)
 		expect(source.indexOf('<ContactForm />')).toBeLessThan(
 			source.indexOf('https://wa.me/'),

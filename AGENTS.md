@@ -140,12 +140,13 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
 - `.glass-fill` = same material **without** `backdrop-filter`; use for repeated items
   (pricing cards, capability cards). Tiers also drop blur below 768px (perf rule).
 - `.glass-card` is the shared modifier for the homepage demo, three call-flow
-  previews, calculator shell, and closing CTA. Pair with `.glass .glass-fill
+  previews, calculator shell, closing CTA, full FAQ panel, contact form/channel
+  cards, and Terms/Privacy cards. Pair with `.glass .glass-fill
   .glass-regular`: one 40% background fill, grey borders/dividers, no white bevel,
   grain, per-card gradients, hover tint, or backdrop filter. Text stays opaque.
   Calculator inner panels stay clear to avoid stacking opacity. Reduced-transparency
   and high-contrast preferences retain an opaque fallback. Do not apply this
-  modifier to header, pricing, or forms without being asked.
+  modifier to header, pricing, or the demo-request form without being asked.
 - `.grain` = noise overlay; it also sets `position: relative` so the `::after` never escapes.
 - `.scrim` / `.scrim-soft` are transparent section wrappers so the fixed `.scene`
   remains visible on every page (static near-black + persistent 28px dot grid at
@@ -280,6 +281,7 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 - Do not renumber existing legal sections or rewrite unrelated legal wording
   without explicit approval. The approved technical-detail relocation adds
   Terms 2.1 (`#service-details`), 3.1 (`#billing-details`), and 3.2 (`#estimates`).
+  The approved setup-fee upgrade credit is explained in 3.3 (`#setup-fee-upgrades`).
   The existing setup clause remains 7.1, anchored at `/terms#setup-time`.
 - The footer links to Free Demo, Terms, Privacy, and Contact. There is no refund page; Terms states the no-refund policy.
 
@@ -336,6 +338,10 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 - Additional-minute rates are per-plan (`overagePerMinute`), not one global rate.
   Agent bundles (`agents`) and card benefits must stay consistent with that same
   shared plan data.
+- Upgrades credit all Service Setup Fees already paid, including earlier setup
+  top-ups. Only a positive difference is due; subscription proration is separate.
+  Show a short linked note below both pricing grids and keep the full policy and
+  examples in `/terms#setup-fee-upgrades`. Derive example amounts from `PLANS`.
 - Homepage cards show five practical benefits. Technical allowances, integrations,
   and support detail live in the `/pricing` comparison table.
 - Keep public copy short and practical. Billing mechanics, setup constraints,

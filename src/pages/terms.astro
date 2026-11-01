@@ -8,11 +8,16 @@ import {
   PRODUCTION_MAX,
   SUPPORTED_STACK,
 } from '../lib/offer'
-import { PLANS } from '../lib/pricing'
+import { PLANS, formatPrice } from '../lib/pricing'
 
 const overageRates = PLANS.map(
   (plan) => `${plan.name}: $${plan.overagePerMinute.toFixed(2)}/minute`,
 ).join('; ')
+
+const setupUpgradeExamples = [
+  { from: PLANS[0], to: PLANS[1] },
+  { from: PLANS[0], to: PLANS[2] },
+]
 ---
 
 <BaseLayout
@@ -24,9 +29,9 @@ const overageRates = PLANS.map(
   <main class="scrim min-h-screen pt-24 pb-20">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <h1 class="text-h1 font-bold text-fg-1 mb-4">Terms & Conditions</h1>
-      <p class="text-fg-3 mb-12">Last Updated: October 31, 2026</p>
+      <p class="text-fg-3 mb-12">Last Updated: November 1, 2026</p>
 
-      <div class="glass glass-thick grain max-w-none space-y-10 rounded-[32px] p-6 sm:p-10 lg:p-14">
+      <div class="glass glass-fill glass-regular glass-card max-w-none space-y-10 rounded-[32px] p-6 sm:p-10 lg:p-14">
 
         <!-- 1. Acceptance of Terms -->
         <section>
@@ -143,6 +148,30 @@ const overageRates = PLANS.map(
             payroll taxes and do not cover 24/7 staffing. Ringlume handles phone
             calls and scheduling, not in-person reception or every administrative
             duty. This comparison does not guarantee savings.
+          </p>
+          <h3 id="setup-fee-upgrades" class="scroll-mt-24 text-lg font-semibold text-fg-1 mt-8 mb-3">
+            3.3 Setup Fees When Upgrading
+          </h3>
+          <p class="text-fg-2 leading-relaxed">
+            When you upgrade, the total Service Setup Fees already paid count toward
+            the new plan's Service Setup Fee. This includes your initial setup payment
+            and any setup-fee top-ups paid on earlier upgrades. You pay only the
+            remaining difference, not the full setup fee again. If your previous
+            setup payments already cover the new plan's setup fee, no additional
+            setup fee is due.
+          </p>
+          <ul class="list-disc list-inside text-fg-2 space-y-2 mt-4 ml-4">
+            {setupUpgradeExamples.map(({ from, to }) => (
+              <li>
+                {from.name} to {to.name}: {formatPrice(from.setupFee)} already paid
+                toward a {formatPrice(to.setupFee)} setup fee means only
+                {formatPrice(Math.max(0, to.setupFee - from.setupFee))} extra.
+              </li>
+            ))}
+          </ul>
+          <p class="text-fg-2 leading-relaxed mt-4">
+            This setup-fee credit is separate from subscription charges and any
+            prorated subscription difference due when upgrading.
           </p>
         </section>
         <!-- 4. Intellectual Property & Licensing -->

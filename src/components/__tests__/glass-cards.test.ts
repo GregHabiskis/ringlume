@@ -72,6 +72,20 @@ describe('uniform glass cards', () => {
 		expect(form).not.toContain('grain')
 	})
 
+	it.each(['terms', 'privacy'])(
+		'matches the /%s legal card to homepage cards',
+		async (page) => {
+			const source = await readFile(
+				new URL(`../../pages/${page}.astro`, import.meta.url),
+				'utf8',
+			)
+			expect(source).toContain(
+				'glass glass-fill glass-regular glass-card max-w-none space-y-10 rounded-[32px] p-6 sm:p-10 lg:p-14',
+			)
+			expect(source).not.toMatch(/glass-thick|grain/)
+		},
+	)
+
 	it('avoids stacking tinted fills inside the calculator', async () => {
 		const source = await readComponent('MissedCallCalculator')
 		const output = source.match(/class="calc-output-card[^"]*"/)?.[0] ?? ''

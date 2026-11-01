@@ -5,6 +5,17 @@ import { PLANS } from '../../lib/pricing'
 const pricingSourceUrl = new URL('../Pricing.astro', import.meta.url)
 
 describe('pricing CTAs', () => {
+	it('places one short setup-fee upgrade disclosure below the cards in both modes', async () => {
+		const source = await readFile(pricingSourceUrl, 'utf8')
+		const text = source.replace(/\s+/g, ' ')
+		expect(text).toContain('Upgrading? Pay only the setup-fee difference.')
+		expect(source).toContain('href="/terms#setup-fee-upgrades"')
+		expect(source.indexOf('href="/terms#setup-fee-upgrades"')).toBeGreaterThan(
+			source.indexOf('</article>'),
+		)
+		expect(source.match(/href="\/terms#setup-fee-upgrades"/g)).toHaveLength(1)
+	})
+
 	it('centers homepage billing and disclosure groups only below the sm breakpoint', async () => {
 		const source = await readFile(pricingSourceUrl, 'utf8')
 		expect(source).toContain(

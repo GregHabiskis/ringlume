@@ -28,7 +28,7 @@ describe('terms', () => {
 		expect(source).toContain('7. Service Availability & Uptime')
 		// The clause is a sub-clause, so the existing numbering is untouched.
 		expect(source).toContain('8. Limitation of Liability')
-		expect(source).toContain('Last Updated: October 31, 2026')
+		expect(source).toContain('Last Updated: November 1, 2026')
 		expect(source).toContain('{PRODUCTION_MAX}')
 		expect(source).toContain('href={CAL_BOOKING_URL}')
 		expect(source).toContain('href="/contact"')
@@ -36,6 +36,26 @@ describe('terms', () => {
 		expect(source).toContain('custom')
 		expect(source).toContain('targets, not guarantees')
 		expect(source).not.toContain('24–48')
+	})
+
+	it('credits prior setup payments and earlier top-ups separately from subscription proration', async () => {
+		const source = (await readTerms()).replace(/\s+/g, ' ')
+		expect(source).toContain('id="setup-fee-upgrades"')
+		expect(source).toContain('3.3 Setup Fees When Upgrading')
+		expect(source).toContain(
+			'total Service Setup Fees already paid count toward',
+		)
+		expect(source).toContain('setup-fee top-ups paid on earlier upgrades')
+		expect(source).toContain(
+			'remaining difference, not the full setup fee again',
+		)
+		expect(source).toContain('no additional setup fee is due')
+		expect(source).toContain('separate from subscription charges')
+		expect(source).toContain('{ from: PLANS[0], to: PLANS[1] }')
+		expect(source).toContain('{ from: PLANS[0], to: PLANS[2] }')
+		expect(source).toContain(
+			'formatPrice(Math.max(0, to.setupFee - from.setupFee))',
+		)
 	})
 
 	it('holds the relocated billing, integration and estimate explanations without renumbering existing sections', async () => {

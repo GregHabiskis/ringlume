@@ -58,12 +58,14 @@ describe('demo request form', () => {
 		expect(source.match(/\brequired\b/g)).toHaveLength(4)
 	})
 
-	it('keeps the website or Facebook page pattern', async () => {
+	it('labels the company website clearly and keeps URL validation', async () => {
 		const source = await readSource()
 
 		expect(source).toContain('pattern={WEBSITE_PATTERN}')
+		expect(source).toMatch(/Company website\s*<span/)
+		expect(source).not.toContain('Facebook page')
 		expect(source).toContain(
-			'title="Enter your website or Facebook page, like example.com"',
+			'title="Enter your company website, like example.com"',
 		)
 
 		const pattern = new RegExp(`^(?:${WEBSITE_PATTERN})$`, 'v')
@@ -100,7 +102,12 @@ describe('demo request form', () => {
 		expect(source).toContain('Get my free demo')
 		expect(source).toContain('DEMO_DELIVERY_MAX')
 		expect(source).toContain('Your demo link arrives by email within')
+		expect(source).toContain('href="/terms"')
+		expect(source).toContain('Terms of Service')
 		expect(source).toContain('href="/privacy"')
+		expect(source.indexOf('href="/terms"')).toBeGreaterThan(
+			source.indexOf('</button>'),
+		)
 	})
 
 	it('rounds supported mobile and desktop pickers without adding JavaScript', async () => {

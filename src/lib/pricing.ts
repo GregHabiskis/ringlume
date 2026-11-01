@@ -9,6 +9,8 @@ export const PLANS = [
 		setupFee: 800,
 		minutes: 600,
 		overagePerMinute: 0.2,
+		smsPerMessage: 0.04,
+		liveTransferPerMinute: 0.1,
 		concurrentCalls: 50,
 		phoneNumbers: 1,
 		agents: 'Receptionist agent',
@@ -33,6 +35,8 @@ export const PLANS = [
 		setupFee: 1000,
 		minutes: 1200,
 		overagePerMinute: 0.18,
+		smsPerMessage: 0.04,
+		liveTransferPerMinute: 0.1,
 		concurrentCalls: 100,
 		phoneNumbers: 3,
 		agents: 'Receptionist agent & Lead follow-up agent',
@@ -57,6 +61,8 @@ export const PLANS = [
 		setupFee: 1200,
 		minutes: 2400,
 		overagePerMinute: 0.18,
+		smsPerMessage: 0.03,
+		liveTransferPerMinute: 0.08,
 		concurrentCalls: 200,
 		phoneNumbers: 5,
 		agents: 'Receptionist, lead follow-up & customer support agents',
@@ -81,6 +87,8 @@ export const PLANS = [
 		setupFee: 1200,
 		minutes: 5000,
 		overagePerMinute: 0.16,
+		smsPerMessage: 0.03,
+		liveTransferPerMinute: 0.08,
 		concurrentCalls: 300,
 		phoneNumbers: 5,
 		agents: 'Receptionist, lead follow-up & customer support agents',
@@ -98,6 +106,10 @@ export const PLANS = [
 		recommended: false,
 	},
 ] as const
+
+export const USAGE_RATES = {
+	additionalPhoneNumberMonthly: 5,
+} as const
 
 export function formatPrice(value: number): string {
 	return new Intl.NumberFormat('en-US', {

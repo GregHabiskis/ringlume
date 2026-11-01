@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { PLANS, formatPrice } from '../pricing'
+import { PLANS, USAGE_RATES, formatPrice } from '../pricing'
 
 describe('Ringlume plan facts', () => {
 	it('preserves the four existing monthly prices and annual totals', () => {
@@ -31,6 +31,16 @@ describe('Ringlume plan facts', () => {
 			'0.18',
 			'0.16',
 		])
+	})
+
+	it('uses the approved SMS, transfer, and additional phone-number rates', () => {
+		expect(PLANS.map((plan) => plan.smsPerMessage)).toEqual([
+			0.04, 0.04, 0.03, 0.03,
+		])
+		expect(PLANS.map((plan) => plan.liveTransferPerMinute)).toEqual([
+			0.1, 0.1, 0.08, 0.08,
+		])
+		expect(USAGE_RATES.additionalPhoneNumberMonthly).toBe(5)
 	})
 
 	it('includes the approved cumulative agent bundles', () => {

@@ -75,7 +75,7 @@ const fieldClass =
 
     <div class="sm:col-span-2 min-w-0">
       <label for="company_website" class={labelClass}>
-        Company website or Facebook page
+        Company website
         <span class="text-brand-text" aria-hidden="true">*</span>
       </label>
       <input
@@ -86,7 +86,7 @@ const fieldClass =
         autocomplete="url"
         required
         pattern={WEBSITE_PATTERN}
-        title="Enter your website or Facebook page, like example.com"
+        title="Enter your company website, like example.com"
         class={fieldClass}
       />
     </div>
@@ -127,6 +127,12 @@ const fieldClass =
   <p class="mt-4 text-xs text-fg-3">
     Your demo link arrives by email within {DEMO_DELIVERY_MAX}, any time of day.
     By submitting you agree to our
+    <a
+      href="/terms"
+      class="text-brand-text underline underline-offset-2 transition-colors hover:text-fg-1"
+    >
+      Terms of Service
+    </a> and
     <a
       href="/privacy"
       class="text-brand-text underline underline-offset-2 transition-colors hover:text-fg-1"

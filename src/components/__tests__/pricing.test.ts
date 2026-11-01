@@ -17,7 +17,10 @@ describe('pricing CTAs', () => {
 	})
 
 	it('centers homepage billing and disclosure groups only below the sm breakpoint', async () => {
-		const source = await readFile(pricingSourceUrl, 'utf8')
+		const source = (await readFile(pricingSourceUrl, 'utf8')).replace(
+			/\s+/g,
+			' ',
+		)
 		expect(source).toContain(
 			"!detailed && 'max-sm:flex-col max-sm:justify-center max-sm:text-center'",
 		)
@@ -25,6 +28,8 @@ describe('pricing CTAs', () => {
 			"!detailed && 'max-sm:items-center max-sm:text-center'",
 		)
 		expect(source).toContain('sm:flex-row sm:items-start sm:justify-between')
+		expect(source).toContain('mobileAlignment.billing')
+		expect(source).toContain('mobileAlignment.disclosure')
 	})
 
 	it('offers the free demo on every plan', async () => {
@@ -43,19 +48,12 @@ describe('pricing CTAs', () => {
 		expect(source).not.toContain('Contact Sales')
 	})
 
-	it('keeps the legal acceptance notice next to every CTA', async () => {
+	it('omits CTA legal notices in both modes while preserving setup fees', async () => {
 		const source = await readFile(pricingSourceUrl, 'utf8')
 
-		expect(source).toContain(
-			'aria-describedby={`cta-legal-notice-${plan.name.toLowerCase()}`}',
-		)
-		expect(source).toContain(
-			'id={`cta-legal-notice-${plan.name.toLowerCase()}`}',
-		)
-		expect(source).toContain('Terms of Service')
-		expect(source).toContain('href="/terms"')
-		expect(source).toContain('Privacy Policy')
-		expect(source).toContain('href="/privacy"')
+		expect(source).not.toContain('Subject to our')
+		expect(source).not.toContain('cta-legal-notice-')
+		expect(source).not.toContain('aria-describedby')
 		expect(PLANS.map((plan) => plan.setupFee)).toEqual([800, 1000, 1200, 1200])
 		expect(source).toContain('formatPrice(plan.setupFee)')
 		expect(source).toContain('one-time Service Setup Fee')
@@ -105,7 +103,7 @@ describe('pricing CTAs', () => {
 			/SETUP_FAST_PHRASE|SETUP_QUALIFIER|afternoon|under best circumstances/,
 		)
 		expect(source).toContain('formatPrice(plan.setupFee)')
-		expect(source).toContain('href="/terms"')
+		expect(source).toContain('href="/terms#setup-fee-upgrades"')
 		expect(source).not.toContain('id="pricing"')
 		expect(source).toContain("const Heading = detailed ? 'h1' : 'h2'")
 		expect(source).toContain("detailed ? 'pb-16 lg:pb-24' : 'py-16 lg:py-24'")

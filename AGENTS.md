@@ -320,7 +320,8 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 
 - `DemoRequestForm.astro` uses `src/lib/demo-form.ts` for the website pattern
   and stable referral choices. Its six fields submit as `demo-request` to
-  `/book-demo/thanks`.
+  `/book-demo/thanks`. Label the website field “Company website”; keep Terms
+  and Privacy links in the notice below the submit button.
 - `ContactForm.astro` has two required fields, email and message, and submits
   as `contact-message` to `/contact/thanks`.
 - Preserve POST, hidden `form-name`, and the `bot-field` honeypot. Field names
@@ -338,6 +339,10 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 - Additional-minute rates are per-plan (`overagePerMinute`), not one global rate.
   Agent bundles (`agents`) and card benefits must stay consistent with that same
   shared plan data.
+- SMS rates (`smsPerMessage`) are $0.04 on Basic/Pro and $0.03 on Plus/Max.
+  Live transfers (`liveTransferPerMinute`) are $0.10/minute on Basic/Pro and
+  $0.08/minute on Plus/Max. Shared `USAGE_RATES` sets additional phone numbers
+  at $5/month per number for every plan.
 - Upgrades credit all Service Setup Fees already paid, including earlier setup
   top-ups. Only a positive difference is due; subscription proration is separate.
   Show a short linked note below both pricing grids and keep the full policy and
@@ -351,13 +356,20 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 - `/pricing` starts with `Pricing detailed`, which renders the page's H1 without
   a second introduction. On mobile below 640px, the comparison table's first
   column is sticky with an opaque background; wider layouts are unchanged.
+  Group its rows into Usage & rates, Agents & phone numbers, Tools & reporting,
+  and Support & compliance. Do not repeat monthly/annual subscriptions or setup
+  fees in the table. Live transfers immediately follow additional call minutes.
+  User Dashboard is Included and HIPAA & BAA Compliance is Available on all
+  plans, subject to the linked scope/configuration qualification.
 - Annual monthly equivalents retain the existing approximate displays. Show the
   actual annual charge beside them; never calculate the charge from the rounded display.
 - Do not assert HIPAA/GDPR/SOC 2 certification from a plan name or an upstream
   platform claim. Compliance and regulated workflows require confirmed scope.
 - All four CTAs are `<a href="/book-demo">Get Your Free Demo</a>`
-  elements carrying `data-plan` and an `aria-describedby` link to the legal
-  notice under the button. There is no payment or checkout integration.
+  elements carrying `data-plan`. Neither homepage nor `/pricing` cards show
+  per-CTA legal notices or their `aria-describedby` references. Footer legal
+  links and the setup-fee upgrade note remain. There is no payment or checkout
+  integration.
 - The only script in the section is the Monthly/Annually display toggle.
 
 ### Contact

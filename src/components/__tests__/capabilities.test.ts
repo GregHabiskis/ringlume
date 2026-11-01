@@ -59,15 +59,50 @@ describe('AI receptionist call flow', () => {
 			read('Capabilities'),
 			read('CapabilityCard'),
 		])
-		expect(section).toContain('Illustrative tree-care call flow')
+		expect(section).not.toContain('Illustrative tree-care call flow')
+		expect(section).toContain('Illustrative example')
 		expect(section).toContain('content-auto')
-		expect(section).toContain('md:grid-cols-3')
-		expect(card).toContain('rotate(90deg)')
-		expect(card).toContain('@media (min-width: 768px)')
+		expect(section).toContain('class="call-journey"')
+		expect(section).toContain('.call-journey::before')
+		expect(card).toContain('class="flow-number" aria-hidden="true"')
+		expect(card).toContain('@media (min-width: 1024px)')
+		expect(card).not.toContain('flow-connector')
+		expect(card).not.toContain('min-height: 280px')
 		for (const source of [section, card]) {
 			expect(source).not.toMatch(
-				/<script|animation:|Answered in 1\.2s|instant booking|emergency dispatch/i,
+				/<script|animation:|filter:|box-shadow|text-shadow|Answered in 1\.2s|instant booking|emergency dispatch/i,
 			)
 		}
+	})
+
+	it('uses distinct conversation, request-note and branching route visuals', async () => {
+		const card = await read('CapabilityCard')
+		for (const name of [
+			'flow-bubble-receptionist',
+			'flow-bubble-caller',
+			'flow-note',
+			'flow-details',
+			'flow-options',
+			'flow-option',
+		]) {
+			expect(card).toContain(name)
+		}
+		expect(card).toContain('“Example Tree Care. How can I help?”')
+		expect(card).toContain('“I’d like an estimate for oak removal.”')
+		expect(card).toContain('repeat(3, minmax(0, 1fr))')
+		expect(card).toContain('.flow-option::before')
+		expect(card).not.toContain('flow-preview')
+	})
+
+	it('keeps translucent previews legible for reduced transparency and high contrast', async () => {
+		const [section, card] = await Promise.all([
+			read('Capabilities'),
+			read('CapabilityCard'),
+		])
+		expect(card).toContain('glass glass-fill glass-regular glass-card')
+		expect(card).toContain('prefers-reduced-transparency: reduce')
+		expect(card).toContain('background: var(--bg-alt)')
+		expect(card).toContain('border-color: var(--fg-3)')
+		expect(section).toContain('prefers-contrast: more')
 	})
 })

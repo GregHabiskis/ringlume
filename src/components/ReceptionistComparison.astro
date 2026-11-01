@@ -4,17 +4,16 @@ import { PLANS, formatPrice } from '../lib/pricing'
 const annualMedianWage = 38010
 const monthlyMedianWage = Math.round(annualMedianWage / 12)
 const basic = PLANS[0]
+const basicMonthlyShare = ((basic.monthly / monthlyMedianWage) * 100).toFixed(2)
 ---
 
 <section
-	class="scrim content-auto py-16 lg:py-24"
+	class="scrim content-auto py-12 lg:py-16"
 	aria-labelledby="comparison-heading"
 >
 	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-		<div
-			class="comparison-layout grid gap-10 border-y border-line py-12 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-20 lg:py-16"
-		>
-			<div>
+		<div class="comparison-stage">
+			<header class="comparison-intro">
 				<h2
 					id="comparison-heading"
 					class="reveal-text max-w-xl text-h2 font-bold text-fg-1"
@@ -23,50 +22,202 @@ const basic = PLANS[0]
 						>Less hiring overhead.</span
 					>
 				</h2>
-				<p class="mt-5 max-w-lg text-base leading-relaxed text-fg-3">
+				<a
+					href="/book-demo"
+					class="comparison-cta btn mt-6 bg-brand text-brand-ink hover:bg-brand-bright"
+				>
+					Get Your Free Demo
+					<svg
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg
+					>
+				</a>
+			</header>
+
+			<figure class="comparison-benchmark" aria-describedby="comparison-notes">
+				<figcaption
+					class="mb-4 text-xs font-medium uppercase tracking-wider text-fg-3"
+				>
+					Monthly price comparison
+				</figcaption>
+				<div class="space-y-4" style={`--offer-share: ${basicMonthlyShare}%`}>
+					<div>
+						<div class="mb-3">
+							<p id="comparison-wage-label" class="mb-2 text-sm text-fg-3">
+								Receptionist wages alone
+							</p>
+							<p
+								class="wage-price-tag"
+								aria-describedby="comparison-wage-label"
+							>
+								<span class="wage-value">{formatPrice(monthlyMedianWage)}</span
+								><span class="wage-period text-lg text-fg-3">/mo</span>
+							</p>
+						</div>
+						<div class="cost-track" aria-hidden="true">
+							<div class="cost-bar cost-bar-wage"></div>
+						</div>
+					</div>
+					<div>
+						<div
+							class="mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1"
+						>
+							<p
+								id="comparison-plan-label"
+								class="text-sm font-medium text-brand-text"
+							>
+								Ringlume {basic.name}
+							</p>
+							<p
+								class="comparison-price"
+								aria-describedby="comparison-plan-label"
+							>
+								{formatPrice(basic.monthly)}<span
+									class="text-lg font-normal tracking-normal text-fg-3"
+									>/mo</span
+								>
+							</p>
+						</div>
+						<div class="cost-track" aria-hidden="true">
+							<div class="cost-bar cost-bar-offer"></div>
+						</div>
+					</div>
+				</div>
+				<p class="mt-3 text-xs leading-relaxed text-fg-3">
 					U.S. median receptionist wage: {formatPrice(annualMedianWage)}/year.
 				</p>
-			</div>
-			<div>
-				<div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-					<span class="wage-amount font-semibold text-fg-1"
-						>{formatPrice(monthlyMedianWage)}</span
-					>
-					<span class="text-sm text-fg-3">/ month in wages alone</span>
-				</div>
-				<div class="mt-5 h-2 rounded-full bg-fg-1/10" aria-hidden="true"></div>
-				<p class="mt-6 text-sm text-fg-2">
-					Ringlume Basic: <span class="font-semibold text-brand-text"
-						>{formatPrice(basic.monthly)}/month</span
-					> + {formatPrice(basic.setupFee)} setup.
-				</p>
-				<p class="mt-2 text-xs text-fg-3">
-					{basic.minutes} minutes/month. Extra minutes: ${
-						basic.overagePerMinute.toFixed(2)
-					} each.
-				</p>
-				<p class="mt-5 text-xs leading-relaxed text-fg-3">
-					Source: <a
-						href="https://www.onetonline.org/link/summary/43-4171.00#WagesEmployment"
-						class="underline underline-offset-4 hover:text-fg-1"
-						>O*NET OnLine, 2025 BLS median wage</a
-					>. Ringlume does not replace in-person duties. Not guaranteed savings.
-					<a
-						href="/terms#estimates"
-						class="underline underline-offset-4 hover:text-fg-1"
-						>Comparison details</a
-					>.
-				</p>
-			</div>
+			</figure>
+
+			<p
+				id="comparison-notes"
+				class="comparison-notes border-t border-line pt-5 text-xs leading-relaxed text-fg-3"
+			>
+				Source: <a
+					href="https://www.onetonline.org/link/summary/43-4171.00#WagesEmployment"
+					class="underline underline-offset-4 hover:text-fg-1"
+					>O*NET OnLine, 2025 BLS median wage</a
+				>. Wages exclude benefits and payroll taxes. Ringlume does not replace
+				in-person duties. Not guaranteed savings.
+				<a
+					href="/terms#estimates"
+					class="underline underline-offset-4 hover:text-fg-1"
+					>Comparison details</a
+				>.
+			</p>
 		</div>
 	</div>
 </section>
 
 <style>
-	.wage-amount {
-		font-size: clamp(3rem, 2.5rem + 2vw, 4.75rem);
-		line-height: 1;
-		letter-spacing: -0.06em;
+	.comparison-stage {
+		display: grid;
+		grid-template-areas: 'intro' 'benchmark' 'notes';
+		gap: 1.5rem;
+	}
+
+	.comparison-intro {
+		grid-area: intro;
+		align-self: center;
+	}
+
+	.comparison-benchmark {
+		grid-area: benchmark;
+		min-width: 0;
+	}
+
+	.wage-price-tag {
+		position: relative;
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.375rem;
+		padding-block: 0.25rem;
+		white-space: nowrap;
+	}
+
+	.wage-price-tag::after {
+		content: '';
+		position: absolute;
+		inset-inline: -0.25rem;
+		top: 53%;
+		border-top: 5px solid var(--danger);
+		border-radius: 9999px;
+		transform: rotate(-9deg);
+		pointer-events: none;
+	}
+
+	.wage-value,
+	.comparison-price {
+		font-size: clamp(3rem, 5.8vw, 4.5rem);
+		font-weight: 600;
+		line-height: 1.1;
+		letter-spacing: -0.065em;
 		font-variant-numeric: tabular-nums;
+	}
+
+	.wage-value {
+		color: var(--fg-1);
+	}
+
+	.comparison-price {
+		color: var(--brand-text);
+		white-space: nowrap;
+	}
+
+	.cost-track {
+		height: 0.75rem;
+		overflow: hidden;
+		border-radius: 9999px;
+		background: color-mix(in srgb, var(--fg-3) 7%, transparent);
+	}
+
+	.cost-bar {
+		height: 100%;
+		border-radius: inherit;
+	}
+
+	.cost-bar-wage {
+		width: 100%;
+		border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+		background: repeating-linear-gradient(
+			115deg,
+			color-mix(in srgb, var(--danger) 35%, transparent) 0 1px,
+			transparent 1px 6px
+		);
+	}
+
+	.cost-bar-offer {
+		width: var(--offer-share);
+		background: var(--brand);
+	}
+
+	.comparison-notes {
+		grid-area: notes;
+	}
+
+	@media (min-width: 1024px) {
+		.comparison-stage {
+			grid-template-columns: 1fr 1.05fr;
+			grid-template-areas: 'intro benchmark' 'notes notes';
+			column-gap: 3rem;
+		}
+
+		.comparison-benchmark {
+			align-self: center;
+		}
+	}
+
+	@media (prefers-contrast: more) {
+		.cost-track {
+			outline: 1px solid var(--fg-3);
+		}
+
+		.cost-bar-wage {
+			background: var(--fg-3);
+		}
 	}
 </style>

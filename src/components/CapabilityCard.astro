@@ -9,25 +9,24 @@ interface Props {
 const { step, kind, title, description } = Astro.props
 ---
 
-<li class="flow-step relative grid min-w-0" data-call-step={kind}>
-	<h3
-		class="flex min-h-14 items-center gap-3 font-sans text-lg font-semibold leading-snug tracking-tight text-fg-1"
+<li class="flow-step" data-call-step={kind}>
+	<span class="flow-number" aria-hidden="true"
+		>{String(step).padStart(2, '0')}</span
 	>
-		<span
-			class="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-line text-xs font-medium tabular-nums text-brand-text"
-			aria-hidden="true">{String(step).padStart(2, '0')}</span
+	<div class="flow-copy">
+		<h3
+			class="font-sans text-lg font-semibold leading-snug tracking-tight text-fg-1 sm:text-xl"
 		>
-		<span>{title}</span>
-	</h3>
-	<p class="mt-2 mb-5 text-sm leading-relaxed text-fg-3">{description}</p>
+			{title}
+		</h3>
+		<p class="mt-3 max-w-md text-sm leading-relaxed text-fg-3">{description}</p>
+	</div>
 
-	<div
-		class="flow-preview glass glass-fill glass-regular glass-card rounded-3xl p-5"
-	>
+	<div class="flow-visual">
 		{
 			kind === 'answer' && (
 				<>
-					<p class="mb-4 flex items-center gap-2 text-xs font-semibold text-fg-1">
+					<p class="mb-4 flex items-center gap-2 text-xs font-semibold text-fg-2">
 						<svg
 							width="14"
 							height="14"
@@ -41,10 +40,10 @@ const { step, kind, title, description } = Astro.props
 						</svg>
 						AI receptionist
 					</p>
-					<div class="rounded-2xl rounded-tl-sm border border-line bg-surface-1/40 px-4 py-3 text-sm leading-relaxed text-fg-2">
+					<div class="flow-bubble flow-bubble-receptionist glass glass-fill glass-regular glass-card">
 						“Example Tree Care. How can I help?”
 					</div>
-					<div class="mt-3 ml-5 rounded-2xl rounded-tr-sm border border-brand/20 bg-brand/10 px-4 py-3 text-sm leading-relaxed text-fg-2">
+					<div class="flow-bubble flow-bubble-caller">
 						“I’d like an estimate for oak removal.”
 					</div>
 				</>
@@ -53,19 +52,33 @@ const { step, kind, title, description } = Astro.props
 
 		{
 			kind === 'capture' && (
-				<>
-					<p class="mb-4 text-xs font-semibold text-fg-1">Request details</p>
-					<dl class="space-y-3 text-xs">
+				<div class="flow-note glass glass-fill glass-regular glass-card">
+					<div class="mb-5 flex items-center justify-between gap-4 border-b border-line pb-4">
+						<p class="text-sm font-semibold text-fg-1">Request details</p>
+						<svg
+							width="18"
+							height="18"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.5"
+							class="text-brand-text"
+							aria-hidden="true"
+						>
+							<path d="M8 3h8l4 4v14H4V3h4Zm8 0v5h4M8 12h8m-8 4h5" />
+						</svg>
+					</div>
+					<dl class="flow-details">
 						{[
 							['Tree work', 'Oak removal'],
 							['Property', 'Address captured'],
 							['Contact', 'Name & phone captured'],
 						].map(([label, value]) => (
-							<div class="border-b border-line pb-3 last:border-b-0 last:pb-0">
-								<dt class="text-fg-3">{label}</dt>
-								<dd class="mt-1 flex items-center gap-2 font-medium text-fg-1">
+							<div class="flow-detail">
+								<dt class="text-xs text-fg-3">{label}</dt>
+								<dd class="mt-2 flex items-start gap-2 text-sm font-medium leading-relaxed text-fg-1">
 									<span
-										class="h-1 w-1 shrink-0 rounded-full bg-brand"
+										class="mt-2 h-1 w-1 shrink-0 rounded-full bg-brand"
 										aria-hidden="true"
 									/>
 									{value}
@@ -73,29 +86,54 @@ const { step, kind, title, description } = Astro.props
 							</div>
 						))}
 					</dl>
-				</>
+				</div>
 			)
 		}
 
 		{
 			kind === 'action' && (
 				<>
-					<p class="mb-4 text-xs font-semibold text-fg-1">
+					<p class="mb-4 text-xs font-semibold text-fg-2">
 						Based on your rules
 					</p>
-					<ul class="space-y-3" role="list" aria-label="Possible next steps">
+					<ul class="flow-options" role="list" aria-label="Possible next steps">
 						{[
-							['Available time', 'Book an estimate'],
-							['Needs your team', 'Transfer the call'],
-							['Can’t connect', 'Take a message'],
-						].map(([condition, action]) => (
-							<li class="flex items-start gap-3 border-b border-line pb-3 last:border-b-0 last:pb-0">
-								<span class="mt-1 text-brand-text" aria-hidden="true">
-									&rarr;
-								</span>
+							[
+								'Available time',
+								'Book an estimate',
+								'M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2Zm3 11 3 3 5-5',
+							],
+							[
+								'Needs your team',
+								'Transfer the call',
+								'M4 5h6v6H4V5Zm10 8h6v6h-6v-6ZM7 11v5h9m-3-3 3 3-3 3',
+							],
+							[
+								'Can’t connect',
+								'Take a message',
+								'M21 15a3 3 0 0 1-3 3H8l-5 3V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v9ZM7 8h10M7 12h7',
+							],
+						].map(([condition, action, icon]) => (
+							<li class="flow-option glass glass-fill glass-regular glass-card">
+								<svg
+									width="22"
+									height="22"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="shrink-0 text-brand-text"
+									aria-hidden="true"
+								>
+									<path d={icon} />
+								</svg>
 								<div>
 									<p class="text-xs text-fg-3">{condition}</p>
-									<p class="mt-1 text-xs font-medium text-fg-1">{action}</p>
+									<p class="mt-1 text-sm font-medium leading-relaxed text-fg-1">
+										{action}
+									</p>
 								</div>
 							</li>
 						))}
@@ -104,53 +142,190 @@ const { step, kind, title, description } = Astro.props
 			)
 		}
 	</div>
-
-	{
-		kind !== 'action' && (
-			<svg
-				class="flow-connector text-fg-3"
-				width="16"
-				height="16"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1.5"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				aria-hidden="true"
-			>
-				<path d="M5 12h14m-6-6 6 6-6 6" />
-			</svg>
-		)
-	}
 </li>
 
 <style>
 	.flow-step {
-		grid-template-rows: auto 1fr auto;
+		position: relative;
+		display: grid;
+		gap: 1.25rem;
+		min-width: 0;
+		padding-inline-start: 3.25rem;
 	}
-	.flow-preview {
-		min-height: 280px;
-	}
-	.flow-connector {
+
+	.flow-number {
 		position: absolute;
-		bottom: -28px;
-		left: calc(50% - 8px);
-		transform: rotate(90deg);
-		pointer-events: none;
+		top: -0.125rem;
+		left: 0;
+		width: 2.25rem;
+		padding-block: 0.25rem;
+		background: var(--bg-base);
+		color: var(--brand-text);
+		font-size: 2rem;
+		font-weight: 600;
+		line-height: 1;
+		letter-spacing: -0.075em;
+		font-variant-numeric: tabular-nums;
+		text-align: center;
 	}
-	@media (min-width: 768px) {
-		.flow-connector {
-			top: 20px;
-			right: -20px;
-			bottom: auto;
-			left: auto;
-			transform: none;
+
+	.flow-visual {
+		min-width: 0;
+	}
+
+	.flow-bubble {
+		width: fit-content;
+		max-width: calc(100% - 1rem);
+		padding: 1rem 1.25rem;
+		border-radius: 1.25rem;
+		font-size: 0.875rem;
+		line-height: 1.65;
+		color: var(--fg-2);
+	}
+
+	.flow-bubble-receptionist {
+		border-start-start-radius: 0.25rem;
+	}
+
+	.flow-bubble-caller {
+		margin-block-start: 0.75rem;
+		margin-inline-start: auto;
+		border: 1px solid color-mix(in srgb, var(--brand) 28%, transparent);
+		border-end-end-radius: 0.25rem;
+		background: color-mix(in srgb, var(--brand) 8%, transparent);
+	}
+
+	.flow-note {
+		position: relative;
+		padding: 1.25rem;
+		border-radius: 1.25rem;
+	}
+
+	.flow-note::before {
+		content: '';
+		position: absolute;
+		top: -0.625rem;
+		right: 1.5rem;
+		width: 0.625rem;
+		height: 1.75rem;
+		border: 1px solid var(--line-strong);
+		border-radius: 9999px;
+		transform: rotate(12deg);
+	}
+
+	.flow-details {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.flow-detail + .flow-detail {
+		border-top: 1px solid var(--line);
+		padding-block-start: 1rem;
+	}
+
+	.flow-options {
+		position: relative;
+		display: grid;
+		gap: 0.75rem;
+		padding-inline-start: 1rem;
+	}
+
+	.flow-options::before {
+		content: '';
+		position: absolute;
+		inset-block: -0.5rem 2.25rem;
+		left: 0;
+		border-inline-start: 1px solid var(--line-strong);
+	}
+
+	.flow-option {
+		position: relative;
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		align-items: center;
+		gap: 0.75rem;
+		min-height: 4.5rem;
+		padding: 0.875rem;
+		border-radius: 1rem;
+	}
+
+	.flow-option::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: calc(-1rem - 1px);
+		width: 1rem;
+		border-top: 1px solid var(--line-strong);
+	}
+
+	@media (min-width: 640px) {
+		.flow-details {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 1.25rem;
+		}
+
+		.flow-detail + .flow-detail {
+			border-top: 0;
+			border-inline-start: 1px solid var(--line);
+			padding-block-start: 0;
+			padding-inline-start: 1.25rem;
+		}
+
+		.flow-options {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			padding-block-start: 1rem;
+			padding-inline-start: 0;
+		}
+
+		.flow-options::before {
+			inset: 0 calc((100% - 1.5rem) / 6) auto;
+			border-inline-start: 0;
+			border-top: 1px solid var(--line-strong);
+		}
+
+		.flow-option {
+			grid-template-columns: minmax(0, 1fr);
+			align-content: start;
+			min-height: 7rem;
+		}
+
+		.flow-option::before {
+			top: calc(-1rem - 1px);
+			left: 50%;
+			width: 0;
+			height: 1rem;
+			border-top: 0;
+			border-inline-start: 1px solid var(--line-strong);
 		}
 	}
+
 	@media (min-width: 1024px) {
-		.flow-connector {
-			right: -22px;
+		.flow-step {
+			grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+			gap: 3rem;
+			padding-inline-start: 5.5rem;
+		}
+
+		.flow-number {
+			width: 3.5rem;
+			font-size: 3rem;
+		}
+
+		.flow-note {
+			padding: 1.5rem;
+		}
+	}
+
+	@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+		.flow-bubble-caller {
+			background: var(--bg-alt);
+			border-color: var(--brand);
+		}
+
+		.flow-options::before,
+		.flow-option::before,
+		.flow-note::before {
+			border-color: var(--fg-3);
 		}
 	}
 </style>

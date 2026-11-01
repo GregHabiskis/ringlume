@@ -91,8 +91,9 @@ describe('homepage redesign', () => {
 		expect(source).toContain('2025 BLS median wage')
 		expect(source).toMatch(/not guaranteed savings/i)
 		expect(source).toMatch(/does not replace\s+in-person duties/)
-		expect(source).toContain('basic.setupFee')
-		expect(source).toContain('basic.minutes')
+		expect(source).toContain('formatPrice(basic.monthly)')
+		expect(source).not.toContain('basic.setupFee')
+		expect(source).not.toContain('basic.minutes')
 	})
 
 	it('uses clearly labelled tree-care examples instead of fabricated social proof', async () => {
@@ -100,7 +101,8 @@ describe('homepage redesign', () => {
 			read('components/Capabilities.astro'),
 			read('components/CapabilityCard.astro'),
 		])
-		expect(features).toContain('Illustrative tree-care call flow')
+		expect(features).not.toContain('Illustrative tree-care call flow')
+		expect(features).toContain('Illustrative example')
 		expect(card).toContain('oak removal')
 		expect(card).toContain('Oak removal')
 		expect(card).not.toContain('Answered in 1.2s')

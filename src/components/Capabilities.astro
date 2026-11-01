@@ -31,7 +31,9 @@ const steps = [
 	aria-labelledby="capabilities-heading"
 >
 	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-		<header class="mb-8 lg:mb-10">
+		<header
+			class="mb-8 flex flex-wrap items-end justify-between gap-3 lg:mb-10"
+		>
 			<h2
 				id="capabilities-heading"
 				class="reveal-text max-w-3xl text-h2 font-bold text-fg-1"
@@ -40,20 +42,26 @@ const steps = [
 					>to the right next step.</span
 				>
 			</h2>
-			<p class="mt-4 text-xs text-fg-3">Illustrative tree-care call flow</p>
+			<span
+				class="mb-2 rounded-full border border-line px-3 py-1.5 text-xs text-fg-3"
+			>
+				Illustrative example
+			</span>
 		</header>
 
 		<ol
-			class="grid gap-10 md:grid-cols-3 md:gap-6 lg:gap-7"
+			class="call-journey"
 			role="list"
 			aria-label="How Ringlume handles a call"
 		>
 			{steps.map((step) => <CapabilityCard {...step} />)}
 		</ol>
 
-		<div class="mt-9 flex items-start gap-4 border-t border-line pt-7 sm:mt-10">
+		<div
+			class="flow-handoff mt-8 flex items-start gap-4 border-t border-line pt-6 sm:mt-10"
+		>
 			<div
-				class="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line bg-brand/10 text-brand-text"
+				class="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-brand/30 text-brand-text lg:ml-2.5"
 				aria-hidden="true"
 			>
 				<svg
@@ -69,7 +77,7 @@ const steps = [
 					<path d="M8 3h8l4 4v14H4V3h4Zm8 0v5h4M8 12h8m-8 4h5"></path>
 				</svg>
 			</div>
-			<div>
+			<div class="lg:ml-4">
 				<h3 class="font-sans text-sm font-semibold text-fg-1">
 					Your team gets the details.
 				</h3>
@@ -80,3 +88,38 @@ const steps = [
 		</div>
 	</div>
 </section>
+
+<style>
+	.call-journey {
+		position: relative;
+		display: grid;
+		gap: 2.5rem;
+	}
+
+	.call-journey::before {
+		content: '';
+		position: absolute;
+		top: 1.25rem;
+		bottom: 0;
+		left: 1.125rem;
+		border-inline-start: 1px solid
+			color-mix(in srgb, var(--brand) 30%, transparent);
+	}
+
+	@media (min-width: 1024px) {
+		.call-journey {
+			gap: 3rem;
+		}
+
+		.call-journey::before {
+			top: 1.75rem;
+			left: 1.75rem;
+		}
+	}
+
+	@media (prefers-contrast: more) {
+		.call-journey::before {
+			border-color: var(--brand);
+		}
+	}
+</style>

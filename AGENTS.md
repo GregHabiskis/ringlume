@@ -139,9 +139,9 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
   (translucent fill + gradient edge + backdrop blur + specular inset + shadow stack).
 - `.glass-fill` = same material **without** `backdrop-filter`; use for repeated items
   (pricing cards, capability cards). Tiers also drop blur below 768px (perf rule).
-- `.glass-card` is the shared modifier for the homepage demo, three call-flow
-  previews, calculator shell, closing CTA, full FAQ panel, contact form/channel
-  cards, and Terms/Privacy cards. Pair with `.glass .glass-fill
+- `.glass-card` is the shared modifier for the homepage demo, call-flow
+  conversation bubble/request note/route tiles, calculator shell, closing CTA, full FAQ panel,
+  contact form/channel cards, and Terms/Privacy cards. Pair with `.glass .glass-fill
   .glass-regular`: one 40% background fill, grey borders/dividers, no white bevel,
   grain, per-card gradients, hover tint, or backdrop filter. Text stays opaque.
   Calculator inner panels stay clear to avoid stacking opacity. Reduced-transparency
@@ -180,11 +180,29 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
   only, disable under reduced motion, and pause via `html.is-paused`. This is
   decorative animation, not a real-time audio meter; no new client JS is needed.
 - Hero offer facts use a simple definition list, not nested glass cards.
+- `ReceptionistComparison.astro` has the headline and content-width demo CTA
+  beside one wage-versus-Basic comparison on desktop, stacked on mobile. Show
+  Ringlume Basic and its enlarged monthly price only once, beside the green bar,
+  at the same type scale as the wage benchmark. Do not restore the removed
+  left-hand offer details, setup fee, feature list, overage line, or duplicate
+  price in this section; those facts remain in pricing. Cost bars derive their
+  proportions from the displayed monthly amounts.
+  Highlight the wage benchmark in large type with a static soft-red diagonal
+  5px strike, using `--danger`. Keep its receptionist-wage label; it is not a former
+  Ringlume price or an actual sale discount.
+  Keep the source and non-equivalence/savings qualifications. No glow, animated
+  bars, new client JS, or glowing CTA treatment in this section.
 - Homepage feature previews are static tree-care examples, visibly labelled
   illustrative. Do not present them as real customer activity or performance data.
 - Capabilities follows one ordered call flow: answer, understand/capture, then act,
   followed by a team summary. Booking, transfer, and taking a message are alternative
   outcomes chosen by the business's rules, not guaranteed steps on every call.
+  Its design is a connected vertical journey, not three identical feature cards:
+  large numbered stages on a continuous rail, offset conversation bubbles, a
+  request-note preview, and a branching outcome diagram. Copy and examples stay
+  unchanged. Mobile stacks each stage's copy and visual; desktop places them
+  side by side. Keep the visuals static and without glow, with opaque/high-contrast
+  fallbacks and the visible illustrative-example badge.
 - `FAQ compact` enables the homepage-only split layout; `/faq` keeps its full layout.
 - `@utility content-auto` — `content-visibility: auto` for below-the-fold sections
 - Shared component classes live in `@layer components`, so Tailwind utilities in markup

@@ -40,7 +40,12 @@ describe('uniform glass cards', () => {
 				'glass glass-fill glass-regular glass-card',
 			)
 		}
-		for (const name of ['Header', 'Pricing', 'DemoRequestForm']) {
+		for (const name of [
+			'Header',
+			'Pricing',
+			'DemoRequestForm',
+			'ReceptionistComparison',
+		]) {
 			expect(await readComponent(name), name).not.toContain('glass-card')
 		}
 		const [demo, flow, cta] = await Promise.all(

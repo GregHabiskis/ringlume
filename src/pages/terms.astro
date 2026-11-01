@@ -8,10 +8,18 @@ import {
   PRODUCTION_MAX,
   SUPPORTED_STACK,
 } from '../lib/offer'
-import { PLANS, formatPrice } from '../lib/pricing'
+import { PLANS, USAGE_RATES, formatPrice } from '../lib/pricing'
 
 const overageRates = PLANS.map(
   (plan) => `${plan.name}: $${plan.overagePerMinute.toFixed(2)}/minute`,
+).join('; ')
+
+const transferRates = PLANS.map(
+  (plan) => `${plan.name}: $${plan.liveTransferPerMinute.toFixed(2)}/minute`,
+).join('; ')
+
+const smsRates = PLANS.map(
+  (plan) => `${plan.name}: $${plan.smsPerMessage.toFixed(2)}/SMS`,
 ).join('; ')
 
 const setupUpgradeExamples = [
@@ -29,7 +37,7 @@ const setupUpgradeExamples = [
   <main class="scrim min-h-screen pt-24 pb-20">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <h1 class="text-h1 font-bold text-fg-1 mb-4">Terms & Conditions</h1>
-      <p class="text-fg-3 mb-12">Last Updated: November 1, 2026</p>
+      <p class="text-fg-3 mb-12">Last Updated: November 2, 2026</p>
 
       <div class="glass glass-fill glass-regular glass-card max-w-none space-y-10 rounded-[32px] p-6 sm:p-10 lg:p-14">
 
@@ -73,6 +81,14 @@ const setupUpgradeExamples = [
             active subscription plan and may be updated or modified by Ringlume from time
             to time to improve functionality and service quality.
           </p>
+          <p class="text-fg-2 leading-relaxed mt-4">
+            Every plan includes a User Dashboard and daily call recordings and reports.
+            Agent bundles, included call minutes and phone numbers, simultaneous-call
+            limits, calendar and CRM connections, multilingual support, and support
+            levels are set out in the
+            <a href="/pricing#plan-comparison" class="text-brand-text underline underline-offset-2">plan comparison</a>
+            for your selected plan.
+          </p>
           <h3 id="service-details" class="scroll-mt-24 text-lg font-semibold text-fg-1 mt-8 mb-3">
             2.1 Configuration and Integrations
           </h3>
@@ -82,6 +98,12 @@ const setupUpgradeExamples = [
             agreed scope. No compliance certification or regulated workflow is
             guaranteed by choosing a plan. Preferred tools and setup targets are
             explained in <a href="#setup-time" class="text-brand-text underline underline-offset-2">section 7.1</a>.
+          </p>
+          <p class="text-fg-2 leading-relaxed mt-4">
+            HIPAA support and a Business Associate Agreement (BAA) are available on
+            all plans through Trillet AI. Use involving protected health information
+            requires confirmation of the applicable BAA, configuration, and agreed
+            scope before processing begins.
           </p>
         </section>
 
@@ -108,8 +130,9 @@ const setupUpgradeExamples = [
           <p class="text-fg-2 leading-relaxed mt-4">
             All fees are quoted in United States Dollars (USD) unless otherwise specified. Our payment
             provider processes payment and billing records for Ringlume and provides invoices or
-            receipts, payment-method management, and hosted billing tools. Ringlume manually fulfills the
-            Services and does not provide an application account or automated access system.
+            receipts, payment-method management, and hosted billing tools. Ringlume manually
+            sets up and manages the Services, including the dashboard access included
+            with every plan.
           </p>
           <p class="text-fg-2 leading-relaxed mt-4">
             <strong class="text-fg-1">No refunds.</strong> All fees, including subscription
@@ -117,7 +140,7 @@ const setupUpgradeExamples = [
             refund is required by applicable law.
           </p>
           <h3 id="billing-details" class="scroll-mt-24 text-lg font-semibold text-fg-1 mt-8 mb-3">
-            3.1 Minutes, Annual Billing, and Plan Changes
+            3.1 Usage Rates, Annual Billing, and Plan Changes
           </h3>
           <p class="text-fg-2 leading-relaxed">
             Included minutes reset monthly. Extra call-minute rates are
@@ -125,6 +148,14 @@ const setupUpgradeExamples = [
             at the full annual total shown on the Pricing page; displayed monthly
             equivalents are approximate, not monthly charges.
           </p>
+          <ul class="list-disc list-inside text-fg-2 space-y-2 mt-4 ml-4">
+            <li>Live call transfers: {transferRates}.</li>
+            <li>SMS messages: {smsRates}.</li>
+            <li>
+              Additional phone numbers: {formatPrice(USAGE_RATES.additionalPhoneNumberMonthly)}
+              per additional number per month, beyond the numbers included in your plan.
+            </li>
+          </ul>
           <p class="text-fg-2 leading-relaxed mt-4">
             Request upgrades or cancellation through our
             <a href="/contact" class="text-brand-text underline underline-offset-2">Contact page</a>.

@@ -28,7 +28,7 @@ describe('terms', () => {
 		expect(source).toContain('7. Service Availability & Uptime')
 		// The clause is a sub-clause, so the existing numbering is untouched.
 		expect(source).toContain('8. Limitation of Liability')
-		expect(source).toContain('Last Updated: November 1, 2026')
+		expect(source).toContain('Last Updated: November 2, 2026')
 		expect(source).toContain('{PRODUCTION_MAX}')
 		expect(source).toContain('href={CAL_BOOKING_URL}')
 		expect(source).toContain('href="/contact"')
@@ -81,6 +81,52 @@ describe('terms', () => {
 		expect(source).toContain('Wages exclude benefits and payroll taxes')
 		expect(source).toContain('8. Limitation of Liability')
 		expect(source).toContain('12. Contact Information')
+	})
+
+	it('includes dashboard access and aligns service allowances with the plan comparison', async () => {
+		const source = (await readTerms()).replace(/\s+/g, ' ')
+		expect(source).toContain(
+			'Every plan includes a User Dashboard and daily call recordings and reports.',
+		)
+		expect(source).toContain('href="/pricing#plan-comparison"')
+		expect(source).toContain(
+			'Agent bundles, included call minutes and phone numbers, simultaneous-call limits',
+		)
+		expect(source).toContain(
+			'calendar and CRM connections, multilingual support, and support levels',
+		)
+		expect(source).toContain('dashboard access included with every plan')
+		expect(source).not.toMatch(
+			/does not provide an application account|automated access system/,
+		)
+	})
+
+	it('discloses transfer, SMS, and additional-number prices from shared pricing data', async () => {
+		const source = await readTerms()
+		expect(source).toContain('plan.liveTransferPerMinute.toFixed(2)')
+		expect(source).toContain('plan.smsPerMessage.toFixed(2)')
+		expect(source).toContain('Live call transfers: {transferRates}')
+		expect(source).toContain('SMS messages: {smsRates}')
+		expect(source).toContain(
+			'formatPrice(USAGE_RATES.additionalPhoneNumberMonthly)',
+		)
+		expect(source).toContain('per additional number per month')
+		expect(source).toContain(
+			'3.1 Usage Rates, Annual Billing, and Plan Changes',
+		)
+	})
+
+	it('states Trillet-provided HIPAA/BAA availability without automatically guaranteeing regulated workflows', async () => {
+		const source = (await readTerms()).replace(/\s+/g, ' ')
+		expect(source).toContain(
+			'HIPAA support and a Business Associate Agreement (BAA) are available on all plans through Trillet AI.',
+		)
+		expect(source).toContain(
+			'requires confirmation of the applicable BAA, configuration, and agreed scope before processing begins',
+		)
+		expect(source).toContain(
+			'No compliance certification or regulated workflow is guaranteed by choosing a plan.',
+		)
 	})
 
 	it('renders every supported tool from the shared stack', async () => {

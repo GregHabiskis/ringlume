@@ -4,6 +4,13 @@ import { describe, expect, it } from 'vitest'
 const headerUrl = new URL('../Header.astro', import.meta.url)
 
 describe('homepage anchor navigation', () => {
+	it('routes Features and its scroll-spy state to the single visual demonstration', async () => {
+		const source = await readFile(headerUrl, 'utf8')
+		expect(source).toContain("{ label: 'Features', href: '/#visual' }")
+		expect(source).toContain("['#visual', '/#visual']")
+		expect(source).not.toContain('/#capabilities')
+	})
+
 	it('links the demo item to the hero card and Pricing to its own page', async () => {
 		const [header, demo, css] = await Promise.all([
 			readFile(headerUrl, 'utf8'),

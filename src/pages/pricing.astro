@@ -5,6 +5,14 @@ import Footer from '../components/Footer.astro'
 import Pricing from '../components/Pricing.astro'
 import { PLANS, USAGE_RATES, formatPrice } from '../lib/pricing'
 
+const agentIncludedOverrides: Partial<
+	Record<(typeof PLANS)[number]['name'], string>
+> = {
+	Pro: 'Receptionist & Lead follow-up agent',
+	Plus: 'Receptionist, Lead follow-up, & Qualification agent',
+	Max: 'Receptionist, Lead follow-up, & Qualification agent',
+}
+
 const groups = [
 	{
 		label: 'Usage & rates',
@@ -34,7 +42,12 @@ const groups = [
 	{
 		label: 'Agents & phone numbers',
 		rows: [
-			{ label: 'Agent included', values: PLANS.map((plan) => plan.agents) },
+			{
+				label: 'Agent included',
+				values: PLANS.map(
+					(plan) => agentIncludedOverrides[plan.name] ?? plan.agents,
+				),
+			},
 			{
 				label: 'Simultaneous calls, up to',
 				values: PLANS.map((plan) => String(plan.concurrentCalls)),
@@ -67,7 +80,7 @@ const groups = [
 			{
 				label: 'Multilingual support',
 				values: PLANS.map((plan) =>
-					plan.multilingual ? 'Included' : 'Not included',
+					plan.multilingual ? '32 languages' : 'Not included',
 				),
 			},
 		],

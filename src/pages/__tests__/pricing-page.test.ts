@@ -5,6 +5,17 @@ const readPage = () =>
 	readFile(new URL('../pricing.astro', import.meta.url), 'utf8')
 
 describe('dedicated pricing page', () => {
+	it('uses the requested included-agent names for Pro, Plus, and Max', async () => {
+		const source = await readPage()
+		expect(source).toContain("Pro: 'Receptionist & Lead follow-up agent'")
+		expect(source).toContain(
+			"Plus: 'Receptionist, Lead follow-up, & Qualification agent'",
+		)
+		expect(source).toContain(
+			"Max: 'Receptionist, Lead follow-up, & Qualification agent'",
+		)
+	})
+
 	it('uses the shared plans and full accessible comparison table', async () => {
 		const source = await readPage()
 		expect(source).toContain('<Pricing detailed />')
@@ -28,6 +39,9 @@ describe('dedicated pricing page', () => {
 		]) {
 			expect(source).toContain(`plan.${field}`)
 		}
+		expect(source).toContain(
+			"plan.multilingual ? '32 languages' : 'Not included'",
+		)
 	})
 
 	it('groups features and rates without repeating subscription and setup prices', async () => {

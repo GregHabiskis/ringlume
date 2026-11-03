@@ -77,7 +77,7 @@ BaseLayout
   Header
   main
     Hero                 # includes DemoSection (#demo), click-loaded Retell
-    Capabilities
+    ReceptionistVisual   # #visual, one illustrative call-to-booking storyboard
     ReceptionistComparison # cited 2025 O*NET/BLS wage benchmark, not guaranteed savings
     Pricing              # five plain-English benefits per plan; links to /pricing
     FomoSection          # #fomo, missed-call calculator only
@@ -138,9 +138,9 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
 - `.glass` + one tier: `.glass-thin` / `.glass-regular` / `.glass-thick`
   (translucent fill + gradient edge + backdrop blur + specular inset + shadow stack).
 - `.glass-fill` = same material **without** `backdrop-filter`; use for repeated items
-  (pricing cards, capability cards). Tiers also drop blur below 768px (perf rule).
-- `.glass-card` is the shared modifier for the homepage demo, call-flow
-  conversation bubble/request note/route tiles, calculator shell, closing CTA, full FAQ panel,
+  (pricing cards and other repeated panels). Tiers also drop blur below 768px (perf rule).
+- `.glass-card` is the shared modifier for the homepage demo, receptionist
+  storyboard, calculator shell, closing CTA, full FAQ panel,
   contact form/channel cards, and Terms/Privacy cards. Pair with `.glass .glass-fill
   .glass-regular`: one 40% background fill, grey borders/dividers, no white bevel,
   grain, per-card gradients, hover tint, or backdrop filter. Text stays opaque.
@@ -192,17 +192,30 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
   Ringlume price or an actual sale discount.
   Keep the source and non-equivalence/savings qualifications. No glow, animated
   bars, new client JS, or glowing CTA treatment in this section.
-- Homepage feature previews are static tree-care examples, visibly labelled
+- Homepage feature previews are illustrative tree-care examples, visibly labelled
   illustrative. Do not present them as real customer activity or performance data.
-- Capabilities follows one ordered call flow: answer, understand/capture, then act,
-  followed by a team summary. Booking, transfer, and taking a message are alternative
-  outcomes chosen by the business's rules, not guaranteed steps on every call.
-  Its design is a connected vertical journey, not three identical feature cards:
-  large numbered stages on a continuous rail, offset conversation bubbles, a
-  request-note preview, and a branching outcome diagram. Copy and examples stay
-  unchanged. Mobile stacks each stage's copy and visual; desktop places them
-  side by side. Keep the visuals static and without glow, with opaque/high-contrast
-  fallbacks and the visible illustrative-example badge.
+- `ReceptionistVisual.astro` is the single homepage call demonstration, directly
+  after Hero. Its `#visual` storyboard follows one fictional after-hours tree-care
+  call through captured details, an agreed estimate booking, and a team summary.
+  A short static note explains that booking is only one possible outcome;
+  transfers or messages depend on the business's rules and availability.
+  Do not restore the removed Capabilities/CapabilityCard demonstration or a
+  second version of the same caller's story. A zero-height `#capabilities`
+  bookmark alias remains inside `#visual`; Features and its scroll-spy mapping
+  target `/#visual`. Desktop places conversation and outcomes side by side;
+  mobile stacks them with a compact single-slot calendar. Timing and example
+  data live in `src/lib/receptionist-visual.ts`, covered by Vitest. The conversation
+  is a continuous 18rem inbox with eight alternating, compact glass/green bubbles,
+  speaking dots, a message counter, and automatic scrolling, not replacing pairs
+  of messages. Use the former capabilities first-step cadence: messages arrive
+  at 200, 850, 1500, 2250, 3100, 3900, 4700, and 5600ms. The full loop is 10 seconds;
+  booking appears with its confirmation and the summary follows the final message.
+  The bottom progress steps use a circulating green border, with one active step
+  at a time, not checkmarks; pause the border offscreen and in hidden tabs.
+  Preserve the illustrative-example badge, pause/resume control,
+  offscreen and hidden-tab pausing, complete screen-reader transcript, static
+  no-JS/reduced-motion view, and contrast/transparency fallbacks. Add no animation
+  dependencies or blurred glow.
 - `FAQ compact` enables the homepage-only split layout; `/faq` keeps its full layout.
 - `@utility content-auto` — `content-visibility: auto` for below-the-fold sections
 - Shared component classes live in `@layer components`, so Tailwind utilities in markup
@@ -514,6 +527,7 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 | Brand colors / fonts           | `src/styles/global.css` `@theme` + `@font-face`            |
 | SEO title/description defaults | `src/layouts/BaseLayout.astro`                             |
 | Landing section order          | `src/pages/index.astro`                                    |
+| Receptionist storyboard / timing | `src/components/ReceptionistVisual.astro` + `src/lib/receptionist-visual.ts` |
 | Live voice demo (Retell)       | `src/components/DemoSection.astro` + `PUBLIC_RETELL_*`      |
 | Cache / security headers       | `netlify.toml`                                             |
 | New page                       | `src/pages/<slug>.astro` + link from Header/Footer         |

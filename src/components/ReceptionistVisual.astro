@@ -1,0 +1,1012 @@
+---
+import {
+	VISUAL_CONVERSATION,
+	VISUAL_DURATION,
+	getVisualFrame,
+} from '../lib/receptionist-visual';
+
+const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
+---
+
+<section
+	id="visual"
+	class="scrim content-auto scroll-mt-24 py-16 lg:py-24"
+	aria-labelledby="visual-heading"
+>
+	<!-- Preserve existing Features bookmarks without a second demonstration. -->
+	<span id="capabilities" class="block scroll-mt-24" aria-hidden="true"></span>
+	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+		<header class="mb-8 text-center lg:mb-10">
+			<h2 id="visual-heading" class="reveal-text text-h2 font-bold text-fg-1">
+				A call comes in.
+				<br class="sm:hidden" />{' '}
+				<span class="text-brand-text">Ringlume takes it from here.</span>
+			</h2>
+			<p class="mt-4 text-fg-3">
+				Watch a tree-care request become a booked estimate.
+			</p>
+		</header>
+
+		<figure class="visual-shell glass glass-fill glass-regular glass-card">
+			<figcaption class="visual-toolbar">
+				<span class="visual-example">
+					<span class="visual-dot" aria-hidden="true"></span>Illustrative
+					example
+				</span>
+				<button
+					type="button"
+					class="visual-playback"
+					data-visual-playback
+					hidden
+					aria-pressed="false"
+				>
+					<svg
+						width="14"
+						height="14"
+						viewBox="0 0 16 16"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.5"
+						aria-hidden="true"
+					>
+						<path d="M5 3v10M11 3v10"></path>
+					</svg>
+					<span>Pause animation</span>
+				</button>
+				<span class="sr-only">
+					A fictional after-hours call to Example Tree Care. Ringlume captures
+					Alex Morgan’s request for oak removal at 24 Maple Lane, books an
+					agreed Tuesday estimate, and prepares a summary for the team. Booking
+					follows the business’s availability and rules. This is a silent,
+					condensed illustration, not a live dashboard or a timing claim.
+				</span>
+			</figcaption>
+
+			<div class="visual-scene" data-visual-scene data-phase={finalFrame.phase}>
+				<div class="visual-statusbar" aria-hidden="true">
+					<div class="visual-status">
+						<span class="visual-dot"></span>
+						<span data-visual-status>{finalFrame.status}</span>
+					</div>
+					<span class="visual-afterhours">
+						9:47 PM <span>· After hours</span>
+					</span>
+				</div>
+
+				<div class="visual-workspace">
+					<div class="visual-call">
+						<div class="visual-call-heading">
+							<div class="visual-caller-icon" aria-hidden="true">
+								<svg
+									width="24"
+									height="24"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<path d="m7 3 3 5-2 2a15 15 0 0 0 6 6l2-2 5 3-1 4C11 22 2 13 3 4l4-1Z"></path>
+								</svg>
+							</div>
+							<div>
+								<p class="visual-label">Example Tree Care</p>
+								<p class="visual-call-title">One less call to miss.</p>
+							</div>
+							<span class="visual-timer" data-visual-count aria-hidden="true">
+								08 / 08
+							</span>
+						</div>
+
+						<div class="visual-chat">
+							<div
+								class="visual-incoming"
+								data-visual-incoming
+								aria-hidden="true"
+								hidden
+							>
+								<div class="visual-ring-mark">
+									<svg
+										width="32"
+										height="32"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.4"
+										stroke-linecap="round"
+									>
+										<path d="M4 15v-4a8 8 0 0 1 16 0v4M4 12H2v6h4v-6H4Zm16 0h2v6h-4v-6h2ZM18 19c0 2-3 2-6 2"></path>
+									</svg>
+								</div>
+								<p class="text-lg font-semibold text-fg-1">
+									Your crew’s off the clock.
+								</p>
+								<p class="mt-2 text-sm text-fg-3">Your receptionist isn’t.</p>
+							</div>
+							<div
+								class="visual-conversation"
+								data-visual-inbox
+								tabindex="0"
+								role="region"
+								aria-label="Illustrative tree-care conversation"
+							>
+								<ol class="visual-messages" role="list" aria-live="off">
+									{VISUAL_CONVERSATION.map(({ speaker, text }) => (
+										<li
+											class:list={[
+												'visual-bubble',
+												`visual-bubble-${speaker}`,
+												speaker === 'receptionist' &&
+													'glass glass-fill glass-regular glass-card',
+											]}
+											data-visual-message
+										>
+											<span class="sr-only">
+												{speaker === 'caller' ? 'Caller' : 'Ringlume'}:{' '}
+											</span>
+											“{text}”
+										</li>
+									))}
+								</ol>
+							</div>
+						</div>
+
+						<div class="visual-call-footer" aria-hidden="true">
+							<span class="visual-typing">
+								<i></i>
+								<i></i>
+								<i></i>
+							</span>
+							<span data-visual-caption>Example conversation</span>
+							<span class="visual-call-clock" data-visual-timer>
+								{finalFrame.timer}
+							</span>
+						</div>
+					</div>
+
+					<div class="visual-outcomes" aria-hidden="true">
+						<div class="visual-calendar">
+							<div class="visual-calendar-heading">
+								<div>
+									<p class="visual-label">Your calendar</p>
+									<p class="visual-day">Tuesday</p>
+								</div>
+								<span class="visual-calendar-icon">
+									<svg
+										width="20"
+										height="20"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.5"
+										stroke-linecap="round"
+									>
+										<rect x="3" y="5" width="18" height="16" rx="3"></rect>
+										<path d="M7 3v4m10-4v4M3 11h18"></path>
+									</svg>
+								</span>
+							</div>
+							<div class="visual-schedule">
+								<div class="visual-slot">
+									<span>9:00</span>
+									<div class="visual-existing">Crew check-in</div>
+								</div>
+								<div class="visual-slot visual-slot-booking">
+									<span>10:30</span>
+									<div class="visual-available">Available for an estimate</div>
+									<div class="visual-booking" data-visual-booking>
+										<div>
+											<span class="visual-label">Estimate visit</span>
+											<p>Oak removal</p>
+											<span class="text-xs">Alex Morgan · 24 Maple Lane</span>
+										</div>
+									</div>
+								</div>
+								<div class="visual-slot">
+									<span>12:00</span>
+									<div class="visual-empty-slot"></div>
+								</div>
+							</div>
+						</div>
+						<div class="visual-summary">
+							<div class="visual-summary-icon">
+								<svg
+									width="19"
+									height="19"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<path d="M8 3h8l4 4v14H4V3h4Zm8 0v5h4M8 12h8m-8 4h5"></path>
+								</svg>
+							</div>
+							<div>
+								<p class="visual-label">Ready for your team</p>
+								<div class="visual-summary-content" data-visual-summary>
+									<p class="text-sm font-semibold text-fg-1">
+										Alex Morgan · Estimate booked
+									</p>
+									<p class="mt-1 text-xs leading-relaxed text-fg-3">
+										Front-yard oak removal. Tuesday, 10:30.
+										<br />
+										Callback: 202-555-0148
+									</p>
+								</div>
+								<p class="visual-summary-waiting" data-visual-waiting hidden>
+									Call details will appear here.
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<ol class="visual-progress" role="list" aria-hidden="true">
+					{['Call answered', 'Estimate booked', 'Team updated'].map(
+						(label, index) => (
+							<li data-visual-step>
+								<span class="visual-step-number">0{index + 1}</span>
+								<span>{label}</span>
+								<svg
+									class="visual-step-border"
+									width="100%"
+									height="100%"
+									aria-hidden="true"
+								>
+									<rect x="1" y="1" rx="15" pathLength="100"></rect>
+								</svg>
+							</li>
+						),
+					)}
+				</ol>
+			</div>
+
+			<div class="visual-footnote">
+				<p>
+					<strong class="font-medium text-fg-2">
+						Booking is one possible outcome.
+					</strong>
+					Ringlume can instead transfer the call or take a message, following
+					your rules and availability.
+				</p>
+				<a href="/#demo" class="visual-try">
+					Try it now <span aria-hidden="true">↗</span>
+				</a>
+			</div>
+		</figure>
+	</div>
+</section>
+
+<script>
+	import { VISUAL_DURATION, getVisualFrame } from '../lib/receptionist-visual';
+
+	const root = document.querySelector<HTMLElement>('#visual');
+	if (root) initializeVisual(root);
+
+	function initializeVisual(root: HTMLElement) {
+		const scene = root.querySelector<HTMLElement>('[data-visual-scene]')!;
+		const button = root.querySelector<HTMLButtonElement>(
+			'[data-visual-playback]',
+		)!;
+		const label = button.querySelector('span')!;
+		const status = root.querySelector<HTMLElement>('[data-visual-status]')!;
+		const timer = root.querySelector<HTMLElement>('[data-visual-timer]')!;
+		const incoming = root.querySelector<HTMLElement>('[data-visual-incoming]')!;
+		const inbox = root.querySelector<HTMLElement>('[data-visual-inbox]')!;
+		const list = root.querySelector<HTMLElement>('.visual-messages')!;
+		const messages = [
+			...root.querySelectorAll<HTMLElement>('[data-visual-message]'),
+		];
+		const counter = root.querySelector<HTMLElement>('[data-visual-count]')!;
+		const caption = root.querySelector<HTMLElement>('[data-visual-caption]')!;
+		const booking = root.querySelector<HTMLElement>('[data-visual-booking]')!;
+		const summary = root.querySelector<HTMLElement>('[data-visual-summary]')!;
+		const waiting = root.querySelector<HTMLElement>('[data-visual-waiting]')!;
+		const steps = [...root.querySelectorAll<HTMLElement>('[data-visual-step]')];
+		const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+		let elapsed = 0;
+		let visible = false;
+		let paused = false;
+		let interval: ReturnType<typeof setInterval> | undefined;
+		let lastTime = 0;
+		let visibleMessages = 0;
+		let previous = '';
+
+		function positionConversation() {
+			const last = messages[visibleMessages - 1];
+			const offset = last
+				? Math.max(
+						0,
+						last.offsetTop + last.offsetHeight - inbox.clientHeight + 8,
+					)
+				: 0;
+			list.style.setProperty('--conversation-offset', `${-offset}px`);
+		}
+
+		function render() {
+			const frame = getVisualFrame(
+				reducedMotion.matches ? VISUAL_DURATION - 1 : elapsed,
+			);
+			const key = `${reducedMotion.matches}:${JSON.stringify(frame)}`;
+			if (key === previous) return;
+			previous = key;
+			scene.dataset.phase = String(frame.phase);
+			status.textContent = frame.status;
+			timer.textContent = frame.timer;
+			incoming.hidden = frame.answered;
+			scene.classList.toggle(
+				'visual-resetting',
+				frame.messages < visibleMessages || frame.messages === 0,
+			);
+			scene.classList.toggle(
+				'visual-is-typing',
+				frame.typing && !reducedMotion.matches,
+			);
+			messages.forEach((message, index) => {
+				message.classList.toggle('is-shown', index < frame.messages);
+			});
+			if (visibleMessages !== frame.messages) {
+				visibleMessages = frame.messages;
+				positionConversation();
+			}
+			counter.textContent = `${String(frame.messages).padStart(2, '0')} / 08`;
+			caption.textContent =
+				frame.typing && !reducedMotion.matches
+					? `${frame.callerTyping ? 'Caller' : 'Receptionist'} is speaking`
+					: frame.messages === messages.length
+						? 'Conversation captured'
+						: 'Example conversation';
+			booking.classList.toggle('visual-pending', !frame.booked);
+			summary.classList.toggle('visual-pending', !frame.summarized);
+			waiting.hidden = frame.summarized;
+			steps.forEach((step, index) => {
+				step.classList.toggle('visual-step-done', frame.phase > index);
+				step.classList.toggle(
+					'visual-step-active',
+					!reducedMotion.matches && frame.activeStep === index,
+				);
+			});
+		}
+
+		function advance() {
+			const now = performance.now();
+			elapsed = (elapsed + now - lastTime) % VISUAL_DURATION;
+			lastTime = now;
+		}
+
+		function syncPlayback() {
+			if (interval !== undefined) advance();
+			clearInterval(interval);
+			interval = undefined;
+			const running =
+				visible && !paused && !document.hidden && !reducedMotion.matches;
+			scene.classList.toggle('visual-running', running);
+			scene.classList.toggle('visual-ready', !reducedMotion.matches);
+			inbox.tabIndex = reducedMotion.matches ? 0 : -1;
+			button.hidden = reducedMotion.matches;
+			render();
+			if (!running) return;
+			lastTime = performance.now();
+			interval = setInterval(() => {
+				advance();
+				render();
+			}, 50);
+		}
+
+		button.addEventListener('click', () => {
+			paused = !paused;
+			button.setAttribute('aria-pressed', String(paused));
+			label.textContent = paused ? 'Resume animation' : 'Pause animation';
+			syncPlayback();
+		});
+		new IntersectionObserver(
+			([entry]) => {
+				visible = entry.isIntersecting;
+				syncPlayback();
+			},
+			{ threshold: 0.15 },
+		).observe(scene);
+		const resize = new ResizeObserver(positionConversation);
+		resize.observe(inbox);
+		resize.observe(list);
+		document.addEventListener('visibilitychange', syncPlayback);
+		reducedMotion.addEventListener('change', syncPlayback);
+		syncPlayback();
+	}
+</script>
+
+<style>
+	.visual-shell {
+		border-radius: 1.5rem;
+		overflow: hidden;
+	}
+	.visual-toolbar,
+	.visual-statusbar,
+	.visual-footnote {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 1rem 1.25rem;
+	}
+	.visual-toolbar {
+		border-bottom: 1px solid var(--line);
+		min-height: 4.5rem;
+	}
+	.visual-example,
+	.visual-status {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.8rem;
+	}
+	.visual-example {
+		color: var(--fg-3);
+	}
+	.visual-dot {
+		display: inline-block;
+		width: 6px;
+		height: 6px;
+		flex-shrink: 0;
+		border-radius: 50%;
+		background: var(--brand);
+	}
+	.visual-example .visual-dot {
+		background: var(--fg-3);
+	}
+	.visual-playback:not([hidden]) {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		min-height: 44px;
+		font-size: 0.7rem;
+		color: var(--fg-3);
+		cursor: pointer;
+	}
+	.visual-playback:hover {
+		color: var(--fg-1);
+	}
+	.visual-statusbar {
+		flex-wrap: wrap;
+		padding-block: 1.25rem;
+	}
+	.visual-status {
+		color: var(--brand-text);
+		font-weight: 600;
+	}
+	.visual-afterhours {
+		color: var(--fg-3);
+		font-size: 0.65rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.visual-afterhours > span {
+		display: none;
+	}
+	.visual-workspace {
+		display: grid;
+		gap: 1.25rem;
+		padding: 0 1.25rem 1.25rem;
+	}
+	.visual-call {
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+	}
+	.visual-call-heading {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding-bottom: 1.25rem;
+	}
+	.visual-caller-icon,
+	.visual-summary-icon {
+		display: grid;
+		place-items: center;
+		flex-shrink: 0;
+		border: 1px solid var(--line-strong);
+		border-radius: 50%;
+		color: var(--brand-text);
+	}
+	.visual-caller-icon {
+		width: 2.75rem;
+		height: 2.75rem;
+	}
+	.visual-label {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		color: var(--fg-3);
+		font-size: 0.625rem;
+		font-weight: 500;
+		letter-spacing: 0.04em;
+	}
+	.visual-call-title {
+		margin-top: 0.25rem;
+		color: var(--fg-1);
+		font-size: 0.8rem;
+		font-weight: 600;
+	}
+	.visual-timer {
+		margin-left: auto;
+		align-self: flex-start;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		padding: 0.35rem 0.5rem;
+		color: var(--fg-3);
+		font-size: 0.65rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.visual-chat {
+		position: relative;
+	}
+	.visual-conversation {
+		height: 18rem;
+		overflow: auto;
+		overscroll-behavior: contain;
+		scrollbar-width: thin;
+		scrollbar-color: var(--line-strong) transparent;
+	}
+	.visual-messages {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 0.875rem;
+		padding: 0.25rem 0.25rem 0.5rem;
+	}
+	.visual-incoming[hidden] {
+		display: none;
+	}
+	.visual-bubble {
+		width: fit-content;
+		max-width: calc(100% - 1.25rem);
+		padding: 0.875rem 1rem;
+		border-radius: 1.25rem;
+		color: var(--fg-2);
+		font-size: 0.875rem;
+		line-height: 1.65;
+	}
+	.visual-bubble-caller {
+		margin-inline-start: auto;
+		border: 1px solid color-mix(in srgb, var(--brand) 28%, transparent);
+		background: color-mix(in srgb, var(--brand) 8%, transparent);
+		border-bottom-right-radius: 0.25rem;
+	}
+	.visual-bubble-receptionist {
+		border-start-start-radius: 0.25rem;
+	}
+	.visual-incoming {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		padding-bottom: 1.5rem;
+		pointer-events: none;
+	}
+	.visual-ring-mark {
+		display: grid;
+		place-items: center;
+		width: 5rem;
+		height: 5rem;
+		margin-bottom: 1.5rem;
+		border: 1px solid color-mix(in srgb, var(--brand) 30%, transparent);
+		border-radius: 50%;
+		color: var(--brand-text);
+	}
+	.visual-call-footer {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		min-height: 2.5rem;
+		color: var(--fg-3);
+		font-size: 0.65rem;
+	}
+	.visual-typing {
+		display: none;
+		align-items: center;
+		gap: 0.25rem;
+		height: 1rem;
+	}
+	.visual-typing i {
+		width: 0.25rem;
+		height: 0.25rem;
+		border-radius: 50%;
+		background: var(--brand);
+	}
+	.visual-call-clock {
+		margin-inline-start: auto;
+		font-variant-numeric: tabular-nums;
+	}
+	.visual-ready .visual-conversation {
+		overflow: hidden;
+	}
+	.visual-ready .visual-messages {
+		transform: translateY(var(--conversation-offset, 0px));
+		transition: transform 520ms var(--ease-spring);
+	}
+	.visual-ready .visual-bubble {
+		opacity: 0;
+		transform: translateY(8px);
+		transition:
+			opacity 280ms ease,
+			transform 420ms var(--ease-spring);
+	}
+	.visual-ready .visual-bubble.is-shown {
+		opacity: 1;
+		transform: none;
+	}
+	.visual-ready .visual-typing {
+		display: inline-flex;
+		opacity: 0;
+	}
+	.visual-is-typing .visual-typing {
+		opacity: 1;
+	}
+	.visual-resetting .visual-messages,
+	.visual-resetting .visual-bubble {
+		transition: none;
+	}
+	.visual-outcomes {
+		min-width: 0;
+		border-top: 1px solid var(--line);
+		padding-top: 1.5rem;
+	}
+	.visual-calendar-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 1rem;
+	}
+	.visual-day {
+		margin-top: 0.4rem;
+		color: var(--fg-1);
+		font-size: 1.15rem;
+		font-family: var(--font-display);
+	}
+	.visual-calendar-icon {
+		color: var(--fg-3);
+	}
+	.visual-schedule {
+		display: grid;
+	}
+	.visual-slot {
+		position: relative;
+		display: grid;
+		grid-template-columns: 2.75rem minmax(0, 1fr);
+		gap: 0.5rem;
+		min-height: 3.2rem;
+	}
+	.visual-slot > span {
+		padding-top: 0.7rem;
+		font-size: 0.65rem;
+		color: var(--fg-3);
+		font-variant-numeric: tabular-nums;
+	}
+	.visual-slot:not(.visual-slot-booking) {
+		display: none;
+	}
+	.visual-existing,
+	.visual-empty-slot,
+	.visual-available {
+		grid-column: 2;
+		border-top: 1px solid var(--line);
+		padding: 0.7rem;
+		font-size: 0.65rem;
+		color: var(--fg-3);
+	}
+	.visual-existing {
+		margin-bottom: 0.75rem;
+		border: 1px solid var(--line);
+		border-radius: 0.5rem;
+	}
+	.visual-slot-booking {
+		min-height: 6.25rem;
+	}
+	.visual-available {
+		border-top-style: dashed;
+	}
+	.visual-booking {
+		position: absolute;
+		top: 0;
+		left: 3.25rem;
+		right: 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 0.5rem;
+		min-height: 5.5rem;
+		padding: 0.75rem;
+		border: 1px solid color-mix(in srgb, var(--brand) 40%, transparent);
+		border-left: 3px solid var(--brand);
+		border-radius: 0.65rem;
+		background: var(--bg-alt);
+		color: var(--brand-text);
+	}
+	.visual-booking .visual-label {
+		color: var(--brand-text);
+	}
+	.visual-booking p {
+		margin-block: 0.35rem;
+		color: var(--fg-1);
+		font-size: 0.85rem;
+		font-weight: 600;
+	}
+	.visual-booking .text-xs {
+		color: var(--fg-3);
+		font-size: 0.65rem;
+	}
+	.visual-summary {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		border-top: 1px solid var(--line);
+		padding-top: 1rem;
+	}
+	.visual-summary-icon {
+		width: 2rem;
+		height: 2rem;
+		border-radius: 0.6rem;
+	}
+	.visual-summary > div:last-child {
+		position: relative;
+		flex: 1;
+	}
+	.visual-summary-content {
+		margin-top: 0.5rem;
+		min-height: 4rem;
+	}
+	.visual-summary-waiting {
+		position: absolute;
+		top: 1.6rem;
+		color: var(--fg-3);
+		font-size: 0.75rem;
+	}
+	.visual-progress {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.5rem;
+		border-top: 1px solid var(--line);
+		margin-inline: 1.25rem;
+		padding-block: 1rem;
+	}
+	.visual-progress li {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4rem;
+		color: var(--fg-3);
+		font-size: 0.6rem;
+		min-height: 44px;
+		padding: 0.5rem;
+		border: 1px solid var(--line);
+		border-radius: 1rem;
+		min-width: 0;
+	}
+	.visual-step-number {
+		color: var(--brand-text);
+		font-variant-numeric: tabular-nums;
+	}
+	.visual-step-border {
+		position: absolute;
+		inset: 0;
+		overflow: visible;
+		pointer-events: none;
+		opacity: 0;
+		fill: none;
+		stroke: var(--brand-bright);
+		stroke-width: 1.5;
+		stroke-linecap: round;
+		stroke-dasharray: 16 84;
+	}
+	.visual-step-border rect {
+		width: calc(100% - 2px);
+		height: calc(100% - 2px);
+	}
+	.visual-progress .visual-step-active {
+		transform: scale(1.025);
+		border-color: color-mix(in srgb, var(--brand) 45%, var(--line-strong));
+	}
+	.visual-step-active .visual-step-border {
+		opacity: 1;
+	}
+	.visual-footnote {
+		border-top: 1px solid var(--line);
+		flex-wrap: wrap;
+		font-size: 0.7rem;
+		color: var(--fg-3);
+	}
+	.visual-footnote p {
+		flex: 1 1 22rem;
+		max-width: 65ch;
+		line-height: 1.7;
+	}
+	.visual-try {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		min-height: 44px;
+		flex-shrink: 0;
+		color: var(--brand-text);
+		font-weight: 600;
+	}
+	.visual-try:hover {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.visual-pending {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+
+	@media (min-width: 640px) {
+		.visual-shell {
+			border-radius: 2rem;
+		}
+		.visual-toolbar,
+		.visual-statusbar,
+		.visual-footnote {
+			padding-inline: 2rem;
+		}
+		.visual-afterhours > span {
+			display: inline;
+		}
+		.visual-workspace {
+			padding: 0.5rem 2rem 1.5rem;
+		}
+		.visual-outcomes {
+			display: grid;
+			grid-template-columns: 1.15fr 1fr;
+			gap: 1.5rem;
+		}
+		.visual-slot:not(.visual-slot-booking) {
+			display: grid;
+		}
+		.visual-summary {
+			border-top: 0;
+			border-left: 1px solid var(--line);
+			padding-top: 0;
+			padding-left: 1.25rem;
+		}
+		.visual-progress {
+			margin-inline: 2rem;
+		}
+		.visual-progress li {
+			justify-content: flex-start;
+			font-size: 0.75rem;
+			gap: 0.75rem;
+		}
+		.visual-progress .visual-step-done {
+			color: var(--brand-text);
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.visual-workspace {
+			grid-template-columns: 1.25fr 1fr;
+			gap: 3rem;
+			padding-top: 1rem;
+			padding-bottom: 2rem;
+		}
+		.visual-call-heading {
+			padding-bottom: 2rem;
+		}
+		.visual-call-title {
+			font-size: 1rem;
+		}
+		.visual-caller-icon {
+			width: 3rem;
+			height: 3rem;
+		}
+		.visual-outcomes {
+			display: block;
+			border-top: 0;
+			border-left: 1px solid var(--line);
+			padding-top: 0;
+			padding-left: 2.5rem;
+		}
+		.visual-calendar-heading {
+			margin-bottom: 1.5rem;
+		}
+		.visual-day {
+			font-size: 1.4rem;
+		}
+		.visual-slot {
+			min-height: 3.5rem;
+		}
+		.visual-slot-booking {
+			min-height: 6.5rem;
+		}
+		.visual-summary {
+			border-left: 0;
+			border-top: 1px solid var(--line);
+			padding: 1.25rem 0 0;
+		}
+		.visual-example,
+		.visual-status,
+		.visual-afterhours {
+			font-size: 0.75rem;
+		}
+		.visual-progress {
+			padding-block: 1.25rem;
+		}
+		.visual-progress li {
+			justify-content: center;
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.visual-booking,
+		.visual-summary-content,
+		.visual-progress li {
+			transition:
+				opacity 400ms ease,
+				transform 400ms var(--ease-spring);
+		}
+		.visual-typing i {
+			animation: visual-typing-pulse 900ms ease-in-out infinite;
+			animation-play-state: paused;
+		}
+		.visual-typing i:nth-child(2) {
+			animation-delay: 120ms;
+		}
+		.visual-typing i:nth-child(3) {
+			animation-delay: 240ms;
+		}
+		.visual-running.visual-is-typing .visual-typing i {
+			animation-play-state: running;
+		}
+		.visual-step-active .visual-step-border rect {
+			animation: visual-border-travel 1700ms linear infinite;
+		}
+		.visual-scene:not(.visual-running) .visual-step-border rect,
+		:global(html.is-paused) .visual-step-border rect {
+			animation-play-state: paused;
+		}
+		.visual-scene:not(.visual-running) *,
+		:global(html.is-paused) .visual-scene * {
+			animation-play-state: paused;
+			transition: none;
+		}
+	}
+	@keyframes visual-typing-pulse {
+		0%,
+		70%,
+		100% {
+			opacity: 0.35;
+			transform: translateY(0);
+		}
+		35% {
+			opacity: 1;
+			transform: translateY(-3px);
+		}
+	}
+	@keyframes visual-border-travel {
+		to {
+			stroke-dashoffset: -100;
+		}
+	}
+	@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+		.visual-bubble-caller {
+			background: var(--bg-alt);
+			border-color: var(--brand);
+		}
+	}
+	@media (prefers-contrast: more) {
+		.visual-bubble,
+		.visual-existing,
+		.visual-booking,
+		.visual-caller-icon,
+		.visual-summary-icon {
+			border-color: var(--fg-3);
+		}
+		.visual-label {
+			color: var(--fg-2);
+		}
+	}
+</style>

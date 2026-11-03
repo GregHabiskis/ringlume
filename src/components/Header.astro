@@ -2,7 +2,7 @@
 const navLinks = [
   { label: 'Home', href: '/' },
   { label: 'Try it now', href: '/#demo' },
-  { label: 'Features', href: '/#capabilities' },
+  { label: 'Features', href: '/#visual' },
   { label: 'Pricing', href: '/pricing' },
   { label: 'FAQ', href: '/faq' },
   { label: 'Contact', href: '/contact' },
@@ -334,7 +334,7 @@ const currentAttr = (href: string) =>
     const sections: [selector: string, href: string][] = [
       ['#demo', '/#demo'], // nested in the hero; takes over at its anchor position
       ['main > section:first-child', '/'], // hero → Home
-      ['#capabilities', '/#capabilities'],
+      ['#visual', '/#visual'],
       ['#faq', '/faq'],
       ['#contact', '/contact'],
     ]

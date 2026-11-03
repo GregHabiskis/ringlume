@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
+import { VISUAL_CONVERSATION } from '../../lib/receptionist-visual'
 
 const read = (file: string) =>
 	readFile(new URL(`../../${file}`, import.meta.url), 'utf8')
@@ -54,7 +55,7 @@ describe('homepage redesign', () => {
 		expect(page).not.toContain('<DemoSection />')
 		const sections = [
 			'<Hero />',
-			'<Capabilities />',
+			'<ReceptionistVisual />',
 			'<ReceptionistComparison />',
 			'<Pricing />',
 			'<FomoSection />',
@@ -65,6 +66,7 @@ describe('homepage redesign', () => {
 		expect(positions.every((position) => position >= 0)).toBe(true)
 		expect(positions).toEqual([...positions].sort((a, b) => a - b))
 		expect(page).toContain('An AI receptionist for arborists.')
+		expect(page).not.toContain('Capabilities')
 	})
 
 	it('keeps Retell on-demand, with reduced-motion support and a load-error message', async () => {
@@ -97,16 +99,17 @@ describe('homepage redesign', () => {
 	})
 
 	it('uses clearly labelled tree-care examples instead of fabricated social proof', async () => {
-		const [features, card] = await Promise.all([
-			read('components/Capabilities.astro'),
-			read('components/CapabilityCard.astro'),
-		])
-		expect(features).not.toContain('Illustrative tree-care call flow')
+		const features = (
+			await read('components/ReceptionistVisual.astro')
+		).replace(/\s+/g, ' ')
 		expect(features).toContain('Illustrative example')
-		expect(card).toContain('oak removal')
-		expect(card).toContain('Oak removal')
-		expect(card).not.toContain('Answered in 1.2s')
-		expect(features).not.toContain('<script')
-		expect(card).not.toContain('infinite')
+		expect(
+			VISUAL_CONVERSATION.some(({ text }) => text.includes('oak')),
+		).toBe(true)
+		expect(features).toContain('Oak removal')
+		expect(features).not.toContain('Answered in 1.2s')
+		expect(features).toContain('getVisualFrame')
+		expect(features).not.toMatch(/<script[^>]*src=/)
+		expect(features).toContain('prefers-reduced-motion: reduce')
 	})
 })

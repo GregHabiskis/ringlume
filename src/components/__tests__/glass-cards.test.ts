@@ -30,7 +30,7 @@ describe('uniform glass cards', () => {
 	it('applies the same material to every pictured card without affecting unrelated surfaces', async () => {
 		for (const name of [
 			'DemoSection',
-			'CapabilityCard',
+			'ReceptionistVisual',
 			'MissedCallCalculator',
 			'CtaSection',
 			'ContactForm',
@@ -49,7 +49,7 @@ describe('uniform glass cards', () => {
 			expect(await readComponent(name), name).not.toContain('glass-card')
 		}
 		const [demo, flow, cta] = await Promise.all(
-			['DemoSection', 'CapabilityCard', 'CtaSection'].map(readComponent),
+			['DemoSection', 'ReceptionistVisual', 'CtaSection'].map(readComponent),
 		)
 		expect(demo).not.toContain('grain specular')
 		expect(demo).not.toContain('--glass-fill:')

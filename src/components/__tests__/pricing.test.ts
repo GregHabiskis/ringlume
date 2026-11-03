@@ -88,6 +88,20 @@ describe('pricing CTAs', () => {
 		expect(source).toContain("setAttribute('aria-pressed', String(annual))")
 	})
 
+	it('anchors a white-on-red savings badge to the annual button in both modes', async () => {
+		const source = await readFile(pricingSourceUrl, 'utf8')
+		const annualButton = source.match(
+			/<button\s[^>]*id="annual-btn"[\s\S]*?<\/button/,
+		)?.[0]
+		expect(annualButton).toContain('relative min-h-11')
+		expect(annualButton).toContain('absolute -top-3 right-0')
+		expect(annualButton).toContain('text-white')
+		expect(annualButton).toContain('Save ~17%')
+		expect(source).toContain(
+			'background: color-mix(in srgb, var(--danger) 65%, black)',
+		)
+	})
+
 	it('has no payment provider wiring left in the section', async () => {
 		const source = await readFile(pricingSourceUrl, 'utf8')
 

@@ -64,8 +64,11 @@ const mobileAlignment = {
 					type="button"
 					id="annual-btn"
 					aria-pressed="false"
-					class="pricing-toggle toggle-inactive min-h-11 rounded-full px-4 text-xs font-semibold"
-					>Annually <span class="ml-1">Save ~17%</span></button
+					class="pricing-toggle toggle-inactive relative min-h-11 rounded-full px-4 text-xs font-semibold"
+					>Annually <span
+						class="annual-discount absolute -top-3 right-0 whitespace-nowrap rounded-full px-2 py-1 text-xs leading-none font-bold text-white"
+						>Save ~17%</span
+						></button
 				>
 			</div>
 		</div>
@@ -183,6 +186,9 @@ const mobileAlignment = {
 </section>
 
 <style>
+	.annual-discount {
+		background: color-mix(in srgb, var(--danger) 65%, black);
+	}
 	.plan-card {
 		--glass-edge-hi: color-mix(in srgb, var(--fg-1) 16%, transparent);
 	}

@@ -51,7 +51,10 @@ describe('Ringlume plan facts', () => {
 			'Receptionist, lead follow-up & customer support agents',
 		])
 		expect(PLANS[1].benefits).toContain('Answers calls & follows up with leads')
-		expect(PLANS[2].benefits).toContain('Answering, follow-up & support')
+		expect(PLANS.slice(2).map(({ benefits }) => benefits[1])).toEqual([
+			'Answering, follow-up & qualify',
+			'Answering, follow-up & qualify',
+		])
 	})
 
 	it('formats USD without losing thousands separators', () => {

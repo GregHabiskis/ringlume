@@ -72,7 +72,7 @@ export const PLANS = [
 		description: 'For busy tree-care offices',
 		benefits: [
 			'2,400 call minutes / month',
-			'Answering, follow-up & support',
+			'Answering, follow-up & qualify',
 			'Connects with your business tools',
 			'Call recordings & daily reports',
 			'Priority email & chat support',
@@ -98,7 +98,7 @@ export const PLANS = [
 		description: 'For high-volume operations',
 		benefits: [
 			'5,000 call minutes / month',
-			'Answering, follow-up & support',
+			'Answering, follow-up & qualify',
 			'Connects with your business tools',
 			'Call recordings & daily reports',
 			'Dedicated priority support',

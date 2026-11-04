@@ -2,8 +2,10 @@ export const VISUAL_TRANSFERS = {
 	booking: { at: 4700, duration: 900, source: 6 },
 	summary: { at: 6500, duration: 900, source: 6 },
 } as const;
-export const VISUAL_DURATION =
+const SUMMARY_END =
 	VISUAL_TRANSFERS.summary.at + VISUAL_TRANSFERS.summary.duration;
+export const VISUAL_CHECK_DURATION = 420;
+export const VISUAL_DURATION = SUMMARY_END + VISUAL_CHECK_DURATION;
 export const DETAIL_HIGHLIGHT_DELAY = 500;
 
 export const VISUAL_CONVERSATION = [
@@ -91,13 +93,7 @@ export function getVisualFrame(elapsed: number) {
 		VISUAL_TRANSFERS.booking.at + VISUAL_TRANSFERS.booking.duration;
 	const endedAt = VISUAL_CONVERSATION[7].at;
 	const phase =
-		time < answeredAt
-			? 0
-			: time < bookedAt
-				? 1
-				: time < VISUAL_DURATION
-					? 2
-					: 3;
+		time < answeredAt ? 0 : time < bookedAt ? 1 : time < SUMMARY_END ? 2 : 3;
 	const messages = VISUAL_CONVERSATION.filter(({ at }) => time >= at).length;
 	const nextMessage = VISUAL_CONVERSATION[messages];
 	const stepProgress = [
@@ -107,13 +103,17 @@ export function getVisualFrame(elapsed: number) {
 			VISUAL_CONVERSATION[1].at,
 			bookedAt - VISUAL_CONVERSATION[1].at,
 		),
-		progress(time, bookedAt, VISUAL_DURATION - bookedAt),
+		progress(time, bookedAt, SUMMARY_END - bookedAt),
 	];
+	const checkProgress = [VISUAL_CONVERSATION[1].at, bookedAt, SUMMARY_END].map(
+		(end) => progress(time, end, VISUAL_CHECK_DURATION),
+	);
 	return {
 		phase,
 		complete: time === VISUAL_DURATION,
 		activeStep: stepProgress.findIndex((value) => value < 1),
 		stepProgress,
+		checkProgress,
 		messages,
 		highlights: VISUAL_CONVERSATION.map(
 			({ at }) => time >= at + DETAIL_HIGHLIGHT_DELAY,

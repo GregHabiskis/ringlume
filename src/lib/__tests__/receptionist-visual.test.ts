@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	VISUAL_CONVERSATION,
 	VISUAL_DURATION,
+	VISUAL_CHECK_DURATION,
 	getVisualFrame,
 	VISUAL_TRANSFERS,
 	DETAIL_HIGHLIGHT_DELAY,
@@ -11,8 +12,8 @@ import {
 } from '../receptionist-visual';
 
 describe('receptionist visual storyboard', () => {
-	it('preserves the inbox cadence and finishes after the final transfer', () => {
-		expect(VISUAL_DURATION).toBe(7400);
+	it('preserves the inbox cadence and finishes after the last completion check is drawn', () => {
+		expect(VISUAL_DURATION).toBe(7820);
 		expect(VISUAL_CONVERSATION.map(({ at }) => at)).toEqual([
 			200, 850, 1500, 2250, 3100, 3900, 4700, 5600,
 		]);
@@ -128,10 +129,36 @@ describe('receptionist visual storyboard', () => {
 		for (let time = 0; time < VISUAL_DURATION; time += 50) {
 			const frame = getVisualFrame(time);
 			const active = [0, 1, 2].filter((step) => frame.activeStep === step);
-			expect(active.length).toBe(1);
+			expect(active.length).toBe(
+				frame.stepProgress.some((value) => value < 1) ? 1 : 0,
+			);
 			if (active.length) activeSteps.add(active[0]);
 		}
 		expect([...activeSteps]).toEqual([0, 1, 2]);
+	});
+
+	it('starts each handwritten check only after its loading border completes and retains all three', () => {
+		expect(VISUAL_CHECK_DURATION).toBe(420);
+		for (const [index, end] of [850, 5600, 7400].entries()) {
+			expect(getVisualFrame(end - 1).checkProgress[index]).toBe(0);
+			expect(getVisualFrame(end).stepProgress[index]).toBe(1);
+			expect(getVisualFrame(end).checkProgress[index]).toBe(0);
+			expect(
+				getVisualFrame(end + VISUAL_CHECK_DURATION / 2).checkProgress[index],
+			).toBeCloseTo(0.5);
+			expect(
+				getVisualFrame(end + VISUAL_CHECK_DURATION).checkProgress[index],
+			).toBe(1);
+		}
+		expect(getVisualFrame(7400)).toMatchObject({
+			summarized: true,
+			complete: false,
+		});
+		expect(getVisualFrame(VISUAL_DURATION)).toMatchObject({
+			stepProgress: [1, 1, 1],
+			checkProgress: [1, 1, 1],
+			complete: true,
+		});
 	});
 
 	it('never loops and handles invalid input deterministically', () => {
@@ -236,7 +263,23 @@ describe('one-shot visual playback', () => {
 			bookingProgress: 0,
 			summaryProgress: 0,
 			stepProgress: [0, 0, 0],
+			checkProgress: [0, 0, 0],
 		});
+	});
+	it('pauses the ink mid-stroke and resumes it without redrawing a completed check', () => {
+		const clock = createVisualPlayback();
+		clock.advance(950);
+		const partial = getVisualFrame(clock.state.elapsed).checkProgress[0];
+		expect(partial).toBeGreaterThan(0);
+		expect(partial).toBeLessThan(1);
+		clock.press();
+		clock.advance(5000);
+		expect(getVisualFrame(clock.state.elapsed).checkProgress[0]).toBe(partial);
+		clock.press();
+		clock.advance(320);
+		expect(getVisualFrame(clock.state.elapsed).checkProgress[0]).toBe(1);
+		clock.advance(1000);
+		expect(getVisualFrame(clock.state.elapsed).checkProgress[0]).toBe(1);
 	});
 	it('supports the completed reduced-motion view and ignores invalid elapsed deltas', () => {
 		const clock = createVisualPlayback();

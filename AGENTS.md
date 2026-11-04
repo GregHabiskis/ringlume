@@ -211,8 +211,14 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
   speaking dots, a message counter, and automatic scrolling, not replacing pairs
   of messages. Use the former capabilities first-step cadence: messages arrive
   at 200, 850, 1500, 2250, 3100, 3900, 4700, and 5600ms. This is a one-shot
-  7.4-second timeline, never a loop. Each bottom progress border makes one pass,
-  synchronized with its stage. Captured name/address/phone/request/time details
+  7.82-second timeline, never a loop. Each bottom progress border progressively
+  fills around its card, synchronized with its stage, then stays as a full green
+  outline. Use an accumulating stroke, not a circulating short loading dash.
+  At each stage's completion, draw a persistent top-right checkmark along its curved SVG path over
+  420ms, using the same clock. Replay appears only after the final tick finishes;
+  pausing freezes the ink mid-stroke and Replay resets it. Static/no-JS and reduced
+  motion show all three full outlines and checks without drawing motion.
+  Captured name/address/phone/request/time details
   highlight 500ms after their message appears. Booking and team-summary cards
   slide from measured inbox origins into reserved destination mounts, using the
   same clock as the borders; no independent repeating CSS animations. Preserve
@@ -412,6 +418,9 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
   links and the setup-fee upgrade note remain. There is no payment or checkout
   integration.
 - The only script in the section is the Monthly/Annually display toggle.
+- The Annually savings badge uses `--annual-discount-fill: #F50909EB` exactly,
+  including its alpha, with the existing white text on both the homepage and
+  `/pricing`. Do not recolor other danger/status treatments to match it.
 
 ### Contact
 

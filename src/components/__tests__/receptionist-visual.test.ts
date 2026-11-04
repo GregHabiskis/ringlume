@@ -91,13 +91,27 @@ describe('homepage visual demonstration', () => {
 		expect(source).not.toContain('data-visual-reply');
 	});
 
-	it('uses a circulating green border instead of progress checkmarks', async () => {
+	it('retains completed green borders and draws completion checks in the top-right corners', async () => {
 		const source = await read('components/ReceptionistVisual.astro');
 		expect(source).toContain('class="visual-step-border"');
-		expect(source).toContain('stroke-dasharray: 16 84');
+		expect(source).toContain('stroke-dasharray: 100 100');
 		expect(source).toContain('stroke: var(--brand-bright)');
 		expect(source).toContain('frame.activeStep === index');
-		expect(source).toContain('-100 * frame.stepProgress[index]');
+		expect(source).toContain('100 * (1 - frame.stepProgress[index])');
+		expect(source).not.toContain('stroke-dasharray: 16 84');
+		expect(source).not.toContain('-100 * frame.stepProgress[index]');
+		expect(source).toContain('class="visual-step-done" data-visual-step');
+		expect(source).toContain(
+			'.visual-step-done .visual-step-border { opacity: 1; }',
+		);
+		expect(source).toContain(
+			'.visual-step-done .visual-step-border rect { stroke-dasharray: none; }',
+		);
+		expect(source).toContain('data-visual-check');
+		expect(source).toContain('100 * (1 - frame.checkProgress[index])');
+		expect(source).toContain('top: -0.625rem');
+		expect(source).toContain('right: -0.25rem');
+		expect(source).toContain('pathLength="100"');
 		expect(source).not.toContain('infinite');
 		expect(source).not.toContain('@keyframes');
 		expect(source).not.toContain('m3 8 3 3 7-7');

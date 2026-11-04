@@ -88,7 +88,7 @@ describe('pricing CTAs', () => {
 		expect(source).toContain("setAttribute('aria-pressed', String(annual))")
 	})
 
-	it('anchors a white-on-red savings badge to the annual button in both modes', async () => {
+	it('uses the exact requested savings badge color on the annual button in both modes', async () => {
 		const source = await readFile(pricingSourceUrl, 'utf8')
 		const annualButton = source.match(
 			/<button\s[^>]*id="annual-btn"[\s\S]*?<\/button/,
@@ -97,9 +97,12 @@ describe('pricing CTAs', () => {
 		expect(annualButton).toContain('absolute -top-3 right-0')
 		expect(annualButton).toContain('text-white')
 		expect(annualButton).toContain('Save ~17%')
-		expect(source).toContain(
-			'background: color-mix(in srgb, var(--danger) 65%, black)',
+		expect(source).toContain('background: var(--annual-discount-fill)')
+		const css = await readFile(
+			new URL('../../styles/global.css', import.meta.url),
+			'utf8',
 		)
+		expect(css).toContain('--annual-discount-fill: #F50909EB')
 	})
 
 	it('has no payment provider wiring left in the section', async () => {

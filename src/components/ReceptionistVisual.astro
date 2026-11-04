@@ -268,7 +268,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 				<ol class="visual-progress" role="list" aria-hidden="true">
 					{['Call answered', 'Estimate booked', 'Team updated'].map(
 						(label, index) => (
-							<li data-visual-step>
+							<li class="visual-step-done" data-visual-step>
 								<span class="visual-step-number">0{index + 1}</span>
 								<span>{label}</span>
 								<svg
@@ -278,6 +278,24 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 									aria-hidden="true"
 								>
 									<rect x="1" y="1" rx="15" pathLength="100"></rect>
+								</svg>
+								<svg
+									class="visual-step-check"
+									data-visual-check
+									width="22"
+									height="22"
+									viewBox="0 0 26 26"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<path
+										d="M4.5 12.5c1.6 1.3 3 3.2 4.4 4.7C12 12.8 16.1 8.1 21 4.5"
+										pathLength="100"
+									></path>
 								</svg>
 							</li>
 						),
@@ -332,6 +350,10 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 		const waiting = root.querySelector<HTMLElement>('[data-visual-waiting]')!;
 		const steps = [...root.querySelectorAll<HTMLElement>('[data-visual-step]')];
 		const borders = steps.map((step) => step.querySelector('rect')!);
+		const checks = steps.map((step) =>
+			step.querySelector<SVGSVGElement>('[data-visual-check]')!,
+		);
+		const checkPaths = checks.map((check) => check.querySelector('path')!);
 		const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 		const clock = createVisualPlayback();
 		const flights = (['booking', 'summary'] as const).map((kind) => ({
@@ -458,7 +480,13 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 					!reducedMotion.matches && frame.activeStep === index,
 				);
 				borders[index].style.strokeDashoffset = String(
-					-100 * frame.stepProgress[index],
+					100 * (1 - frame.stepProgress[index]),
+				);
+				checks[index].style.opacity = String(
+					Math.min(1, frame.checkProgress[index] * 6),
+				);
+				checkPaths[index].style.strokeDashoffset = String(
+					100 * (1 - frame.checkProgress[index]),
 				);
 			});
 		}
@@ -956,7 +984,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 		stroke: var(--brand-bright);
 		stroke-width: 1.5;
 		stroke-linecap: round;
-		stroke-dasharray: 16 84;
+		stroke-dasharray: 100 100;
 	}
 	.visual-step-border rect {
 		width: calc(100% - 2px);
@@ -970,8 +998,29 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 		border-color: color-mix(in srgb, var(--brand) 30%, var(--line));
 		color: var(--brand-text);
 	}
-	.visual-step-active .visual-step-border {
+	.visual-step-active .visual-step-border,
+	.visual-step-done .visual-step-border {
 		opacity: 1;
+	}
+	.visual-step-done .visual-step-border rect {
+		stroke-dasharray: none;
+	}
+	.visual-step-check {
+		position: absolute;
+		top: -0.625rem;
+		right: -0.25rem;
+		width: 1.375rem;
+		height: 1.375rem;
+		padding: 2px;
+		border: 1px solid var(--brand);
+		border-radius: 50%;
+		background: var(--bg-alt);
+		color: var(--brand-text);
+		pointer-events: none;
+	}
+	.visual-step-check path {
+		stroke-dasharray: 100;
+		stroke-dashoffset: 0;
 	}
 	.visual-footnote {
 		border-top: 1px solid var(--line);

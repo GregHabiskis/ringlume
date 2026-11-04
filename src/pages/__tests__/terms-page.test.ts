@@ -119,7 +119,7 @@ describe('terms', () => {
 	it('states Trillet-provided HIPAA/BAA availability without automatically guaranteeing regulated workflows', async () => {
 		const source = (await readTerms()).replace(/\s+/g, ' ')
 		expect(source).toContain(
-			'HIPAA support and a Business Associate Agreement (BAA) are available on all plans through Trillet AI.',
+			'HIPAA support and a Business Associate Agreement (BAA) are available on all plans through Trillet.',
 		)
 		expect(source).toContain(
 			'requires confirmation of the applicable BAA, configuration, and agreed scope before processing begins',

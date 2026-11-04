@@ -57,7 +57,6 @@ describe('pricing CTAs', () => {
 		expect(PLANS.map((plan) => plan.setupFee)).toEqual([800, 1000, 1200, 1200])
 		expect(source).toContain('formatPrice(plan.setupFee)')
 		expect(source).toContain('one-time Service Setup Fee')
-		expect(source).not.toContain('Voice AI Setup Fee')
 		expect(source).not.toContain('/refund')
 		expect(source).not.toMatch(/refund/i)
 	})

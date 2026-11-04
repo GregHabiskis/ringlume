@@ -1,12 +1,23 @@
-# AGENTS.md — Ringlume Voice AI Marketing Site
+# AGENTS.md — Ringlume Virtual Receptionist Marketing Site
 
-Instructions for AI coding agents working in this repository.
+Instructions for coding agents working in this repository.
 
 ---
 
 ## What this project is
 
-**Ringlume** is a static marketing site for a Voice AI receptionist product.
+**Ringlume** is a static marketing site for a virtual receptionist product.
+
+### Brand terminology
+
+- Use virtual receptionist terminology throughout first-party code, website
+  copy, metadata, tests, comments, and documentation. Never reintroduce the
+  retired technical acronym or its expanded form; `brand-copy.test.ts` enforces
+  this rule. Preserve required third-party identifiers, URLs, and original
+  historical reports and logs.
+- The embedded demo receptionist is **Ava**. Its heading is **Talk to Ava** and
+  its description is **Ringlume's virtual receptionist. A real conversation.
+  Not a recording.** The hero starts with **Virtual receptionist for arborists.**
 
 | Fact                   | Value                                                       |
 | ---------------------- | ----------------------------------------------------------- |
@@ -547,7 +558,7 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 | SEO title/description defaults | `src/layouts/BaseLayout.astro`                             |
 | Landing section order          | `src/pages/index.astro`                                    |
 | Receptionist storyboard / timing | `src/components/ReceptionistVisual.astro` + `src/lib/receptionist-visual.ts` |
-| Live voice demo (Retell)       | `src/components/DemoSection.astro` + `PUBLIC_RETELL_*`      |
+| Talk to Ava (Retell)          | `src/components/DemoSection.astro` + `PUBLIC_RETELL_*`      |
 | Cache / security headers       | `netlify.toml`                                             |
 | New page                       | `src/pages/<slug>.astro` + link from Header/Footer         |
 

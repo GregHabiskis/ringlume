@@ -65,7 +65,7 @@ describe('homepage redesign', () => {
 		const positions = sections.map((section) => page.indexOf(section))
 		expect(positions.every((position) => position >= 0)).toBe(true)
 		expect(positions).toEqual([...positions].sort((a, b) => a - b))
-		expect(page).toContain('An AI receptionist for arborists.')
+		expect(page).toContain('Virtual receptionist for arborists.')
 		expect(page).not.toContain('Capabilities')
 	})
 

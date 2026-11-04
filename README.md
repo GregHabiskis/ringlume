@@ -1,6 +1,6 @@
 # Ringlume
 
-Static marketing site for Ringlume, a Voice AI receptionist product.
+Static marketing site for Ringlume, a virtual receptionist product.
 
 - **Framework:** Astro 7 (fully static pages)
 - **Styling:** Tailwind CSS v4

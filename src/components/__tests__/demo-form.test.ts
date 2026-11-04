@@ -91,7 +91,7 @@ describe('demo request form', () => {
 			'X/Twitter',
 			'YouTube',
 			'Referral from someone',
-			'AI assistant (ChatGPT, Claude, etc.)',
+			'Virtual assistant (ChatGPT, Claude, etc.)',
 			'Other',
 		])
 	})

@@ -22,6 +22,10 @@ const smsRates = PLANS.map(
   (plan) => `${plan.name}: $${plan.smsPerMessage.toFixed(2)}/SMS`,
 ).join('; ')
 
+const telephonyRates = PLANS.map(
+  (plan) => `${plan.name}: from $${plan.telephonyFromPerMinute.toFixed(3)}/minute`,
+).join('; ')
+
 const setupUpgradeExamples = [
   { from: PLANS[0], to: PLANS[1] },
   { from: PLANS[0], to: PLANS[2] },
@@ -37,7 +41,7 @@ const setupUpgradeExamples = [
   <main class="scrim min-h-screen pt-24 pb-20">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <h1 class="text-h1 font-bold text-fg-1 mb-4">Terms & Conditions</h1>
-      <p class="text-fg-3 mb-12">Last Updated: November 2, 2026</p>
+      <p class="text-fg-3 mb-12">Last Updated: November 4, 2026</p>
 
       <div class="glass glass-fill glass-regular glass-card max-w-none space-y-10 rounded-[32px] p-6 sm:p-10 lg:p-14">
 
@@ -83,6 +87,8 @@ const setupUpgradeExamples = [
           </p>
           <p class="text-fg-2 leading-relaxed mt-4">
             Every plan includes a User Dashboard and daily call recordings and reports.
+            Web calls and web chat widgets are also included on all plans; usage
+            charges are governed by <a href="#billing-details" class="text-brand-text underline underline-offset-2">section 3.1</a>.
             Agent bundles, included call minutes and phone numbers, simultaneous-call
             limits, calendar and CRM connections, multilingual support, and support
             levels are set out in the
@@ -151,11 +157,27 @@ const setupUpgradeExamples = [
           <ul class="list-disc list-inside text-fg-2 space-y-2 mt-4 ml-4">
             <li>Live call transfers: {transferRates}.</li>
             <li>SMS messages: {smsRates}.</li>
+            <li>Ringlume telephony: {telephonyRates}. These carrier charges apply to calls routed through a phone number in addition to standard call usage.</li>
             <li>
               Additional phone numbers: {formatPrice(USAGE_RATES.additionalPhoneNumberMonthly)}
               per additional number per month, beyond the numbers included in your plan.
             </li>
           </ul>
+          <p class="text-fg-2 leading-relaxed mt-4">
+            Voice conversations through a website widget or web call use the same
+            monthly call-minute allowance and standard per-minute rates as phone
+            calls, including your plan's additional-minute rate once the allowance
+            is exhausted. Web calls do not use a phone line, so no telephony fee
+            applies. This exemption does not make web-call usage free.
+          </p>
+          <p class="text-fg-2 leading-relaxed mt-4">
+            Text messages exchanged through the web chat widget are counted as SMS
+            messages for billing purposes and charged at your plan's SMS rate.
+            In a type-or-talk session, where a visitor switches between typing and
+            speaking, the voice portion is billed as call usage and the typed
+            messages are billed at SMS rates. Including a widget in your plan does
+            not waive these usage charges.
+          </p>
           <p class="text-fg-2 leading-relaxed mt-4">
             Request upgrades or cancellation through our
             <a href="/contact" class="text-brand-text underline underline-offset-2">Contact page</a>.

@@ -57,6 +57,15 @@ describe('Ringlume plan facts', () => {
 		])
 	})
 
+	it('uses the approved telephony starting rates with three-decimal displays', () => {
+		expect(PLANS.map((plan) => plan.telephonyFromPerMinute)).toEqual([
+			0.028, 0.028, 0.02, 0.02,
+		])
+		expect(PLANS.map((plan) => plan.telephonyFromPerMinute.toFixed(3))).toEqual([
+			'0.028', '0.028', '0.020', '0.020',
+		])
+	})
+
 	it('formats USD without losing thousands separators', () => {
 		expect(formatPrice(299)).toBe('$299')
 		expect(formatPrice(1200)).toBe('$1,200')

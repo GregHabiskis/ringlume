@@ -55,11 +55,11 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 					<span>Pause animation</span>
 				</button>
 				<span class="sr-only">
-					A fictional after-hours call to Ringlume. It captures
-					Alex Morgan’s request for oak removal at 24 Maple Lane, books an
-					agreed Tuesday estimate, and prepares a summary for the team. Booking
-					follows the business’s availability and rules. This is a silent,
-					condensed illustration, not a live dashboard or a timing claim.
+					A fictional after-hours call to Ringlume. It captures Alex Morgan’s
+					request for oak removal at 24 Maple Lane, books an agreed Tuesday
+					estimate, and prepares a summary for the team. Booking follows the
+					business’s availability and rules. This is a silent, condensed
+					illustration, not a live dashboard or a timing claim.
 				</span>
 			</figcaption>
 
@@ -265,38 +265,50 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 					</div>
 				</div>
 
-				<ol class="visual-progress" role="list" aria-hidden="true">
+				<ol
+					class="visual-progress"
+					role="list"
+					aria-label="Replay a storyboard event"
+				>
 					{['Call answered', 'Estimate booked', 'Team updated'].map(
 						(label, index) => (
-							<li class="visual-step-done" data-visual-step>
-								<span class="visual-step-number">0{index + 1}</span>
-								<span>{label}</span>
-								<svg
-									class="visual-step-border"
-									width="100%"
-									height="100%"
-									aria-hidden="true"
+							<li>
+								<button
+									type="button"
+									class="visual-step-button visual-step-done"
+									data-visual-step={index}
+									aria-label={`Replay from ${label.toLowerCase()}`}
+									disabled
 								>
-									<rect x="1" y="1" rx="15" pathLength="100"></rect>
-								</svg>
-								<svg
-									class="visual-step-check"
-									data-visual-check
-									width="22"
-									height="22"
-									viewBox="0 0 26 26"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									aria-hidden="true"
-								>
-									<path
-										d="M4.5 12.5c1.6 1.3 3 3.2 4.4 4.7C12 12.8 16.1 8.1 21 4.5"
-										pathLength="100"
-									></path>
-								</svg>
+									<span class="visual-step-number">0{index + 1}</span>
+									<span>{label}</span>
+									<svg
+										class="visual-step-border"
+										width="100%"
+										height="100%"
+										aria-hidden="true"
+									>
+										<rect x="1" y="1" rx="15" pathLength="100"></rect>
+									</svg>
+									<svg
+										class="visual-step-check"
+										data-visual-check
+										width="22"
+										height="22"
+										viewBox="0 0 26 26"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										aria-hidden="true"
+									>
+										<path
+											d="M4.5 12.5c1.6 1.3 3 3.2 4.4 4.7C12 12.8 16.1 8.1 21 4.5"
+											pathLength="100"
+										></path>
+									</svg>
+								</button>
 							</li>
 						),
 					)}
@@ -348,7 +360,11 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 		const counter = root.querySelector<HTMLElement>('[data-visual-count]')!;
 		const caption = root.querySelector<HTMLElement>('[data-visual-caption]')!;
 		const waiting = root.querySelector<HTMLElement>('[data-visual-waiting]')!;
-		const steps = [...root.querySelectorAll<HTMLElement>('[data-visual-step]')];
+		const steps = [
+			...root.querySelectorAll<HTMLButtonElement>('[data-visual-step]'),
+		];
+		const progressControls =
+			root.querySelector<HTMLElement>('.visual-progress')!;
 		const borders = steps.map((step) => step.querySelector('rect')!);
 		const checks = steps.map((step) =>
 			step.querySelector<SVGSVGElement>('[data-visual-check]')!,
@@ -365,6 +381,8 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 			progress: 0,
 		}));
 		let visible = false;
+		let sceneVisible = false;
+		let controlsVisible = false;
 		let request: number | undefined;
 		let lastTime: number | null = null;
 		let visibleMessages = 0;
@@ -396,7 +414,10 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 
 		function render() {
 			const state = clock.state;
-			const frame = getVisualFrame(state.elapsed);
+			const frame = getVisualFrame(
+				state.elapsed,
+				state.segmentIndex ?? undefined,
+			);
 			const wasComplete = scene.classList.contains('visual-complete');
 			scene.dataset.phase = String(frame.phase);
 			if (status.textContent !== frame.status)
@@ -415,8 +436,8 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 			}
 			if (state.complete) button.removeAttribute('aria-pressed');
 			else button.setAttribute('aria-pressed', String(state.paused));
-			scene.classList.toggle('visual-complete', state.complete);
-			inbox.tabIndex = reducedMotion.matches || state.complete ? 0 : -1;
+			scene.classList.toggle('visual-complete', frame.complete);
+			inbox.tabIndex = reducedMotion.matches || frame.complete ? 0 : -1;
 			incoming.hidden = frame.answered;
 			scene.classList.toggle(
 				'visual-resetting',
@@ -437,7 +458,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 				visibleMessages = frame.messages;
 				positionConversation();
 			}
-			if (state.complete && !wasComplete) inbox.scrollTop = conversationOffset;
+			if (frame.complete && !wasComplete) inbox.scrollTop = conversationOffset;
 			const count = `${String(frame.messages).padStart(2, '0')} / 08`;
 			if (counter.textContent !== count) counter.textContent = count;
 			const captionText =
@@ -471,6 +492,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 			});
 			waiting.hidden = frame.summaryStarted;
 			steps.forEach((step, index) => {
+				step.disabled = reducedMotion.matches;
 				step.classList.toggle(
 					'visual-step-done',
 					frame.stepProgress[index] === 1,
@@ -531,17 +553,34 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 
 		button.addEventListener('click', () => {
 			stop();
+			const wasComplete = clock.state.complete;
 			clock.press();
-			if (clock.state.elapsed === 0) inbox.scrollTop = 0;
+			if (wasComplete || clock.state.elapsed === 0) inbox.scrollTop = 0;
 			syncPlayback();
 		});
-		new IntersectionObserver(
-			([entry]) => {
-				visible = entry.isIntersecting;
+		steps.forEach((step, index) => {
+			step.addEventListener('click', () => {
+				controlsVisible = true;
+				visible = true;
+				stop();
+				clock.playSegment(index);
+				inbox.scrollTop = 0;
+				syncPlayback();
+			});
+		});
+		const visibilityObserver = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.target === scene) sceneVisible = entry.isIntersecting;
+					else controlsVisible = entry.isIntersecting;
+				});
+				visible = sceneVisible || controlsVisible;
 				syncPlayback();
 			},
 			{ threshold: 0.15 },
-		).observe(scene);
+		);
+		visibilityObserver.observe(scene);
+		visibilityObserver.observe(progressControls);
 		const resize = new ResizeObserver(() => {
 			positionConversation();
 			flights.forEach((flight) => {
@@ -956,19 +995,37 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 		margin-inline: 1.25rem;
 		padding-block: 1rem;
 	}
-	.visual-progress li {
+	.visual-step-button {
 		position: relative;
 		display: flex;
+		width: 100%;
 		align-items: center;
 		justify-content: center;
 		gap: 0.4rem;
 		color: var(--fg-3);
 		font-size: 0.75rem;
+		font-family: inherit;
+		text-align: start;
 		min-height: 44px;
 		padding: 0.5rem;
 		border: 1px solid var(--line);
 		border-radius: 1rem;
+		background: transparent;
+		appearance: none;
 		min-width: 0;
+		cursor: pointer;
+	}
+	.visual-step-button:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 3px;
+	}
+	.visual-step-button:not(:disabled):hover {
+		border-color: color-mix(in srgb, var(--brand) 45%, var(--line-strong));
+		color: var(--fg-1);
+	}
+	.visual-step-button:disabled {
+		opacity: 1;
+		cursor: default;
 	}
 	.visual-step-number {
 		color: var(--brand-text);
@@ -1096,7 +1153,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 		.visual-progress {
 			margin-inline: 2rem;
 		}
-		.visual-progress li {
+		.visual-step-button {
 			justify-content: flex-start;
 			font-size: 0.75rem;
 			gap: 0.75rem;
@@ -1152,7 +1209,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 		.visual-progress {
 			padding-block: 1.25rem;
 		}
-		.visual-progress li {
+		.visual-step-button {
 			justify-content: center;
 		}
 	}
@@ -1163,7 +1220,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 				color 180ms ease,
 				background-color 180ms ease;
 		}
-		.visual-progress li,
+		.visual-step-button,
 		.visual-step-border {
 			transition:
 				opacity 400ms ease,

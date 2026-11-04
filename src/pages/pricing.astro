@@ -37,6 +37,12 @@ const groups = [
 				label: 'SMS messages',
 				values: PLANS.map((plan) => `$${plan.smsPerMessage.toFixed(2)}/SMS`),
 			},
+			{
+				label: 'Ringlume telephony',
+				values: PLANS.map(
+					(plan) => `From $${plan.telephonyFromPerMinute.toFixed(3)}/min`,
+				),
+			},
 		],
 	},
 	{
@@ -72,15 +78,16 @@ const groups = [
 				label: 'Calendar & CRM connections',
 				values: PLANS.map((plan) => plan.integrations),
 			},
-			{ label: 'User Dashboard', values: PLANS.map(() => 'Included') },
+			{ label: 'Web call & chat widget', values: PLANS.map(() => true) },
+			{ label: 'User Dashboard', values: PLANS.map(() => true) },
 			{
 				label: 'Daily call recordings & reports',
-				values: PLANS.map(() => 'Included'),
+				values: PLANS.map(() => true),
 			},
 			{
 				label: 'Multilingual support',
 				values: PLANS.map((plan) =>
-					plan.multilingual ? '32 languages' : 'Not included',
+					plan.multilingual ? '32 languages' : false,
 				),
 			},
 		],
@@ -164,7 +171,32 @@ const groups = [
 												{row.label}
 											</th>
 											{row.values.map((value) => (
-												<td class="p-5 leading-relaxed text-fg-3">{value}</td>
+												<td class="p-5 leading-relaxed text-fg-3">
+													{typeof value === 'boolean' || value === 'Available' ? (
+														<>
+															<svg
+																class:list={[
+																	'h-5 w-5',
+																	value ? 'text-brand-text' : 'text-danger',
+																]}
+																viewBox="0 0 24 24"
+																fill="none"
+																stroke="currentColor"
+																stroke-width="2.5"
+																stroke-linecap="round"
+																stroke-linejoin="round"
+																aria-hidden="true"
+															>
+																<path
+																	d={value ? 'M5 12l4 4L19 6' : 'M6 6l12 12M6 18L18 6'}
+																/>
+															</svg>
+															<span class="sr-only">
+																{value === 'Available' ? value : value ? 'Included' : 'Not included'}
+															</span>
+														</>
+													) : value}
+												</td>
 											))}
 										</tr>
 									))}

@@ -3,6 +3,7 @@ import {
 	VISUAL_CONVERSATION,
 	VISUAL_DURATION,
 	VISUAL_CHECK_DURATION,
+	VISUAL_STEP_SEGMENTS,
 	getVisualFrame,
 	VISUAL_TRANSFERS,
 	DETAIL_HIGHLIGHT_DELAY,
@@ -164,6 +165,32 @@ describe('receptionist visual storyboard', () => {
 		});
 	});
 
+	it('maps event buttons to exact segment boundaries and holds other steps complete or clear', () => {
+		expect(VISUAL_STEP_SEGMENTS).toEqual([
+			{ start: 0, end: 1270 },
+			{ start: 850, end: 6020 },
+			{ start: 5600, end: 7820 },
+		]);
+		VISUAL_STEP_SEGMENTS.forEach(({ start, end }, index) => {
+			const startFrame = getVisualFrame(start, index);
+			const endFrame = getVisualFrame(end, index);
+			expect(startFrame.activeStep).toBe(index);
+			expect(startFrame.stepProgress).toEqual([
+				...Array.from({ length: index }, () => 1),
+				0,
+				...Array.from({ length: 2 - index }, () => 0),
+			]);
+			expect(startFrame.checkProgress).toEqual([
+				...Array.from({ length: index }, () => 1),
+				0,
+				...Array.from({ length: 2 - index }, () => 0),
+			]);
+			expect(endFrame.stepProgress[index]).toBe(1);
+			expect(endFrame.checkProgress[index]).toBe(1);
+			expect(endFrame.activeStep).toBe(-1);
+		});
+	});
+
 	it('never loops and handles invalid input deterministically', () => {
 		expect(getVisualFrame(VISUAL_DURATION).complete).toBe(true);
 		expect(getVisualFrame(VISUAL_DURATION + 2250)).toEqual(
@@ -283,6 +310,31 @@ describe('one-shot visual playback', () => {
 		expect(getVisualFrame(clock.state.elapsed).checkProgress[0]).toBe(1);
 		clock.advance(1000);
 		expect(getVisualFrame(clock.state.elapsed).checkProgress[0]).toBe(1);
+	});
+	it('plays only the selected event segment, stops at its check, and replays from that start', () => {
+		const clock = createVisualPlayback();
+		VISUAL_STEP_SEGMENTS.forEach(({ start, end }, index) => {
+			clock.playSegment(index);
+			expect(clock.state).toMatchObject({
+				elapsed: start,
+				complete: false,
+				segmentIndex: index,
+			});
+			clock.advance(end - start + 1000);
+			expect(clock.state).toMatchObject({
+				elapsed: end,
+				complete: true,
+				label: 'Replay',
+			});
+			clock.advance(1000);
+			expect(clock.state.elapsed).toBe(end);
+			clock.press();
+			expect(clock.state).toMatchObject({
+				elapsed: start,
+				complete: false,
+				segmentIndex: index,
+			});
+		});
 	});
 	it('supports the completed reduced-motion view and ignores invalid elapsed deltas', () => {
 		const clock = createVisualPlayback();

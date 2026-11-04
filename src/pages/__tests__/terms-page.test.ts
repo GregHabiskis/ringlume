@@ -28,7 +28,7 @@ describe('terms', () => {
 		expect(source).toContain('7. Service Availability & Uptime')
 		// The clause is a sub-clause, so the existing numbering is untouched.
 		expect(source).toContain('8. Limitation of Liability')
-		expect(source).toContain('Last Updated: November 2, 2026')
+		expect(source).toContain('Last Updated: November 4, 2026')
 		expect(source).toContain('{PRODUCTION_MAX}')
 		expect(source).toContain('href={CAL_BOOKING_URL}')
 		expect(source).toContain('href="/contact"')
@@ -126,6 +126,39 @@ describe('terms', () => {
 		)
 		expect(source).toContain(
 			'No compliance certification or regulated workflow is guaranteed by choosing a plan.',
+		)
+	})
+
+	it('explains web voice, text, mixed-session billing, and separate telephony charges', async () => {
+		const source = (await readTerms()).replace(/\s+/g, ' ')
+		expect(source).toContain('plan.telephonyFromPerMinute.toFixed(3)')
+		expect(source).toContain('Ringlume telephony: {telephonyRates}')
+		expect(source).toContain(
+			'carrier charges apply to calls routed through a phone number in addition to standard call usage',
+		)
+		expect(source).toContain(
+			'Web calls and web chat widgets are also included on all plans',
+		)
+		const billing = source.slice(
+			source.indexOf('id="billing-details"'),
+			source.indexOf('id="estimates"'),
+		)
+		expect(billing).toContain(
+			'same monthly call-minute allowance and standard per-minute rates as phone calls',
+		)
+		expect(billing).toContain(
+			"plan's additional-minute rate once the allowance is exhausted",
+		)
+		expect(billing).toContain(
+			'Web calls do not use a phone line, so no telephony fee applies',
+		)
+		expect(billing).toContain('does not make web-call usage free')
+		expect(billing).toContain(
+			"counted as SMS messages for billing purposes and charged at your plan's SMS rate",
+		)
+		expect(billing).toContain('type-or-talk session')
+		expect(billing).toContain(
+			'voice portion is billed as call usage and the typed messages are billed at SMS rates',
 		)
 	})
 

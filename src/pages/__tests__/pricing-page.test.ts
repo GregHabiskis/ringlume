@@ -30,6 +30,7 @@ describe('dedicated pricing page', () => {
 			'minutes',
 			'overagePerMinute',
 			'smsPerMessage',
+			'telephonyFromPerMinute',
 			'concurrentCalls',
 			'phoneNumbers',
 			'agents',
@@ -40,7 +41,7 @@ describe('dedicated pricing page', () => {
 			expect(source).toContain(`plan.${field}`)
 		}
 		expect(source).toContain(
-			"plan.multilingual ? '32 languages' : 'Not included'",
+			"plan.multilingual ? '32 languages' : false",
 		)
 	})
 
@@ -86,11 +87,39 @@ describe('dedicated pricing page', () => {
 			expect(labels).toContain(label)
 		}
 		expect(source).toMatch(
-			/label: 'User Dashboard', values: PLANS.map\(\(\) => 'Included'\)/,
+			/label: 'User Dashboard', values: PLANS.map\(\(\) => true\)/,
 		)
 		expect(source).toMatch(
-			/label: 'HIPAA & BAA Compliance',[\s\S]*?values: PLANS.map\(\(\) => 'Available'\)/,
+			/label: 'HIPAA & BAA Compliance', values: PLANS.map\(\(\) => 'Available'\)/,
 		)
+	})
+
+	it('shows included web widgets and plan-specific telephony starting rates', async () => {
+		const source = await readPage()
+		expect(source).toContain(
+			"label: 'Web call & chat widget', values: PLANS.map(() => true)",
+		)
+		expect(source).not.toContain("label: 'Web calls widget'")
+		expect(source).not.toContain("label: 'Web chat widget'")
+		expect(source).toContain("label: 'Ringlume telephony'")
+		expect(source).toContain(
+			'From $${plan.telephonyFromPerMinute.toFixed(3)}/min',
+		)
+	})
+
+	it('renders inclusion and availability as colored icons with accurate screen-reader labels', async () => {
+		const source = await readPage()
+		expect(source).toContain("typeof value === 'boolean' || value === 'Available'")
+		expect(source).toContain("value ? 'text-brand-text' : 'text-danger'")
+		expect(source).toContain(
+			"value ? 'M5 12l4 4L19 6' : 'M6 6l12 12M6 18L18 6'",
+		)
+		expect(source).toContain('aria-hidden="true"')
+		expect(source).toContain(
+			"value === 'Available' ? value : value ? 'Included' : 'Not included'",
+		)
+		expect(source).toContain('<span class="sr-only">')
+		expect(source).not.toContain("values: PLANS.map(() => 'Included')")
 	})
 
 	it('moves technical explanations into Terms without adding checkout wiring', async () => {

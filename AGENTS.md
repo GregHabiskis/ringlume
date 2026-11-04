@@ -226,16 +226,22 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
   fills around its card, synchronized with its stage, then stays as a full green
   outline. Use an accumulating stroke, not a circulating short loading dash.
   At each stage's completion, draw a persistent top-right checkmark along its curved SVG path over
-  420ms, using the same clock. Replay appears only after the final tick finishes;
-  pausing freezes the ink mid-stroke and Replay resets it. Static/no-JS and reduced
-  motion show all three full outlines and checks without drawing motion.
+  420ms, using the same clock. Replay appears after the active stage's final tick;
+  pausing freezes the ink mid-stroke. The three progress buttons seek to their
+  stage boundaries, retain earlier stages as complete, play only the selected
+  stage through its check, and stop there. Replay repeats the current segment;
+  after a full run it restarts the full timeline. Static/no-JS and reduced motion
+  show all three full outlines and checks without drawing motion; reduced-motion
+  playback controls are disabled.
   Captured name/address/phone/request/time details
   highlight 500ms after their message appears. Booking and team-summary cards
   slide from measured inbox origins into reserved destination mounts, using the
   same clock as the borders; no independent repeating CSS animations. Preserve
-  offscreen/hidden-tab pauses. At completion stop the clock and replace Pause
-  with Replay; scrolling back into view must not restart it. Only Replay resets
-  the messages, highlights, transfers, and borders. The completed inbox supports
+  offscreen/hidden-tab pauses; keep playback active while the scene or its event
+  controls are onscreen. At segment completion stop the clock and replace
+  Pause with Replay; scrolling back into view must not restart it. Replay and
+  progress-button selection reset the messages, highlights, transfers, and
+  borders to the selected segment's start. The completed inbox supports
   manual scrolling. Reduced motion shows the completed static view immediately.
   Control, calendar/team labels, and the call subtitle share `--visual-ui-size`;
   the company name is 0.125rem larger. Preserve these size relationships.

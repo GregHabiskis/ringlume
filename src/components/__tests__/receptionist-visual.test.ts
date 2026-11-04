@@ -100,7 +100,7 @@ describe('homepage visual demonstration', () => {
 		expect(source).toContain('100 * (1 - frame.stepProgress[index])');
 		expect(source).not.toContain('stroke-dasharray: 16 84');
 		expect(source).not.toContain('-100 * frame.stepProgress[index]');
-		expect(source).toContain('class="visual-step-done" data-visual-step');
+		expect(source).toContain('class="visual-step-button visual-step-done"');
 		expect(source).toContain(
 			'.visual-step-done .visual-step-border { opacity: 1; }',
 		);
@@ -116,6 +116,22 @@ describe('homepage visual demonstration', () => {
 		expect(source).not.toContain('@keyframes');
 		expect(source).not.toContain('m3 8 3 3 7-7');
 		expect(source).not.toContain('m5 12 4 4L19 6');
+	});
+
+	it('makes each progress card an accessible control for its own bounded event replay', async () => {
+		const source = await read('components/ReceptionistVisual.astro');
+		expect(source).toContain('aria-label="Replay a storyboard event"');
+		expect(source).toContain('data-visual-step={index}');
+		expect(source).toContain(
+			'aria-label={`Replay from ${label.toLowerCase()}`}',
+		);
+		expect(source).toContain('clock.playSegment(index)');
+		expect(source).toContain('getVisualFrame(');
+		expect(source).toContain('state.segmentIndex ?? undefined');
+		expect(source).toContain('step.disabled = reducedMotion.matches');
+		expect(source).toContain("step.addEventListener('click', () => {");
+		expect(source).toContain('controlsVisible = true');
+		expect(source).toContain('visibilityObserver.observe(progressControls)');
 	});
 
 	it('supports pausing, reduced motion, offscreen pausing and background tabs', async () => {

@@ -2,6 +2,8 @@ export const VISUAL_TRANSFERS = {
 	booking: { at: 4700, duration: 900, source: 6 },
 	summary: { at: 6500, duration: 900, source: 6 },
 } as const;
+const BOOKING_END =
+	VISUAL_TRANSFERS.booking.at + VISUAL_TRANSFERS.booking.duration;
 const SUMMARY_END =
 	VISUAL_TRANSFERS.summary.at + VISUAL_TRANSFERS.summary.duration;
 export const VISUAL_CHECK_DURATION = 420;
@@ -51,6 +53,15 @@ export const VISUAL_CONVERSATION = [
 	},
 ] as const;
 
+export const VISUAL_STEP_SEGMENTS = [
+	{ start: 0, end: VISUAL_CONVERSATION[1].at + VISUAL_CHECK_DURATION },
+	{
+		start: VISUAL_CONVERSATION[1].at,
+		end: BOOKING_END + VISUAL_CHECK_DURATION,
+	},
+	{ start: BOOKING_END, end: VISUAL_DURATION },
+] as const;
+
 const DETAILS: Readonly<Record<number, readonly string[]>> = {
 	1: ['oak removal', 'front yard'],
 	3: ['Alex Morgan', '24 Maple Lane', '202-555-0148'],
@@ -84,13 +95,12 @@ const progress = (time: number, start: number, duration: number) =>
 	Math.max(0, Math.min(1, (time - start) / duration));
 
 // A short silent storyboard, not a real call or a service-speed benchmark.
-export function getVisualFrame(elapsed: number) {
+export function getVisualFrame(elapsed: number, activeSegment?: number) {
 	const time = Number.isFinite(elapsed)
 		? Math.max(0, Math.min(VISUAL_DURATION, elapsed))
 		: 0;
 	const answeredAt = VISUAL_CONVERSATION[0].at;
-	const bookedAt =
-		VISUAL_TRANSFERS.booking.at + VISUAL_TRANSFERS.booking.duration;
+	const bookedAt = BOOKING_END;
 	const endedAt = VISUAL_CONVERSATION[7].at;
 	const phase =
 		time < answeredAt ? 0 : time < bookedAt ? 1 : time < SUMMARY_END ? 2 : 3;
@@ -108,10 +118,33 @@ export function getVisualFrame(elapsed: number) {
 	const checkProgress = [VISUAL_CONVERSATION[1].at, bookedAt, SUMMARY_END].map(
 		(end) => progress(time, end, VISUAL_CHECK_DURATION),
 	);
+	const segmentIndex =
+		typeof activeSegment === 'number' &&
+		Number.isInteger(activeSegment) &&
+		activeSegment >= 0 &&
+		activeSegment < VISUAL_STEP_SEGMENTS.length
+			? activeSegment
+			: null;
+	if (segmentIndex !== null) {
+		stepProgress.forEach((_, index) => {
+			if (index < segmentIndex) {
+				stepProgress[index] = 1;
+				checkProgress[index] = 1;
+			} else if (index > segmentIndex) {
+				stepProgress[index] = 0;
+				checkProgress[index] = 0;
+			}
+		});
+	}
 	return {
 		phase,
 		complete: time === VISUAL_DURATION,
-		activeStep: stepProgress.findIndex((value) => value < 1),
+		activeStep:
+			segmentIndex === null
+				? stepProgress.findIndex((value) => value < 1)
+				: time < VISUAL_STEP_SEGMENTS[segmentIndex].end
+					? segmentIndex
+					: -1,
 		stepProgress,
 		checkProgress,
 		messages,
@@ -145,17 +178,21 @@ export function getVisualFrame(elapsed: number) {
 	};
 }
 
-// The clock cannot wrap or restart itself. Only the playback button can replay it.
+// The clock stops at each full-run or selected-segment boundary.
 export function createVisualPlayback() {
 	let elapsed = 0;
 	let paused = false;
+	let segmentStart = 0;
+	let segmentEnd = VISUAL_DURATION;
+	let segmentIndex: number | null = null;
 	return {
 		get state() {
-			const complete = elapsed === VISUAL_DURATION;
+			const complete = elapsed >= segmentEnd;
 			return {
 				elapsed,
 				paused,
 				complete,
+				segmentIndex,
 				label: complete
 					? 'Replay'
 					: paused
@@ -165,15 +202,27 @@ export function createVisualPlayback() {
 		},
 		advance(delta: number) {
 			if (!paused && Number.isFinite(delta))
-				elapsed = Math.min(VISUAL_DURATION, elapsed + Math.max(0, delta));
+				elapsed = Math.min(segmentEnd, elapsed + Math.max(0, delta));
 		},
 		press() {
-			if (elapsed === VISUAL_DURATION) {
-				elapsed = 0;
+			if (elapsed >= segmentEnd) {
+				elapsed = segmentStart;
 				paused = false;
 			} else paused = !paused;
 		},
+		playSegment(index: number) {
+			const segment = VISUAL_STEP_SEGMENTS[index];
+			if (!segment) return;
+			segmentIndex = index;
+			segmentStart = segment.start;
+			segmentEnd = segment.end;
+			elapsed = segment.start;
+			paused = false;
+		},
 		finish() {
+			segmentIndex = null;
+			segmentStart = 0;
+			segmentEnd = VISUAL_DURATION;
 			elapsed = VISUAL_DURATION;
 			paused = false;
 		},

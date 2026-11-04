@@ -3,9 +3,10 @@ import {
 	VISUAL_CONVERSATION,
 	VISUAL_DURATION,
 	getVisualFrame,
+	getVisualMessageParts,
 } from '../lib/receptionist-visual';
 
-const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
+const finalFrame = getVisualFrame(VISUAL_DURATION);
 ---
 
 <section
@@ -91,7 +92,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 								</svg>
 							</div>
 							<div>
-								<p class="visual-label">Example Tree Care</p>
+								<p class="visual-company-name">Example Tree Care</p>
 								<p class="visual-call-title">One less call to miss.</p>
 							</div>
 							<span class="visual-timer" data-visual-count aria-hidden="true">
@@ -132,7 +133,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 								aria-label="Illustrative tree-care conversation"
 							>
 								<ol class="visual-messages" role="list" aria-live="off">
-									{VISUAL_CONVERSATION.map(({ speaker, text }) => (
+									{VISUAL_CONVERSATION.map(({ speaker }, index) => (
 										<li
 											class:list={[
 												'visual-bubble',
@@ -145,7 +146,15 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 											<span class="sr-only">
 												{speaker === 'caller' ? 'Caller' : 'Ringlume'}:{' '}
 											</span>
-											“{text}”
+											“
+											{getVisualMessageParts(index).map((part) =>
+												part.detail ? (
+													<mark class="visual-detail">{part.text}</mark>
+												) : (
+													part.text
+												),
+											)}
+											”
 										</li>
 									))}
 								</ol>
@@ -169,7 +178,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 						<div class="visual-calendar">
 							<div class="visual-calendar-heading">
 								<div>
-									<p class="visual-label">Your calendar</p>
+									<p class="visual-label visual-ui-label">Your calendar</p>
 									<p class="visual-day">Tuesday</p>
 								</div>
 								<span class="visual-calendar-icon">
@@ -195,11 +204,16 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 								<div class="visual-slot visual-slot-booking">
 									<span>10:30</span>
 									<div class="visual-available">Available for an estimate</div>
-									<div class="visual-booking" data-visual-booking>
-										<div>
-											<span class="visual-label">Estimate visit</span>
-											<p>Oak removal</p>
-											<span class="text-xs">Alex Morgan · 24 Maple Lane</span>
+									<div class="visual-booking-mount" data-visual-booking-mount>
+										<div
+											class="visual-booking visual-transfer"
+											data-visual-booking
+										>
+											<div>
+												<span class="visual-label">Estimate visit</span>
+												<p>Oak removal</p>
+												<span class="text-xs">Alex Morgan · 24 Maple Lane</span>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -209,37 +223,44 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 								</div>
 							</div>
 						</div>
-						<div class="visual-summary">
-							<div class="visual-summary-icon">
-								<svg
-									width="19"
-									height="19"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="1.5"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-								>
-									<path d="M8 3h8l4 4v14H4V3h4Zm8 0v5h4M8 12h8m-8 4h5"></path>
-								</svg>
-							</div>
-							<div>
-								<p class="visual-label">Ready for your team</p>
-								<div class="visual-summary-content" data-visual-summary>
-									<p class="text-sm font-semibold text-fg-1">
-										Alex Morgan · Estimate booked
-									</p>
-									<p class="mt-1 text-xs leading-relaxed text-fg-3">
-										Front-yard oak removal. Tuesday, 10:30.
-										<br />
-										Callback: 202-555-0148
-									</p>
+						<div class="visual-summary-mount" data-visual-summary-mount>
+							<div
+								class="visual-summary visual-transfer glass glass-fill glass-regular glass-card"
+								data-visual-summary
+							>
+								<div class="visual-summary-icon">
+									<svg
+										width="19"
+										height="19"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.5"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									>
+										<path d="M8 3h8l4 4v14H4V3h4Zm8 0v5h4M8 12h8m-8 4h5"></path>
+									</svg>
 								</div>
-								<p class="visual-summary-waiting" data-visual-waiting hidden>
-									Call details will appear here.
-								</p>
+								<div>
+									<p class="visual-label visual-ui-label">
+										Ready for your team
+									</p>
+									<div class="visual-summary-content">
+										<p class="text-sm font-semibold text-fg-1">
+											Alex Morgan · Estimate booked
+										</p>
+										<p class="mt-1 text-xs leading-relaxed text-fg-3">
+											Front-yard oak removal. Tuesday, 10:30.
+											<br />
+											Callback: 202-555-0148
+										</p>
+									</div>
+								</div>
 							</div>
+							<p class="visual-summary-waiting" data-visual-waiting hidden>
+								Call details will appear here.
+							</p>
 						</div>
 					</div>
 				</div>
@@ -281,7 +302,12 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 </section>
 
 <script>
-	import { VISUAL_DURATION, getVisualFrame } from '../lib/receptionist-visual';
+	import {
+		VISUAL_TRANSFERS,
+		createVisualPlayback,
+		getVisualFrame,
+		getVisualTransferOrigin,
+	} from '../lib/receptionist-visual';
 
 	const root = document.querySelector<HTMLElement>('#visual');
 	if (root) initializeVisual(root);
@@ -292,6 +318,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 			'[data-visual-playback]',
 		)!;
 		const label = button.querySelector('span')!;
+		const controlIcon = button.querySelector('path')!;
 		const status = root.querySelector<HTMLElement>('[data-visual-status]')!;
 		const timer = root.querySelector<HTMLElement>('[data-visual-timer]')!;
 		const incoming = root.querySelector<HTMLElement>('[data-visual-incoming]')!;
@@ -302,40 +329,72 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		];
 		const counter = root.querySelector<HTMLElement>('[data-visual-count]')!;
 		const caption = root.querySelector<HTMLElement>('[data-visual-caption]')!;
-		const booking = root.querySelector<HTMLElement>('[data-visual-booking]')!;
-		const summary = root.querySelector<HTMLElement>('[data-visual-summary]')!;
 		const waiting = root.querySelector<HTMLElement>('[data-visual-waiting]')!;
 		const steps = [...root.querySelectorAll<HTMLElement>('[data-visual-step]')];
+		const borders = steps.map((step) => step.querySelector('rect')!);
 		const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-		let elapsed = 0;
+		const clock = createVisualPlayback();
+		const flights = (['booking', 'summary'] as const).map((kind) => ({
+			kind,
+			element: root.querySelector<HTMLElement>(`[data-visual-${kind}]`)!,
+			mount: root.querySelector<HTMLElement>(`[data-visual-${kind}-mount]`)!,
+			source: messages[VISUAL_TRANSFERS[kind].source],
+			started: false,
+			progress: 0,
+		}));
 		let visible = false;
-		let paused = false;
-		let interval: ReturnType<typeof setInterval> | undefined;
-		let lastTime = 0;
+		let request: number | undefined;
+		let lastTime: number | null = null;
 		let visibleMessages = 0;
-		let previous = '';
+		let conversationOffset = 0;
 
 		function positionConversation() {
 			const last = messages[visibleMessages - 1];
-			const offset = last
+			conversationOffset = last
 				? Math.max(
 						0,
 						last.offsetTop + last.offsetHeight - inbox.clientHeight + 8,
 					)
 				: 0;
-			list.style.setProperty('--conversation-offset', `${-offset}px`);
+			list.style.setProperty(
+				'--conversation-offset',
+				`${-conversationOffset}px`,
+			);
+		}
+
+		function measureFlight(flight: (typeof flights)[number]) {
+			const origin = getVisualTransferOrigin(
+				flight.source.getBoundingClientRect(),
+				inbox.getBoundingClientRect(),
+				flight.mount.getBoundingClientRect(),
+			);
+			flight.element.style.setProperty('--from-x', `${origin.x}px`);
+			flight.element.style.setProperty('--from-y', `${origin.y}px`);
 		}
 
 		function render() {
-			const frame = getVisualFrame(
-				reducedMotion.matches ? VISUAL_DURATION - 1 : elapsed,
-			);
-			const key = `${reducedMotion.matches}:${JSON.stringify(frame)}`;
-			if (key === previous) return;
-			previous = key;
+			const state = clock.state;
+			const frame = getVisualFrame(state.elapsed);
+			const wasComplete = scene.classList.contains('visual-complete');
 			scene.dataset.phase = String(frame.phase);
-			status.textContent = frame.status;
-			timer.textContent = frame.timer;
+			if (status.textContent !== frame.status)
+				status.textContent = frame.status;
+			if (timer.textContent !== frame.timer) timer.textContent = frame.timer;
+			if (label.textContent !== state.label) {
+				label.textContent = state.label;
+				controlIcon.setAttribute(
+					'd',
+					state.complete
+						? 'M3 5a5 5 0 1 1-1 5M3 1v4h4'
+						: state.paused
+							? 'm5 3 7 5-7 5Z'
+							: 'M5 3v10M11 3v10',
+				);
+			}
+			if (state.complete) button.removeAttribute('aria-pressed');
+			else button.setAttribute('aria-pressed', String(state.paused));
+			scene.classList.toggle('visual-complete', state.complete);
+			inbox.tabIndex = reducedMotion.matches || state.complete ? 0 : -1;
 			incoming.hidden = frame.answered;
 			scene.classList.toggle(
 				'visual-resetting',
@@ -347,59 +406,105 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 			);
 			messages.forEach((message, index) => {
 				message.classList.toggle('is-shown', index < frame.messages);
+				message.classList.toggle(
+					'visual-details-captured',
+					frame.highlights[index],
+				);
 			});
 			if (visibleMessages !== frame.messages) {
 				visibleMessages = frame.messages;
 				positionConversation();
 			}
-			counter.textContent = `${String(frame.messages).padStart(2, '0')} / 08`;
-			caption.textContent =
+			if (state.complete && !wasComplete) inbox.scrollTop = conversationOffset;
+			const count = `${String(frame.messages).padStart(2, '0')} / 08`;
+			if (counter.textContent !== count) counter.textContent = count;
+			const captionText =
 				frame.typing && !reducedMotion.matches
 					? `${frame.callerTyping ? 'Caller' : 'Receptionist'} is speaking`
 					: frame.messages === messages.length
 						? 'Conversation captured'
 						: 'Example conversation';
-			booking.classList.toggle('visual-pending', !frame.booked);
-			summary.classList.toggle('visual-pending', !frame.summarized);
-			waiting.hidden = frame.summarized;
+			if (caption.textContent !== captionText)
+				caption.textContent = captionText;
+			flights.forEach((flight) => {
+				const started = frame[`${flight.kind}Started`];
+				const progress = frame[`${flight.kind}Progress`];
+				if (started && !flight.started && !reducedMotion.matches)
+					measureFlight(flight);
+				flight.started = started;
+				flight.progress = progress;
+				flight.element.classList.toggle('visual-transfer-pending', !started);
+				flight.element.classList.toggle(
+					'visual-transferring',
+					started && progress < 1,
+				);
+				flight.element.style.setProperty(
+					'--flight-progress',
+					String(1 - (1 - progress) ** 3),
+				);
+				flight.element.style.setProperty(
+					'--flight-opacity',
+					String(Math.min(1, progress * 8)),
+				);
+			});
+			waiting.hidden = frame.summaryStarted;
 			steps.forEach((step, index) => {
-				step.classList.toggle('visual-step-done', frame.phase > index);
+				step.classList.toggle(
+					'visual-step-done',
+					frame.stepProgress[index] === 1,
+				);
 				step.classList.toggle(
 					'visual-step-active',
 					!reducedMotion.matches && frame.activeStep === index,
 				);
+				borders[index].style.strokeDashoffset = String(
+					-100 * frame.stepProgress[index],
+				);
 			});
 		}
 
-		function advance() {
-			const now = performance.now();
-			elapsed = (elapsed + now - lastTime) % VISUAL_DURATION;
+		function stop() {
+			if (request !== undefined) {
+				cancelAnimationFrame(request);
+				if (lastTime !== null) clock.advance(performance.now() - lastTime);
+			}
+			request = undefined;
+			lastTime = null;
+		}
+
+		function tick(now: number) {
+			if (lastTime !== null) clock.advance(now - lastTime);
 			lastTime = now;
+			render();
+			if (clock.state.complete) {
+				request = undefined;
+				lastTime = null;
+				scene.classList.remove('visual-running');
+			} else request = requestAnimationFrame(tick);
 		}
 
 		function syncPlayback() {
-			if (interval !== undefined) advance();
-			clearInterval(interval);
-			interval = undefined;
+			stop();
+			if (reducedMotion.matches) clock.finish();
 			const running =
-				visible && !paused && !document.hidden && !reducedMotion.matches;
+				visible &&
+				!clock.state.paused &&
+				!clock.state.complete &&
+				!document.hidden &&
+				!reducedMotion.matches;
 			scene.classList.toggle('visual-running', running);
 			scene.classList.toggle('visual-ready', !reducedMotion.matches);
-			inbox.tabIndex = reducedMotion.matches ? 0 : -1;
 			button.hidden = reducedMotion.matches;
 			render();
 			if (!running) return;
 			lastTime = performance.now();
-			interval = setInterval(() => {
-				advance();
-				render();
-			}, 50);
+			request = requestAnimationFrame(tick);
 		}
 
 		button.addEventListener('click', () => {
-			paused = !paused;
-			button.setAttribute('aria-pressed', String(paused));
-			label.textContent = paused ? 'Resume animation' : 'Pause animation';
+			stop();
+			clock.press();
+			if (clock.state.elapsed === 0) inbox.scrollTop = 0;
 			syncPlayback();
 		});
 		new IntersectionObserver(
@@ -409,9 +514,15 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 			},
 			{ threshold: 0.15 },
 		).observe(scene);
-		const resize = new ResizeObserver(positionConversation);
+		const resize = new ResizeObserver(() => {
+			positionConversation();
+			flights.forEach((flight) => {
+				if (flight.started && flight.progress < 1) measureFlight(flight);
+			});
+		});
 		resize.observe(inbox);
 		resize.observe(list);
+		flights.forEach((flight) => resize.observe(flight.mount));
 		document.addEventListener('visibilitychange', syncPlayback);
 		reducedMotion.addEventListener('change', syncPlayback);
 		syncPlayback();
@@ -420,6 +531,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 
 <style>
 	.visual-shell {
+		--visual-ui-size: clamp(0.875rem, 0.8rem + 0.2vw, 1rem);
 		border-radius: 1.5rem;
 		overflow: hidden;
 	}
@@ -433,6 +545,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		padding: 1rem 1.25rem;
 	}
 	.visual-toolbar {
+		flex-wrap: wrap;
 		border-bottom: 1px solid var(--line);
 		min-height: 4.5rem;
 	}
@@ -462,7 +575,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		align-items: center;
 		gap: 0.5rem;
 		min-height: 44px;
-		font-size: 0.7rem;
+		font-size: var(--visual-ui-size);
 		color: var(--fg-3);
 		cursor: pointer;
 	}
@@ -479,13 +592,14 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 	}
 	.visual-afterhours {
 		color: var(--fg-3);
-		font-size: 0.65rem;
+		font-size: 0.75rem;
 		font-variant-numeric: tabular-nums;
 	}
 	.visual-afterhours > span {
 		display: none;
 	}
 	.visual-workspace {
+		position: relative;
 		display: grid;
 		gap: 1.25rem;
 		padding: 0 1.25rem 1.25rem;
@@ -519,14 +633,14 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		align-items: center;
 		gap: 0.4rem;
 		color: var(--fg-3);
-		font-size: 0.625rem;
+		font-size: 0.75rem;
 		font-weight: 500;
 		letter-spacing: 0.04em;
 	}
 	.visual-call-title {
 		margin-top: 0.25rem;
 		color: var(--fg-1);
-		font-size: 0.8rem;
+		font-size: var(--visual-ui-size);
 		font-weight: 600;
 	}
 	.visual-timer {
@@ -536,7 +650,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		border-radius: 999px;
 		padding: 0.35rem 0.5rem;
 		color: var(--fg-3);
-		font-size: 0.65rem;
+		font-size: 0.75rem;
 		font-variant-numeric: tabular-nums;
 	}
 	.visual-chat {
@@ -547,6 +661,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		overflow: auto;
 		overscroll-behavior: contain;
 		scrollbar-width: thin;
+		scrollbar-gutter: stable;
 		scrollbar-color: var(--line-strong) transparent;
 	}
 	.visual-messages {
@@ -577,6 +692,31 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 	.visual-bubble-receptionist {
 		border-start-start-radius: 0.25rem;
 	}
+	.visual-ui-label {
+		font-size: var(--visual-ui-size);
+	}
+	.visual-company-name {
+		font-size: calc(var(--visual-ui-size) + 0.125rem);
+		line-height: 1.4;
+		font-weight: 600;
+		color: var(--fg-1);
+	}
+	.visual-detail {
+		color: var(--brand-text);
+		background: color-mix(in srgb, var(--brand) 14%, transparent);
+		border-radius: 0.2rem;
+		padding: 0.06em 0.08em;
+		margin-inline: -0.08em;
+		box-decoration-break: clone;
+	}
+	.visual-ready .visual-detail {
+		color: inherit;
+		background: transparent;
+	}
+	.visual-ready .visual-details-captured .visual-detail {
+		color: var(--brand-text);
+		background: color-mix(in srgb, var(--brand) 14%, transparent);
+	}
 	.visual-incoming {
 		position: absolute;
 		inset: 0;
@@ -604,7 +744,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		gap: 0.75rem;
 		min-height: 2.5rem;
 		color: var(--fg-3);
-		font-size: 0.65rem;
+		font-size: 0.75rem;
 	}
 	.visual-typing {
 		display: none;
@@ -628,6 +768,13 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 	.visual-ready .visual-messages {
 		transform: translateY(var(--conversation-offset, 0px));
 		transition: transform 520ms var(--ease-spring);
+	}
+	.visual-complete .visual-conversation {
+		overflow: auto;
+	}
+	.visual-complete .visual-messages {
+		transform: none;
+		transition: none;
 	}
 	.visual-ready .visual-bubble {
 		opacity: 0;
@@ -683,7 +830,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 	}
 	.visual-slot > span {
 		padding-top: 0.7rem;
-		font-size: 0.65rem;
+		font-size: 0.75rem;
 		color: var(--fg-3);
 		font-variant-numeric: tabular-nums;
 	}
@@ -696,7 +843,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		grid-column: 2;
 		border-top: 1px solid var(--line);
 		padding: 0.7rem;
-		font-size: 0.65rem;
+		font-size: 0.75rem;
 		color: var(--fg-3);
 	}
 	.visual-existing {
@@ -710,11 +857,13 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 	.visual-available {
 		border-top-style: dashed;
 	}
-	.visual-booking {
+	.visual-booking-mount {
 		position: absolute;
 		top: 0;
 		left: 3.25rem;
 		right: 0;
+	}
+	.visual-booking {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
@@ -738,12 +887,17 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 	}
 	.visual-booking .text-xs {
 		color: var(--fg-3);
-		font-size: 0.65rem;
+		font-size: 0.75rem;
 	}
 	.visual-summary {
 		display: flex;
 		align-items: flex-start;
 		gap: 0.75rem;
+		padding: 1rem;
+		border-radius: 1rem;
+	}
+	.visual-summary-mount {
+		position: relative;
 		border-top: 1px solid var(--line);
 		padding-top: 1rem;
 	}
@@ -781,7 +935,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		justify-content: center;
 		gap: 0.4rem;
 		color: var(--fg-3);
-		font-size: 0.6rem;
+		font-size: 0.75rem;
 		min-height: 44px;
 		padding: 0.5rem;
 		border: 1px solid var(--line);
@@ -812,6 +966,10 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		transform: scale(1.025);
 		border-color: color-mix(in srgb, var(--brand) 45%, var(--line-strong));
 	}
+	.visual-progress .visual-step-done {
+		border-color: color-mix(in srgb, var(--brand) 30%, var(--line));
+		color: var(--brand-text);
+	}
 	.visual-step-active .visual-step-border {
 		opacity: 1;
 	}
@@ -839,9 +997,22 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		text-decoration: underline;
 		text-underline-offset: 4px;
 	}
-	.visual-pending {
+	.visual-transfer-pending {
 		opacity: 0;
-		transform: translateY(6px);
+	}
+	.visual-ready .visual-transfer {
+		transition: none;
+		opacity: var(--flight-opacity, 1);
+		transform: translate(
+				calc(var(--from-x, 0px) * (1 - var(--flight-progress, 1))),
+				calc(var(--from-y, 0px) * (1 - var(--flight-progress, 1)))
+			)
+			scale(calc(0.82 + var(--flight-progress, 1) * 0.18));
+	}
+	.visual-transferring {
+		position: relative;
+		z-index: 3;
+		will-change: transform, opacity;
 	}
 
 	@media (min-width: 640px) {
@@ -867,7 +1038,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		.visual-slot:not(.visual-slot-booking) {
 			display: grid;
 		}
-		.visual-summary {
+		.visual-summary-mount {
 			border-top: 0;
 			border-left: 1px solid var(--line);
 			padding-top: 0;
@@ -896,9 +1067,6 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		.visual-call-heading {
 			padding-bottom: 2rem;
 		}
-		.visual-call-title {
-			font-size: 1rem;
-		}
 		.visual-caller-icon {
 			width: 3rem;
 			height: 3rem;
@@ -922,7 +1090,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 		.visual-slot-booking {
 			min-height: 6.5rem;
 		}
-		.visual-summary {
+		.visual-summary-mount {
 			border-left: 0;
 			border-top: 1px solid var(--line);
 			padding: 1.25rem 0 0;
@@ -941,54 +1109,20 @@ const finalFrame = getVisualFrame(VISUAL_DURATION - 1);
 	}
 
 	@media (prefers-reduced-motion: no-preference) {
-		.visual-booking,
-		.visual-summary-content,
-		.visual-progress li {
+		.visual-detail {
+			transition:
+				color 180ms ease,
+				background-color 180ms ease;
+		}
+		.visual-progress li,
+		.visual-step-border {
 			transition:
 				opacity 400ms ease,
 				transform 400ms var(--ease-spring);
 		}
-		.visual-typing i {
-			animation: visual-typing-pulse 900ms ease-in-out infinite;
-			animation-play-state: paused;
-		}
-		.visual-typing i:nth-child(2) {
-			animation-delay: 120ms;
-		}
-		.visual-typing i:nth-child(3) {
-			animation-delay: 240ms;
-		}
-		.visual-running.visual-is-typing .visual-typing i {
-			animation-play-state: running;
-		}
-		.visual-step-active .visual-step-border rect {
-			animation: visual-border-travel 1700ms linear infinite;
-		}
-		.visual-scene:not(.visual-running) .visual-step-border rect,
-		:global(html.is-paused) .visual-step-border rect {
-			animation-play-state: paused;
-		}
 		.visual-scene:not(.visual-running) *,
 		:global(html.is-paused) .visual-scene * {
-			animation-play-state: paused;
 			transition: none;
-		}
-	}
-	@keyframes visual-typing-pulse {
-		0%,
-		70%,
-		100% {
-			opacity: 0.35;
-			transform: translateY(0);
-		}
-		35% {
-			opacity: 1;
-			transform: translateY(-3px);
-		}
-	}
-	@keyframes visual-border-travel {
-		to {
-			stroke-dashoffset: -100;
 		}
 	}
 	@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {

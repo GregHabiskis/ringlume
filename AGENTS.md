@@ -210,11 +210,19 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
   is a continuous 18rem inbox with eight alternating, compact glass/green bubbles,
   speaking dots, a message counter, and automatic scrolling, not replacing pairs
   of messages. Use the former capabilities first-step cadence: messages arrive
-  at 200, 850, 1500, 2250, 3100, 3900, 4700, and 5600ms. The full loop is 10 seconds;
-  booking appears with its confirmation and the summary follows the final message.
-  The bottom progress steps use a circulating green border, with one active step
-  at a time, not checkmarks; pause the border offscreen and in hidden tabs.
-  Preserve the illustrative-example badge, pause/resume control,
+  at 200, 850, 1500, 2250, 3100, 3900, 4700, and 5600ms. This is a one-shot
+  7.4-second timeline, never a loop. Each bottom progress border makes one pass,
+  synchronized with its stage. Captured name/address/phone/request/time details
+  highlight 500ms after their message appears. Booking and team-summary cards
+  slide from measured inbox origins into reserved destination mounts, using the
+  same clock as the borders; no independent repeating CSS animations. Preserve
+  offscreen/hidden-tab pauses. At completion stop the clock and replace Pause
+  with Replay; scrolling back into view must not restart it. Only Replay resets
+  the messages, highlights, transfers, and borders. The completed inbox supports
+  manual scrolling. Reduced motion shows the completed static view immediately.
+  Control, calendar/team labels, and the call subtitle share `--visual-ui-size`;
+  the company name is 0.125rem larger. Preserve these size relationships.
+  Preserve the illustrative-example badge, pause/resume/replay control,
   offscreen and hidden-tab pausing, complete screen-reader transcript, static
   no-JS/reduced-motion view, and contrast/transparency fallbacks. Add no animation
   dependencies or blurred glow.

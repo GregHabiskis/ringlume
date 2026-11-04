@@ -60,7 +60,7 @@ describe('homepage visual demonstration', () => {
 	it('server-renders a finished example and an accessible non-announcing transcript', async () => {
 		const source = await read('components/ReceptionistVisual.astro');
 		expect(source).toContain(
-			'const finalFrame = getVisualFrame(VISUAL_DURATION - 1)',
+			'const finalFrame = getVisualFrame(VISUAL_DURATION)',
 		);
 		expect(source).toContain('data-phase={finalFrame.phase}');
 		expect(source).toContain('data-visual-message');
@@ -79,13 +79,12 @@ describe('homepage visual demonstration', () => {
 			'data-visual-caption',
 			'--conversation-offset',
 			'last.offsetTop + last.offsetHeight',
-			'new ResizeObserver(positionConversation)',
+			'new ResizeObserver',
 			'height: 18rem',
 			'font-size: 0.875rem',
 			'line-height: 1.65',
 			'margin-inline-start: auto',
 			'visual-bubble-receptionist',
-			'visual-typing-pulse 900ms',
 		])
 			expect(source).toContain(detail);
 		expect(source).not.toContain('visual-exchange');
@@ -97,14 +96,10 @@ describe('homepage visual demonstration', () => {
 		expect(source).toContain('class="visual-step-border"');
 		expect(source).toContain('stroke-dasharray: 16 84');
 		expect(source).toContain('stroke: var(--brand-bright)');
-		expect(source).toContain('visual-border-travel 1700ms linear infinite');
 		expect(source).toContain('frame.activeStep === index');
-		expect(source).toContain(
-			'.visual-scene:not(.visual-running) .visual-step-border rect',
-		);
-		expect(source).toContain(
-			':global(html.is-paused) .visual-step-border rect',
-		);
+		expect(source).toContain('-100 * frame.stepProgress[index]');
+		expect(source).not.toContain('infinite');
+		expect(source).not.toContain('@keyframes');
 		expect(source).not.toContain('m3 8 3 3 7-7');
 		expect(source).not.toContain('m5 12 4 4L19 6');
 	});
@@ -113,18 +108,69 @@ describe('homepage visual demonstration', () => {
 		const source = await read('components/ReceptionistVisual.astro');
 		expect(source).toContain('aria-pressed="false"');
 		expect(source).toContain(
-			"button.setAttribute('aria-pressed', String(paused))",
+			"button.setAttribute('aria-pressed', String(state.paused))",
 		);
-		expect(source).toContain("paused ? 'Resume animation' : 'Pause animation'");
+		expect(source).toContain('clock.press()');
 		expect(source).toContain('prefers-reduced-motion: reduce');
-		expect(source).toContain(
-			'reducedMotion.matches ? VISUAL_DURATION - 1 : elapsed',
-		);
+		expect(source).toContain('if (reducedMotion.matches) clock.finish()');
 		expect(source).toContain('new IntersectionObserver');
 		expect(source).toContain('!document.hidden');
-		expect(source).toContain('clearInterval(interval)');
+		expect(source).toContain('cancelAnimationFrame(request)');
 		expect(source).toContain(
 			"document.addEventListener('visibilitychange', syncPlayback)",
+		);
+	});
+
+	it('stops at completion and changes the same control to Replay without an automatic restart', async () => {
+		const source = await read('components/ReceptionistVisual.astro');
+		expect(source).toContain('label.textContent = state.label');
+		expect(source).toContain('!clock.state.complete');
+		expect(source).toContain("scene.classList.remove('visual-running')");
+		expect(source).toContain("button.removeAttribute('aria-pressed')");
+		expect(source).toContain('inbox.scrollTop = 0');
+		expect(source).not.toContain('setInterval');
+		expect(source).not.toContain('% VISUAL_DURATION');
+	});
+
+	it('highlights literal captured facts and flies the two outcomes from measured inbox origins', async () => {
+		const source = await read('components/ReceptionistVisual.astro');
+		expect(source).toContain('getVisualMessageParts(index)');
+		expect(source).toContain('<mark class="visual-detail">');
+		expect(source).toContain('frame.highlights[index]');
+		expect(source).toContain('getVisualTransferOrigin(');
+		expect(source).toContain('flight.source.getBoundingClientRect()');
+		expect(source).toContain('flight.mount.getBoundingClientRect()');
+		expect(source).toContain('data-visual-booking-mount');
+		expect(source).toContain('data-visual-summary-mount');
+		expect(source).toContain('--flight-progress');
+		expect(source).toContain('--from-x');
+		expect(source).toContain('--from-y');
+	});
+
+	it('matches the named UI labels to the call subtitle and makes the company name larger', async () => {
+		const source = await read('components/ReceptionistVisual.astro');
+		expect(source).toContain('class="visual-company-name">Example Tree Care');
+		expect(source).toContain(
+			'class="visual-label visual-ui-label">Your calendar',
+		);
+		expect(source).toMatch(
+			/class="visual-label visual-ui-label">\s*Ready for your team/,
+		);
+		for (const selector of [
+			'.visual-call-title',
+			'.visual-ui-label',
+			'.visual-playback:not([hidden])',
+		]) {
+			const rule =
+				source.match(
+					new RegExp(
+						`${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} \\{([^}]+)\\}`,
+					),
+				)?.[1] ?? '';
+			expect(rule).toContain('font-size: var(--visual-ui-size)');
+		}
+		expect(source).toContain(
+			'font-size: calc(var(--visual-ui-size) + 0.125rem)',
 		);
 	});
 

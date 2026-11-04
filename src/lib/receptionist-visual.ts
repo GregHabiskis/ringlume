@@ -11,7 +11,7 @@ export const DETAIL_HIGHLIGHT_DELAY = 500;
 export const VISUAL_CONVERSATION = [
 	{
 		speaker: 'receptionist',
-		text: 'Example Tree Care. How can I help?',
+		text: 'Thank you for reaching out to Ringlume. How can I help you?',
 		at: 200,
 	},
 	{

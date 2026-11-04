@@ -34,7 +34,7 @@ describe('homepage visual demonstration', () => {
 	it('labels fictional activity and qualifies the booking flow', async () => {
 		const source = await read('components/ReceptionistVisual.astro');
 		expect(source).toContain('Illustrative example');
-		expect(source).toContain('Example Tree Care');
+		expect(source).toContain('A fictional after-hours call to Ringlume.');
 		expect(source).toContain('Booking is one possible outcome.');
 		expect(source).toContain(
 			'Ringlume can instead transfer the call or take a message, following your rules and availability.',
@@ -163,7 +163,7 @@ describe('homepage visual demonstration', () => {
 
 	it('matches the named UI labels to the call subtitle and makes the company name larger', async () => {
 		const source = await read('components/ReceptionistVisual.astro');
-		expect(source).toContain('class="visual-company-name">Example Tree Care');
+		expect(source).toContain('class="visual-company-name">Ringlume');
 		expect(source).toContain(
 			'class="visual-label visual-ui-label">Your calendar',
 		);

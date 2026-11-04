@@ -21,6 +21,9 @@ describe('receptionist visual storyboard', () => {
 
 	it('uses one consistent request that ends in an agreed booking', () => {
 		const transcript = VISUAL_CONVERSATION.map(({ text }) => text).join(' ');
+		expect(VISUAL_CONVERSATION[0].text).toBe(
+			'Thank you for reaching out to Ringlume. How can I help you?',
+		);
 		expect(VISUAL_CONVERSATION).toHaveLength(8);
 		expect(VISUAL_CONVERSATION.map(({ speaker }) => speaker)).toEqual([
 			'receptionist',

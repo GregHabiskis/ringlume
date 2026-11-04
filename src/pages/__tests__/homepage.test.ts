@@ -70,17 +70,32 @@ describe('homepage redesign', () => {
 	})
 
 	it('keeps Retell on-demand, with reduced-motion support and a load-error message', async () => {
-		const source = await read('components/DemoSection.astro')
+		const [source, browser, controller] = await Promise.all([
+			read('components/DemoSection.astro'),
+			read('lib/retell-browser.ts'),
+			read('lib/retell-demo.ts'),
+		])
 		expect(source).toContain('retell && (')
 		expect(source).toContain('id="demo"')
 		expect(source).toContain('data-demo-open')
 		expect(source).toContain('data-demo-status')
-		expect(source).toContain('The demo could not load.')
+		expect(controller).toContain('The demo could not load.')
 		expect(source).toContain('prefers-reduced-motion: reduce')
 		expect(source).toContain('html.is-paused')
 		expect(source).not.toContain('content-auto')
 		expect(source).not.toMatch(/<script[^>]*src=/)
-		expect(source).toContain('inject(config)')
+		expect(browser).toContain("import('retell-client-js-sdk')")
+		expect(source).toContain('loadClient: () => loadRetellClient(publicKey)')
+		expect(source).not.toContain('retell-widget')
+		expect(source).not.toContain('shadowRoot')
+		expect(source).not.toContain('Opens the call panel')
+		for (const control of ['cancel', 'live', 'mute', 'end', 'audio']) {
+			expect(source).toContain(`data-demo-${control}`)
+		}
+		expect(source).toContain("window.addEventListener('pagehide', controller.end)")
+		expect(source).toContain("window.addEventListener('offline', controller.offline)")
+		expect(source).toContain('aria-pressed="false"')
+		expect(source).toContain('aria-atomic="true"')
 	})
 
 	it('cites the wage benchmark and states the comparison limits', async () => {

@@ -110,6 +110,8 @@
 	--glass-edge-lo: rgba(255, 255, 255, 0.05);
 	--glass-specular: rgba(255, 255, 255, 0.15);
 	--glass-inner: rgba(255, 255, 255, 0.08);
+	/* Shared card fill, matched to the pricing cards and comparison table. */
+	--card-fill: rgba(14, 18, 27, 0.66);
 
 	--grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
 
@@ -332,7 +334,7 @@
 }
 
 .glass-fill.glass-regular {
-	--glass-fill-2: rgba(14, 18, 27, 0.66);
+	--glass-fill-2: var(--card-fill);
 }
 
 /* Small screens: drop the blur, keep the material (perf rule).
@@ -350,10 +352,10 @@
 	}
 }
 
-/* Shared clear material for homepage, FAQ, contact, and legal cards.
+/* Shared pricing-matched material for content, form, and confirmation cards.
    Background alpha only: text and controls remain fully opaque. */
 .glass.glass-card {
-	--glass-fill: color-mix(in srgb, var(--bg-alt) 40%, transparent);
+	--glass-fill: var(--card-fill);
 	--glass-fill-2: var(--glass-fill);
 	--glass-filter: none;
 	--line: color-mix(in srgb, var(--fg-3) 12%, transparent);

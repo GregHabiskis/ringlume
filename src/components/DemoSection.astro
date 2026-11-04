@@ -20,7 +20,7 @@ const retell = getRetellConfig()
 				</h2>
 				<span class="flex items-center gap-2 text-xs text-fg-3">
 					<span class="h-1.5 w-1.5 rounded-full bg-brand" aria-hidden="true" />
-					Try it yourself
+					<span data-demo-connection>Try it yourself</span>
 				</span>
 			</div>
 			<div class="signal-stage" aria-hidden="true">
@@ -45,33 +45,74 @@ const retell = getRetellConfig()
 				<p class="mb-5 text-sm text-fg-2">
 					A real conversation. Not a recording.
 				</p>
-				<button
-					type="button"
-					data-demo-open
-					class="btn btn-primary w-full disabled:opacity-60"
-					aria-describedby="demo-call-help"
-				>
-					<svg
-						width="18"
-						height="18"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.7"
-						stroke-linecap="round"
-						viewBox="0 0 24 24"
-						aria-hidden="true"
+				<div class="demo-controls">
+					<div data-demo-start-controls class="flex gap-3">
+						<button
+							type="button"
+							data-demo-open
+							class="btn btn-primary min-w-0 flex-1 disabled:opacity-60"
+							aria-describedby="demo-call-help"
+							disabled
+						>
+							<svg
+								width="18"
+								height="18"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.7"
+								stroke-linecap="round"
+								viewBox="0 0 24 24"
+								aria-hidden="true"
+							>
+								<path d="M8 3H5a2 2 0 0 0-2 2c0 8.8 7.2 16 16 16a2 2 0 0 0 2-2v-3l-5-2-2 2a13 13 0 0 1-6-6l2-2-2-5Z" />
+							</svg>
+							<span data-demo-label>Try it now</span>
+						</button>
+						<button
+							type="button"
+							data-demo-cancel
+							class="btn btn-secondary"
+							hidden
+						>
+							Cancel
+						</button>
+					</div>
+					<div data-demo-live class="grid grid-cols-2 gap-3" hidden>
+						<button
+							type="button"
+							data-demo-mute
+							class="btn btn-secondary"
+							aria-pressed="false"
+							aria-label="Mute microphone"
+						>
+							Mute
+						</button>
+						<button type="button" data-demo-end class="btn demo-end">
+							End call
+						</button>
+					</div>
+				</div>
+				<div class="flex min-h-11 items-center justify-center">
+					<p id="demo-call-help" class="text-xs leading-relaxed text-fg-3">
+						Microphone required to speak.
+					</p>
+					<button
+						type="button"
+						data-demo-audio
+						class="min-h-11 text-xs text-fg-3 underline underline-offset-4 hover:text-fg-1"
+						hidden
 					>
-						<path d="M8 3H5a2 2 0 0 0-2 2c0 8.8 7.2 16 16 16a2 2 0 0 0 2-2v-3l-5-2-2 2a13 13 0 0 1-6-6l2-2-2-5Z" />
-					</svg>
-					<span data-demo-label>Try it now</span>
-				</button>
-				<p id="demo-call-help" class="mt-3 text-xs leading-relaxed text-fg-3">
-					Opens the call panel. Microphone required to speak.
-				</p>
-				<p class="mt-4 text-xs text-fg-3">
+						No sound? Enable audio
+					</button>
+				</div>
+				<p
+					data-demo-status
+					role="status"
+					aria-atomic="true"
+					class="demo-status mt-3 text-sm leading-relaxed text-fg-2"
+				>
 					Try asking: &ldquo;Can I book an appointment?&rdquo;
 				</p>
-				<p data-demo-status role="status" class="mt-3 text-sm text-fg-2" />
 				<noscript>
 					<p class="mt-3 text-sm text-fg-3">
 						Enable JavaScript to use the live demo.
@@ -91,6 +132,27 @@ const retell = getRetellConfig()
 }
 
 <style>
+	/* Author display utilities must not override the native hidden attribute. */
+	[hidden] {
+		display: none !important;
+	}
+	.demo-controls {
+		min-height: 52px;
+	}
+	.demo-status {
+		min-height: 2.5em;
+	}
+	.demo-end {
+		border: 1px solid var(--danger);
+		color: var(--fg-1);
+		background: color-mix(in srgb, var(--danger) 25%, var(--bg-base));
+	}
+	.demo-end:hover {
+		background: color-mix(in srgb, var(--danger) 40%, var(--bg-base));
+	}
+	[data-demo-connection] {
+		font-variant-numeric: tabular-nums;
+	}
 	.signal-stage {
 		position: relative;
 		display: grid;
@@ -242,238 +304,107 @@ const retell = getRetellConfig()
 </style>
 
 <script>
-	const RETELL_SCRIPT_ID = 'retell-widget'
-	const RETELL_SRC = 'https://dashboard.retellai.com/retell-widget-v2.js'
-	const RETELL_TITLE = "Talk to Ringlume's Virtual receptionist"
-	const RETELL_FAB_TEXT = 'Try it now'
-	const OPEN_LABEL = 'Try it now'
-	const BUSY_LABEL = 'Connecting…'
-	const MAX_WAIT_MS = 8000
+	import {
+		createDemoController,
+		formatDemoTime,
+		type DemoPhase,
+		type DemoState,
+	} from '../lib/retell-demo'
+	import { loadRetellClient, prepareRetellCall } from '../lib/retell-browser'
 
-	// Retell's public key is domain-restricted in the Retell dashboard.
-	// Keep this in sync with that list: on any other origin
-	// POST /v3/create-web-call returns 401 and the widget fails silently
-	// (panel opens, timer stays 00:00, agent never speaks).
-	const ALLOWED_ORIGINS = ['https://ringlume.com', 'https://www.ringlume.com']
+	function initDemo(section: HTMLElement): void {
+		const publicKey = section.dataset.retellPublicKey
+		const agentId = section.dataset.retellAgentId
+		if (!publicKey || !agentId) return
+		const start = section.querySelector<HTMLButtonElement>('[data-demo-open]')!
+		const startControls = section.querySelector<HTMLElement>(
+			'[data-demo-start-controls]',
+		)!
+		const label = section.querySelector<HTMLElement>('[data-demo-label]')!
+		const cancel = section.querySelector<HTMLButtonElement>(
+			'[data-demo-cancel]',
+		)!
+		const liveControls = section.querySelector<HTMLElement>('[data-demo-live]')!
+		const mute = section.querySelector<HTMLButtonElement>('[data-demo-mute]')!
+		const end = section.querySelector<HTMLButtonElement>('[data-demo-end]')!
+		const help = section.querySelector<HTMLElement>('#demo-call-help')!
+		const audio = section.querySelector<HTMLButtonElement>('[data-demo-audio]')!
+		const status = section.querySelector<HTMLElement>('[data-demo-status]')!
+		const connection = section.querySelector<HTMLElement>(
+			'[data-demo-connection]',
+		)!
+		let phase: DemoPhase = 'idle'
+		let connectedAt = 0
+		let timer: ReturnType<typeof setInterval> | undefined
 
-	const CLOSED_FAB_SELECTOR =
-		'button[aria-label="Open Assistant"], button[title="Assistant"]'
-	const OPEN_PANEL_SELECTOR =
-		'button[aria-label="Minimize window"], button[aria-label="Return to active call"]'
-	const STYLE_OVERRIDE_ID = 'ringlume-retell-overrides'
-	const POLL_MS = 150
+		function render(state: DemoState): void {
+			const previous = phase
+			const wasFocused = section.contains(document.activeElement)
+			const focusedControl = document.activeElement as HTMLElement | null
+			phase = state.phase
+			const live = phase === 'live'
+			const connecting = phase === 'connecting'
+			startControls.hidden = live
+			start.disabled = connecting
+			start.setAttribute('aria-busy', String(connecting))
+			label.textContent = connecting ? 'Connecting…' : 'Try it now'
+			cancel.hidden = !connecting
+			liveControls.hidden = !live
+			help.hidden = live
+			audio.hidden = !live
+			mute.textContent = state.muted ? 'Unmute' : 'Mute'
+			mute.setAttribute('aria-pressed', String(state.muted))
+			mute.setAttribute(
+				'aria-label',
+				state.muted ? 'Unmute microphone' : 'Mute microphone',
+			)
+			if (status.textContent !== state.message) status.textContent = state.message
+			if (live && previous !== 'live') {
+				connectedAt = Date.now()
+				const tick = () => {
+					connection.textContent = `Live · ${formatDemoTime((Date.now() - connectedAt) / 1000)}`
+				}
+				tick()
+				timer = setInterval(tick, 1000)
+			} else if (phase !== 'live') {
+				clearInterval(timer)
+				timer = undefined
+				const labels = {
+					idle: 'Try it yourself',
+					connecting: 'Connecting…',
+					ended: 'Call ended',
+					error: 'Unable to connect',
+				}
+				connection.textContent = labels[phase]
+			}
+			// Move focus only when the control the visitor was using disappears.
+			if (
+				wasFocused &&
+				(focusedControl?.closest('[hidden]') ||
+					(focusedControl === start && connecting))
+			) {
+				if (connecting) cancel.focus({ preventScroll: true })
+				else if (live) end.focus({ preventScroll: true })
+				else start.focus({ preventScroll: true })
+			}
+		}
 
-	type RetellConfig = {
-		publicKey: string
-		agentId: string
-		recaptchaKey: string
-	}
-
-	let injected = false
-	let opening = false
-
-	function readConfig(): RetellConfig | null {
-		const section = document.getElementById('demo')
-		if (!section) return null
-
-		const publicKey = section.dataset.retellPublicKey?.trim()
-		const agentId = section.dataset.retellAgentId?.trim()
-		if (!publicKey || !agentId) return null
-
-		return {
-			publicKey,
+		const controller = createDemoController({
 			agentId,
-			recaptchaKey: section.dataset.retellRecaptchaKey?.trim() ?? '',
-		}
-	}
-
-	function isOpen(): boolean {
-		return Boolean(queryWidget(OPEN_PANEL_SELECTOR))
-	}
-
-	// Retell renders its whole UI inside a shadow root, so a plain
-	// document.querySelector() never sees the FAB or the panel.
-	function widgetRoot(): ShadowRoot | null {
-		const host = document.getElementById('retell-widget-root')
-		const candidate = host?.firstElementChild ?? host
-		const root = candidate?.shadowRoot ?? findAnyShadowRoot()
-		if (root) applyOverrides(root)
-		return root
-	}
-
-	function findAnyShadowRoot(): ShadowRoot | null {
-		for (const el of document.querySelectorAll('div')) {
-			if (el.shadowRoot) return el.shadowRoot
-		}
-		return null
-	}
-
-	function applyOverrides(root: ShadowRoot): void {
-		if (root.getElementById(STYLE_OVERRIDE_ID)) return
-
-		const style = document.createElement('style')
-		style.id = STYLE_OVERRIDE_ID
-		// Keep CSS compact so Astro can inline this script without another request.
-		style.textContent = [
-			/* Retell hardcodes the subtitle and only drops it behind their
-			   white-label token, so suppress it locally instead. */
-			'[class*="_brandSubtitle_"]{display:none!important}',
-			/* Retell left-aligns the brand title; keep it centred at every
-			   breakpoint so it matches the avatar and the Start-to-call
-			   button, and give it the pricing-card heading treatment
-			   (foreground colour, bold). */
-			'[class*="_brandTitle_"]{text-align:center!important;color:var(--fg-1)!important;font-weight:700!important}',
-			/* The widget card now wears the site's pricing-card material:
-			   `.glass-fill .glass-regular` = one 8% white fill over the dark
-			   page + the 1px diagonal edge ring + the contact shadow.
-			   Retell's surface was a white shell inside a navy rim, so the
-			   rim carries the material and the inner shell goes transparent
-			   (single fill layer = same composite as the cards). */
-			'[class*="_window_"]{background:rgba(13,17,26,0.72)!important;box-shadow:inset 1px 1px 0 0 var(--glass-edge-hi),inset -1px -1px 0 0 var(--glass-edge-lo),inset 0 1px 0 var(--glass-specular),var(--shadow-contact)!important}',
-			'[class*="_innerShell_"]{background:transparent!important}',
-			/* Surface controls on the dark card. */
-			'[class*="_voiceTimer_"]{color:var(--fg-3)!important}',
-			'[class*="_closeButton_"]{background:rgba(13,17,26,0.6)!important;color:var(--fg-2)!important}',
-			'[class*="_closeButton_"]:hover{background:rgba(18,23,34,0.75)!important;color:var(--fg-1)!important}',
-			/* Start-to-call mirrors the site's primary CTA (.btn-primary). */
-			'[class*="_startCallButton_"]{background:var(--grad-cta)!important;color:var(--fg-1)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,0.28),inset 0 -8px 16px -12px rgba(2,20,12,0.55),var(--glow-brand),var(--shadow-contact)!important}',
-			/* Any chat-variant text shares the dark shell, so swap Retell's
-			   navy-on-white palette for the site's foreground tokens. */
-			'[class*="_brandText_"],[class*="_title_"]{color:var(--fg-1)!important}',
-			'[class*="_subtitle_"]{color:var(--fg-3)!important}',
-			/* The delayed greeting ignores Retell's theme and defaults to white.
-			   Match its minimized button; scope text overrides to this popup. */
-			'[class*=_popup_] [class*=_bubble_]{background:var(--color-theme)}',
-			'[class*=_popup_] [class]{color:var(--fg-1)}',
-			/* Site typeface everywhere (Retell defaults to Inter). */
-			':host{--font-family:"Plus Jakarta Sans","Jakarta Fallback",system-ui,sans-serif!important}',
-		].join('')
-		root.appendChild(style)
-	}
-
-	function queryWidget<T extends Element>(selector: string): T | null {
-		return (
-			widgetRoot()?.querySelector<T>(selector) ??
-			document.querySelector<T>(selector)
-		)
-	}
-
-	function warnIfOriginNotAllowed(): void {
-		if (ALLOWED_ORIGINS.includes(window.location.origin)) return
-		console.warn(
-			`[Ringlume demo] ${window.location.origin} is not on Retell's allowed-domain list for this public key. ` +
-				'The demo UI will open but create-web-call will return 401 and the agent stays silent. ' +
-				`Add this origin in the Retell dashboard (Settings → Allowed domains) or test on ${ALLOWED_ORIGINS.join(' / ')}.`,
-		)
-	}
-
-	function inject(config: RetellConfig): void {
-		if (injected || document.getElementById(RETELL_SCRIPT_ID)) {
-			injected = true
-			return
-		}
-
-		const tag = document.createElement('script')
-		tag.id = RETELL_SCRIPT_ID
-		tag.src = RETELL_SRC
-		tag.type = 'module'
-		tag.dataset.voicePublicKey = config.publicKey
-		tag.dataset.voiceAgentId = config.agentId
-		tag.dataset.title = RETELL_TITLE
-		tag.dataset.fabText = RETELL_FAB_TEXT
-		tag.dataset.botName = 'Ringlume'
-		tag.dataset.logoUrl = '/images/logo-240.webp'
-		tag.dataset.themeColor = '#0A1120'
-		tag.dataset.componentColor = '#269635'
-		tag.dataset.showAiPopup = 'true'
-		tag.dataset.showAiPopupTime = '8'
-		tag.dataset.popupMessage =
-			"Hi! I'm Ringlume's Virtual receptionist. Ask me anything."
-
-		if (config.recaptchaKey) {
-			const recaptcha = document.createElement('script')
-			recaptcha.src = `https://www.google.com/recaptcha/api.js?render=${config.recaptchaKey}`
-			recaptcha.async = true
-			document.head.appendChild(recaptcha)
-			tag.dataset.recaptchaKey = config.recaptchaKey
-		}
-
-		tag.addEventListener(
-			'error',
-			() => {
-				injected = false
-				tag.remove()
-			},
-			{ once: true },
-		)
-
-		document.head.appendChild(tag)
-		injected = true
-	}
-
-	function waitForFab(
-		timeoutMs = MAX_WAIT_MS,
-	): Promise<HTMLButtonElement | null> {
-		return new Promise((resolve) => {
-			// Shadow-root mutations never reach a document observer, so poll.
-			const started = Date.now()
-
-			function tick(): void {
-				const fab = queryWidget<HTMLButtonElement>(CLOSED_FAB_SELECTOR)
-				if (fab) {
-					resolve(fab)
-					return
-				}
-				if (Date.now() - started >= timeoutMs) {
-					resolve(null)
-					return
-				}
-				window.setTimeout(tick, POLL_MS)
-			}
-
-			tick()
+			loadClient: () => loadRetellClient(publicKey),
+			prepare: () => prepareRetellCall(section.dataset.retellRecaptchaKey),
+			onChange: render,
 		})
+		start.addEventListener('click', () => void controller.start())
+		cancel.addEventListener('click', controller.end)
+		end.addEventListener('click', controller.end)
+		mute.addEventListener('click', controller.toggleMute)
+		audio.addEventListener('click', () => void controller.enableAudio())
+		window.addEventListener('offline', controller.offline)
+		window.addEventListener('pagehide', controller.end)
+		start.disabled = false
 	}
 
-	function setBusy(button: HTMLButtonElement, busy: boolean): void {
-		const label = button.querySelector<HTMLElement>('[data-demo-label]')
-		button.disabled = busy
-		button.setAttribute('aria-busy', String(busy))
-		if (label) label.textContent = busy ? BUSY_LABEL : OPEN_LABEL
-	}
-
-	async function openDemo(button: HTMLButtonElement): Promise<void> {
-		if (opening || isOpen()) return
-
-		const config = readConfig()
-		if (!config) return
-
-		opening = true
-		setBusy(button, true)
-		const status = document.querySelector<HTMLElement>('[data-demo-status]')
-		if (status) status.textContent = ''
-		warnIfOriginNotAllowed()
-
-		try {
-			inject(config)
-			const fab = await waitForFab()
-			if (fab && !isOpen()) fab.click()
-			if (!fab && !isOpen() && status) {
-				status.textContent =
-					'The demo could not load. Please try again or request a personalized demo below.'
-			}
-		} catch {
-			if (status)
-				status.textContent = 'The demo could not load. Please try again.'
-		} finally {
-			opening = false
-			setBusy(button, false)
-		}
-	}
-
-	document
-		.querySelectorAll<HTMLButtonElement>('[data-demo-open]')
-		.forEach((button) => {
-			button.addEventListener('click', () => void openDemo(button))
-		})
+	const section = document.getElementById('demo')
+	if (section) initDemo(section)
 </script>

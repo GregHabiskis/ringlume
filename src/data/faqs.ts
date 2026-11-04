@@ -110,7 +110,7 @@ export const faqItems: FaqItem[] = [
 		id: 'call-follow-up',
 		question: 'Will we know what happened after every call?',
 		paragraphs: [
-			'Yes. Call summaries, recordings, and caller details are available according to your plan and setup.',
+			'Yes. Call summaries, recordings, and caller details are available on all plans through your dashboard.',
 		],
 	},
 	{

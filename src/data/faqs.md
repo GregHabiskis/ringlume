@@ -47,7 +47,7 @@ Yes. When enabled, it transfers calls to your team using the rules you choose.
 
 ## Will we know what happened after every call?
 
-Yes. Call summaries, recordings, and caller details are available according to your plan and setup.
+Yes. Call summaries, recordings, and caller details are available on all plans through your dashboard.
 
 ## Does Ringlume replace my receptionist or office staff?
 

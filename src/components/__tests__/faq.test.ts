@@ -50,6 +50,13 @@ describe('FAQ content', () => {
 		)
 	})
 
+	it('confirms call details are available on every plan through the dashboard', () => {
+		const callFollowUp = faqItems.find((faq) => faq.id === 'call-follow-up')
+		expect(callFollowUp?.paragraphs).toEqual([
+			'Yes. Call summaries, recordings, and caller details are available on all plans through your dashboard.',
+		])
+	})
+
 	it('links pricing FAQ visitors directly to the pricing page', async () => {
 		const source = await readFile(dataSourceUrl, 'utf8')
 

@@ -99,7 +99,7 @@ Existing legal-page contact lists remain unchanged except for the removed channe
 
 1. **Static first.** Prefer zero client JS. Interactive bits are tiny vanilla `<script>` blocks inside `.astro` files (menu, pricing toggle, missed-call calculator). The hero headline is static.
 2. **No heavy frameworks.** Do not add React, Vue, Framer Motion, GSAP, analytics SDKs, or chat widgets unless explicitly requested.
-3. **No third-party render-blocking scripts.** The Retell demo widget (`~1.4 MB`) is injected only when someone clicks a demo CTA — never at page load.
+3. **No third-party render-blocking scripts.** The Retell Web SDK and its audio dependencies are dynamically imported only after clicking **Try it now** inside `#demo`, never at page load or through a module preload. There is no Retell popup widget.
 4. **Keep deps minimal.** The site has no payment integration, application database, account, entitlement, or webhook layer.
 5. **pnpm only.**
 
@@ -141,12 +141,14 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
   (pricing cards and other repeated panels). Tiers also drop blur below 768px (perf rule).
 - `.glass-card` is the shared modifier for the homepage demo, receptionist
   storyboard, calculator shell, closing CTA, full FAQ panel,
-  contact form/channel cards, and Terms/Privacy cards. Pair with `.glass .glass-fill
-  .glass-regular`: one 40% background fill, grey borders/dividers, no white bevel,
+  contact form/channel cards, demo-request form, confirmation pages, and Terms/Privacy
+  cards. Pair with `.glass .glass-fill .glass-regular`: the shared `--card-fill`
+  (`rgba(14, 18, 27, 0.66)`) matches the `/pricing` comparison table and standard
+  pricing-card backgrounds exactly; grey borders/dividers, no white bevel,
   grain, per-card gradients, hover tint, or backdrop filter. Text stays opaque.
   Calculator inner panels stay clear to avoid stacking opacity. Reduced-transparency
   and high-contrast preferences retain an opaque fallback. Do not apply this
-  modifier to header, pricing, or the demo-request form without being asked.
+  modifier to header or pricing without being asked; their existing treatments stay.
 - `.grain` = noise overlay; it also sets `position: relative` so the `::after` never escapes.
 - `.scrim` / `.scrim-soft` are transparent section wrappers so the fixed `.scene`
   remains visible on every page (static near-black + persistent 28px dot grid at
@@ -410,16 +412,30 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 
 ### Retell voice demo
 
-- **Embedding method: Retell website widget v2 (script tag), not the
-  `retell-client-js-sdk` npm package.** The bundle
-  `https://dashboard.retellai.com/retell-widget-v2.js` is injected on demand by
-  `src/components/DemoSection.astro` when someone clicks **Try it now**
-  (it is never loaded at page load — see performance rules). The injected tag
-  must keep `id="retell-widget"`: the widget reads its config from
-  `data-voice-public-key` / `data-voice-agent-id` / branding `data-*` attributes
-  on that exact element (`document.getElementById('retell-widget')`). It mounts
-  its whole UI in a shadow root (`#retell-widget-root`), so queries must pierce
-  shadow DOM (the component already does this).
+- **Integration: `retell-client-js-sdk` 3.0.3**, using
+  `RetellClient({ key: publicKey }).createWebCall({ agent_id, hooks })`.
+  Retell's current SDK supports public-key browser authentication directly;
+  do not add a backend or put a secret API key in client code. Consult the
+  current [web-call documentation](https://docs.retellai.com/deploy/web-call)
+  before upgrading: older 2.x examples use a different API.
+- **Inline interface:** `src/components/DemoSection.astro` keeps the existing
+  glass card and decorative waveform. One **Try it now** click starts connecting
+  inside `#demo`, with browser microphone permission when needed. The card owns
+  cancellation, connection status, timer, mute/unmute, hangup, errors, and retry.
+  There is no popup, floating launcher, injected widget script, shadow-DOM
+  polling, or second **Start to call** step. Do not restore those workarounds.
+- **Lifecycle:** `src/lib/retell-demo.ts` prevents duplicate calls and ignores
+  stale callbacks after cancellation/retry. Connections time out after 45 seconds;
+  page exit (`pagehide`) and offline events terminate active/pending sessions.
+  The elapsed timer uses the connection timestamp, not interval tick counts, and
+  stays outside the status live region. Hidden-tab animation pausing does not
+  hang up a call. Lifecycle tests use injected mocks, never billable calls.
+- **Browser preparation:** `src/lib/retell-browser.ts` dynamically imports the
+  SDK only after the click, checks secure context/connectivity, and obtains
+  microphone permission before creating a session. It immediately stops every
+  temporary permission-check track, even if permission arrives after cancellation.
+  The SDK owns the actual call's audio resources. Optional reCAPTCHA is loaded
+  on demand and executed with a fresh token for each attempt.
 - **Config flow:** `.env` → `PUBLIC_RETELL_VOICE_PUBLIC_KEY`,
   `PUBLIC_RETELL_VOICE_AGENT_ID`, `PUBLIC_RETELL_RECAPTCHA_KEY` (optional,
   currently empty — calls work without reCAPTCHA) →
@@ -427,43 +443,29 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
   rendered as `data-retell-*` on `#demo`. Values are baked into static HTML at
   build time; the section renders nothing if unset. Both Retell values are
   public (browser-exposed, domain-scoped) and are listed in
-  `netlify.toml` `SECRETS_SCAN_OMIT_KEYS`. The `ALLOWED_ORIGINS` list in
-  `DemoSection.astro` mirrors the Retell dashboard allowlist — keep in sync.
-- **Root cause of "widget opens but agent never responds":** the public key is
-  **domain-restricted in the Retell dashboard to `https://ringlume.com` and
-  `https://www.ringlume.com` only.** On any other origin (`localhost:4321`,
-  `astro preview`, `*.netlify.app`, tunnels) `POST
-  https://api.retellai.com/v3/create-web-call` returns **401**, and the widget
-  swallows the error: the panel opens, "Start to call" works, the timer stays
-  `00:00`, no greeting, no visible error. Key + agent ID themselves are valid
-  (a `create-web-call` with `Origin: https://ringlume.com` returns 201).
-  `DemoSection.astro` now logs a `console.warn` on non-allowlisted origins so
-  the failure is no longer silent.
-- **Second root cause (browser-side): autoplay blocking.** If the call connects
-  (timer ticks, network shows `201 create-web-call` + healthy
-  `/webrtc-proxy/.../webrtc/sessions`) but *no* agent audio is heard, check the
-  browser's autoplay policy. The widget plays the agent's audio through an
-  autoplay `<audio>` element (`srcObject` + `setSinkId`) plus an `AudioContext`
-  graph — **Brave (and Chrome with autoplay set to "Block") silently suppress
-  it**, producing a perfectly silent but otherwise healthy call. Confirmed
-  2026-09-27: enabling autoplay for `ringlume.com` in Brave fixed it with zero
-  code changes. Distinguish this from the 401 case above by checking the
-  network tab first: 401 = domain allowlist; 201 + silent = autoplay/output.
-- **Fix / verification:**
-  1. To test locally, add the dev origin (e.g. `http://localhost:4321`) to the
-     public key's allowed domains in the Retell dashboard — or test on
-     production. This is a dashboard change; do not attempt it from the repo.
-  2. Quick API check:
-     `curl -X POST https://api.retellai.com/v3/create-web-call -H 'Content-Type: application/json' -H 'Authorization: Bearer <public key>' -H 'Origin: <origin>' --data '{"agent_id":"<agent id>"}'`
-     → expect `201` for allowlisted origins, `401` otherwise.
-  3. In-browser: open the demo, click **Start to call**, and watch the network
-     tab — healthy is `201 /v3/create-web-call` followed by `201/204
-     /webrtc-proxy/<call_id>/v1/webrtc/sessions` and a running call timer.
-  4. Microphone still needs a secure context (HTTPS or `localhost`) and
-     permission — a mic denial looks the same (silent call) but produces
-     `NotAllowedError`, so check the console before blaming the domain list.
-     Test with extensions/ad blockers disabled; the widget loads from
-     `dashboard.retellai.com` + `api.retellai.com`.
+  `netlify.toml` `SECRETS_SCAN_OMIT_KEYS`. Only a Google site key belongs in
+  `PUBLIC_RETELL_RECAPTCHA_KEY`; its secret stays in the dashboard.
+- **Domain restrictions:** the public key's known allowed origins are
+  `https://ringlume.com` and `https://www.ringlume.com`. Other origins, including
+  localhost and deploy previews, require owner approval in the Retell dashboard.
+  A rejected `/v3/create-web-call` now produces a visible authorization error
+  instead of the old widget's silent `00:00` failure. Do not change dashboard
+  settings or create real calls without confirmation.
+- **Autoplay:** Brave and other browsers can block agent audio even when the
+  call connects successfully. The card keeps **No sound? Enable audio** available
+  throughout live calls, calling `startAudioPlayback()` directly from that click.
+  A browser-level sound/autoplay block may still require a site permission change.
+  The SDK can swallow initial playback errors, so do not assume a successful
+  connection or playback method call proves audible output.
+- **Verification:** run `pnpm test`, `pnpm check`, and `pnpm build`; verify the
+  SDK chunk is absent from initial HTML scripts/module preloads. Its separate
+  ~571 kB minified chunk currently triggers Vite's 500 kB warning; keep it deferred,
+  not a higher warning limit. Manually test permission denial/allow, cancellation,
+  retries, two-way audio, mute, hangup, offline/page exit, Brave, and mobile Safari
+  on an allowed domain. A healthy create request returns `201`, followed by a
+  working audio transport and a running timer. The 10-minute duration cap and
+  abuse-prevention settings are separate owner-managed Retell dashboard settings;
+  domain restrictions alone are not comprehensive abuse protection.
 
 Keep the channel details on `/contact` unchanged. Footer and CtaSection link
 to `/contact`; neither contains WhatsApp or email links. The retired messaging

@@ -16,6 +16,7 @@
 	},
 	"dependencies": {
 		"astro": "^7.0.9",
+		"retell-client-js-sdk": "3.0.3",
 		"tailwindcss": "^4.3.2"
 	},
 	"devDependencies": {

@@ -7,13 +7,15 @@ const readStyles = () =>
 	readFile(new URL('../../styles/global.css', import.meta.url), 'utf8')
 
 describe('uniform glass cards', () => {
-	it('uses one background alpha and grey edges without dimming content', async () => {
+	it('shares the exact pricing fill and keeps grey edges without dimming content', async () => {
 		const css = await readStyles()
 		const material =
 			css.match(/\.glass\.glass-card \{([\s\S]*?)\n\}/)?.[1] ?? ''
-		expect(material).toContain(
-			'--glass-fill: color-mix(in srgb, var(--bg-alt) 40%, transparent)',
-		)
+		expect(css).toContain('--card-fill: rgba(14, 18, 27, 0.66)')
+		const pricingFill =
+			css.match(/\.glass-fill\.glass-regular \{([\s\S]*?)\n\}/)?.[1] ?? ''
+		expect(pricingFill).toContain('--glass-fill-2: var(--card-fill)')
+		expect(material).toContain('--glass-fill: var(--card-fill)')
 		expect(material).toContain('--glass-fill-2: var(--glass-fill)')
 		expect(material).toContain(
 			'border: 1px solid color-mix(in srgb, var(--fg-3) 20%, transparent)',
@@ -34,6 +36,7 @@ describe('uniform glass cards', () => {
 			'MissedCallCalculator',
 			'CtaSection',
 			'ContactForm',
+			'DemoRequestForm',
 		]) {
 			const source = await readComponent(name)
 			expect(source, name).toContain(
@@ -43,7 +46,6 @@ describe('uniform glass cards', () => {
 		for (const name of [
 			'Header',
 			'Pricing',
-			'DemoRequestForm',
 			'ReceptionistComparison',
 		]) {
 			expect(await readComponent(name), name).not.toContain('glass-card')
@@ -56,6 +58,18 @@ describe('uniform glass cards', () => {
 		expect(flow).not.toContain('background: linear-gradient')
 		expect(cta).not.toContain('background: linear-gradient')
 	})
+
+	it.each(['book-demo/thanks', 'contact/thanks'])(
+		'matches the /%s confirmation card to the pricing fill without blur or grain',
+		async (page) => {
+			const source = await readFile(
+				new URL(`../../pages/${page}.astro`, import.meta.url),
+				'utf8',
+			)
+			expect(source).toContain('glass glass-fill glass-regular glass-card')
+			expect(source).not.toContain('grain')
+		},
+	)
 
 	it('matches FAQ and contact cards without changing the homepage FAQ preview', async () => {
 		const [faq, contact, form] = await Promise.all([

@@ -51,11 +51,11 @@ describe('demo-first CTAs', () => {
 		expect(source).not.toContain('Get Started')
 	})
 
-	it('uses Try it now for the demo button, reset label and widget launcher', async () => {
+	it('uses Try it now for the inline demo button and reset label', async () => {
 		const source = await component('DemoSection')
 		expect(source).toContain('<span data-demo-label>Try it now</span>')
-		expect(source).toContain("const OPEN_LABEL = 'Try it now'")
-		expect(source).toContain("const RETELL_FAB_TEXT = 'Try it now'")
+		expect(source).toContain("connecting ? 'Connecting…' : 'Try it now'")
+		expect(source).not.toContain('retell-widget')
 	})
 
 	it('points every pricing CTA at the demo request', async () => {

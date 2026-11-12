@@ -165,10 +165,10 @@ describe('receptionist visual storyboard', () => {
 		});
 	});
 
-	it('maps event buttons to exact segment boundaries and holds other steps complete or clear', () => {
+	it('maps event buttons to their starts and completes every remaining stage', () => {
 		expect(VISUAL_STEP_SEGMENTS).toEqual([
-			{ start: 0, end: 1270 },
-			{ start: 850, end: 6020 },
+			{ start: 0, end: 7820 },
+			{ start: 850, end: 7820 },
 			{ start: 5600, end: 7820 },
 		]);
 		VISUAL_STEP_SEGMENTS.forEach(({ start, end }, index) => {
@@ -185,8 +185,8 @@ describe('receptionist visual storyboard', () => {
 				0,
 				...Array.from({ length: 2 - index }, () => 0),
 			]);
-			expect(endFrame.stepProgress[index]).toBe(1);
-			expect(endFrame.checkProgress[index]).toBe(1);
+			expect(endFrame.stepProgress).toEqual([1, 1, 1]);
+			expect(endFrame.checkProgress).toEqual([1, 1, 1]);
 			expect(endFrame.activeStep).toBe(-1);
 		});
 	});
@@ -311,7 +311,7 @@ describe('one-shot visual playback', () => {
 		clock.advance(1000);
 		expect(getVisualFrame(clock.state.elapsed).checkProgress[0]).toBe(1);
 	});
-	it('plays only the selected event segment, stops at its check, and replays from that start', () => {
+	it('plays from the selected event through the final check and replays from that start', () => {
 		const clock = createVisualPlayback();
 		VISUAL_STEP_SEGMENTS.forEach(({ start, end }, index) => {
 			clock.playSegment(index);
@@ -334,6 +334,37 @@ describe('one-shot visual playback', () => {
 				complete: false,
 				segmentIndex: index,
 			});
+		});
+	});
+	it('continues past intermediate checks with later progress and transfers still advancing', () => {
+		const clock = createVisualPlayback();
+		clock.playSegment(0);
+		clock.advance(1270);
+		expect(clock.state.complete).toBe(false);
+		expect(getVisualFrame(clock.state.elapsed, 0)).toMatchObject({
+			activeStep: 1,
+			checkProgress: [1, 0, 0],
+		});
+		expect(
+			getVisualFrame(clock.state.elapsed, 0).stepProgress[1],
+		).toBeGreaterThan(0);
+		clock.playSegment(1);
+		clock.advance(6020 - 850);
+		expect(clock.state).toMatchObject({
+			complete: false,
+			label: 'Pause animation',
+		});
+		expect(getVisualFrame(clock.state.elapsed, 1).activeStep).toBe(2);
+		clock.press();
+		clock.advance(10000);
+		expect(clock.state.elapsed).toBe(6020);
+		clock.press();
+		clock.advance(7820 - 6020);
+		expect(getVisualFrame(clock.state.elapsed, 1)).toMatchObject({
+			complete: true,
+			summaryProgress: 1,
+			stepProgress: [1, 1, 1],
+			checkProgress: [1, 1, 1],
 		});
 	});
 	it('supports the completed reduced-motion view and ignores invalid elapsed deltas', () => {

@@ -226,10 +226,11 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
   fills around its card, synchronized with its stage, then stays as a full green
   outline. Use an accumulating stroke, not a circulating short loading dash.
   At each stage's completion, draw a persistent top-right checkmark along its curved SVG path over
-  420ms, using the same clock. Replay appears after the active stage's final tick;
+  420ms, using the same clock. Replay appears after the timeline's final tick;
   pausing freezes the ink mid-stroke. The three progress buttons seek to their
-  stage boundaries, retain earlier stages as complete, play only the selected
-  stage through its check, and stop there. Replay repeats the current segment;
+  stage boundaries, retain earlier stages as complete, and continue through all
+  remaining stages and the final check. Never stop at an intermediate stage.
+  Replay repeats from the selected starting point through the timeline's end;
   after a full run it restarts the full timeline. Static/no-JS and reduced motion
   show all three full outlines and checks without drawing motion; reduced-motion
   playback controls are disabled.
@@ -238,7 +239,7 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
   slide from measured inbox origins into reserved destination mounts, using the
   same clock as the borders; no independent repeating CSS animations. Preserve
   offscreen/hidden-tab pauses; keep playback active while the scene or its event
-  controls are onscreen. At segment completion stop the clock and replace
+  controls are onscreen. At full timeline completion stop the clock and replace
   Pause with Replay; scrolling back into view must not restart it. Replay and
   progress-button selection reset the messages, highlights, transfers, and
   borders to the selected segment's start. The completed inbox supports
@@ -367,15 +368,25 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 - Demo allowance: **free for up to 10 minutes**, from `DEMO_FREE_MINUTES`.
   Hero stat is `{DEMO_FREE_MINUTES} Min / Free Demo`; its other stat stays
   `24/7 / Always Working`.
-- Production agent target: **within 12 hours** with preferred tools, starting
-  only after a conversation and confirmed requirements. This figure belongs
-  only in the Terms clause, never in FAQs, plan cards, hero, CTAs, metadata,
-  or `/book-demo`. The setup FAQ links to Terms instead of repeating details.
-- The retired setup-time slogans and qualifiers must not appear on the homepage
-  or pricing page. Keep setup targets and preferred tool lists in Terms only.
+- Production setup uses an estimated launch date for the agreed scope, not a
+  universal hourly or daily deadline. Do not publish an unvalidated numeric
+  range. Terms 7.1 (`/terms#setup-time`) defines straightforward versus custom
+  setup, confirmed scope and required information/access, Ringlume's setup
+  queue, configuration, testing, customer approval, and timing dependencies.
+  Ready for testing is not live; launch requires approved production routing.
+- The homepage hero's text below its `/book-demo` CTA is
+  **Talk to a receptionist that knows your business.** It reinforces the
+  personalized demo, not the production setup process.
+- Only `Pricing detailed` shows the short setup/testing explanation and Terms
+  setup link below the cards; homepage pricing does not repeat it.
+  The setup FAQ stays brief and links to Terms. Keep full prerequisites,
+  preferred tool lists, and timing explanations in Terms, not marketing copy.
 - Preferred tools are recommendations, not requirements or guaranteed native
-  integrations. Existing PBX/custom CRM setups are more complex and take
-  longer; give no time figure for them. Setup times are targets, not guarantees.
+  integrations. Complex routing, PBX/custom CRM work, number porting, and
+  regulated requirements are scoped individually. Explain timing changes and
+  confirm revised estimates. Setup dates are estimates, not guarantees.
+  Business-day estimates use Saturday-Thursday, excluding U.S. federal holidays,
+  in Eastern Time (America/New_York); the separate demo offer is unchanged.
 - `src/data/faqs.ts` feeds the FAQ component. `src/data/faqs.md` is a docs-only
   mirror, checked by tests but not consumed by site generation. Keep each answer
   short; use Terms links for technical explanations.

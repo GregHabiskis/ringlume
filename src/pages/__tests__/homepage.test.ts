@@ -6,6 +6,18 @@ const read = (file: string) =>
 	readFile(new URL(`../../${file}`, import.meta.url), 'utf8')
 
 describe('homepage redesign', () => {
+	it('reinforces the personalized demo beneath the hero CTA', async () => {
+		const source = await read('components/Hero.astro')
+		const tagline = source.match(
+			/<p\b[^>]*data-demo-reassurance[^>]*>([\s\S]*?)<\/p>/,
+		)?.[1].trim()
+		expect(tagline).toBe('Talk to a receptionist that knows your business.')
+		expect(source).not.toContain('data-setup-tagline')
+		expect(source.indexOf('data-demo-reassurance')).toBeGreaterThan(
+			source.indexOf('Get Your Free Demo'),
+		)
+	})
+
 	it('animates the decorative waveform and rim without animating layout or paint properties', async () => {
 		const source = await read('components/DemoSection.astro')
 		expect(source).toContain('class="signal-stage" aria-hidden="true"')

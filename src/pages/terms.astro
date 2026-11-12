@@ -5,7 +5,6 @@ import Footer from '../components/Footer.astro'
 import {
   formatList,
   CAL_BOOKING_URL,
-  PRODUCTION_MAX,
   SUPPORTED_STACK,
 } from '../lib/offer'
 import { PLANS, USAGE_RATES, formatPrice } from '../lib/pricing'
@@ -41,7 +40,7 @@ const setupUpgradeExamples = [
   <main class="scrim min-h-screen pt-24 pb-20">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <h1 class="text-h1 font-bold text-fg-1 mb-4">Terms & Conditions</h1>
-      <p class="text-fg-3 mb-12">Last Updated: November 4, 2026</p>
+      <p class="text-fg-3 mb-12">Last Updated: November 6, 2026</p>
 
       <div class="glass glass-fill glass-regular glass-card max-w-none space-y-10 rounded-[32px] p-6 sm:p-10 lg:p-14">
 
@@ -102,7 +101,7 @@ const setupUpgradeExamples = [
             Your phone setup, calendar, CRM, and any special compliance requirements
             are reviewed before setup. Custom integrations depend on the tools and
             agreed scope. No compliance certification or regulated workflow is
-            guaranteed by choosing a plan. Preferred tools and setup targets are
+            guaranteed by choosing a plan. Preferred tools and launch estimates are
             explained in <a href="#setup-time" class="text-brand-text underline underline-offset-2">section 7.1</a>.
           </p>
           <p class="text-fg-2 leading-relaxed mt-4">
@@ -332,8 +331,39 @@ const setupUpgradeExamples = [
             7.1 Setup Time and Compatible Tools
           </h3>
           <p class="text-fg-2 leading-relaxed">
-            Setup time depends on the tools the Customer uses. Setup is smoothest and
-            quickest, often an afternoon, when the Customer uses:
+            Ringlume handles setup for your agreed call flows and connections. We
+            confirm an estimated launch date for the agreed scope, not a universal
+            turnaround. A demo is a preview, not a production deployment.
+          </p>
+          <ol class="list-decimal list-inside text-fg-2 space-y-4 mt-4 ml-4 leading-relaxed">
+            <li>
+              <strong class="text-fg-1">Review and scope.</strong> Straightforward
+              setups use existing, tested configurations for inbound call handling
+              and agreed phone or calendar connections. Custom code, PBX changes,
+              CRM workflows, multiple locations, and regulated requirements are
+              scoped individually. Setup scope is subject to your plan's allowances.
+            </li>
+            <li>
+              <strong class="text-fg-1">Information and access.</strong> We schedule
+              setup once the scope is confirmed and we have your approved business
+              information and required account access, including services, hours,
+              service areas, booking rules, and escalation contacts as applicable.
+              Your launch estimate includes our setup queue, configuration, and
+              testing, with customer review time agreed with you.
+            </li>
+            <li>
+              <strong class="text-fg-1">Test and approve.</strong> We test the agreed
+              answers, lead capture, booking, transfers, and fallback handling where
+              applicable. You review and approve the receptionist before we connect
+              or change live call routing. Ready for testing is not the same as live:
+              launch means your approved receptionist is connected to your phone
+              line and ready to take real customer calls.
+            </li>
+          </ol>
+          <p class="text-fg-2 leading-relaxed mt-4">
+            These are recommended tools, not requirements or guarantees of native
+            integration. Compatibility, permissions, and the features needed are
+            checked before we confirm your estimate:
           </p>
           <ul class="list-disc list-inside text-fg-2 space-y-2 mt-4 ml-4">
             <li>{formatList(SUPPORTED_STACK.phone)} for phone service</li>
@@ -344,10 +374,19 @@ const setupUpgradeExamples = [
             </li>
           </ul>
           <p class="text-fg-2 leading-relaxed mt-4">
-            With these tools, our aim is to take the production agent live within
-            {PRODUCTION_MAX}. The {PRODUCTION_MAX} start after we have talked with
-            you and you have confirmed what the agent needs to do. You can talk to
-            us by
+            Choosing a plan or a preferred tool does not guarantee a launch date.
+            Number porting, third-party approvals, missing access, customer review
+            delays, or changes to requirements can extend the timeline. If timing
+            changes, we explain the reason and confirm a revised estimate with you.
+          </p>
+          <p class="text-fg-2 leading-relaxed mt-4">
+            Business days, when used in an estimate, mean Saturday through Thursday,
+            excluding U.S. federal holidays, in Eastern Time (America/New_York).
+            Setup dates are estimates, not guarantees. Production estimates do not
+            change the separate demo-delivery offer.
+          </p>
+          <p class="text-fg-2 leading-relaxed mt-4">
+            Discuss your setup by
             <a
               href={CAL_BOOKING_URL}
               class="text-brand-text underline underline-offset-2 hover:opacity-80"
@@ -360,18 +399,6 @@ const setupUpgradeExamples = [
             >
               Contact page
             </a>).
-          </p>
-          <p class="text-fg-2 leading-relaxed mt-4">
-            If the Customer needs to keep an existing PBX system or use a custom
-            CRM, integration is more complex and takes longer. The {PRODUCTION_MAX}
-            does not apply.
-          </p>
-          <p class="text-fg-2 leading-relaxed mt-4">
-            These tools are recommendations, not requirements, and do not change
-            the terms of this agreement.
-          </p>
-          <p class="text-fg-2 leading-relaxed mt-4">
-            Setup times are targets, not guarantees.
           </p>
         </section>
 

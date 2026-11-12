@@ -5,6 +5,20 @@ import { PLANS } from '../../lib/pricing'
 const pricingSourceUrl = new URL('../Pricing.astro', import.meta.url)
 
 describe('pricing CTAs', () => {
+	it('limits the short setup explanation to detailed pricing and links to Terms', async () => {
+		const source = await readFile(pricingSourceUrl, 'utf8')
+		const summary = source.match(
+			/\{\s*detailed && \([\s\S]*?data-setup-summary[\s\S]*?<\/p>\s*\)\s*\}/,
+		)?.[0]
+		expect(summary).toBeDefined()
+		const text = summary?.replace(/\s+/g, ' ')
+		expect(text).toContain(
+			'We handle setup and testing, with launch timing agreed after review.',
+		)
+		expect(summary).toContain('href="/terms#setup-time"')
+		expect(summary).not.toMatch(/\b\d+\s*(?:hours?|days?|weeks?)\b/i)
+	})
+
 	it('places one short setup-fee upgrade disclosure below the cards in both modes', async () => {
 		const source = await readFile(pricingSourceUrl, 'utf8')
 		const text = source.replace(/\s+/g, ' ')

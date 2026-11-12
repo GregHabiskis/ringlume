@@ -125,7 +125,8 @@ export const faqItems: FaqItem[] = [
 		question: 'How long does setup take?',
 		linkedParagraphs: [
 			{
-				before: 'Timing depends on your phone system and tools. See ',
+				before:
+					'We agree your launch timeline after reviewing your requirements and tools. Your receptionist is tested before going live. See ',
 				linkText: 'setup details',
 				href: '/terms#setup-time',
 				after: '.',

@@ -1,6 +1,5 @@
 // Public offer facts. Change these here, never inline in components.
 export const DEMO_DELIVERY_MAX = '1 hour'
-export const PRODUCTION_MAX = '12 hours'
 export const DEMO_FREE_MINUTES = 10
 
 // Single source for the sales/booking link. Used by /terms and

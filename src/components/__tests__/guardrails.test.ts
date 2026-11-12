@@ -15,8 +15,6 @@ const sourceFiles = async () => {
 const readSource = async (file: string) =>
 	readFile(new URL(file, srcDir), 'utf8')
 
-const allowed = (file: string, list: string[]) => list.includes(file)
-
 describe('content guardrails', () => {
 	it('has no Telegram contact channel anywhere in source or assets', async () => {
 		const files = await sourceFiles()
@@ -57,34 +55,14 @@ describe('content guardrails', () => {
 		}
 	})
 
-	it('keeps the afternoon claim only where it is qualified or explained', async () => {
+	it('removes retired production deadlines and qualifiers from all first-party source', async () => {
 		const files = await sourceFiles()
-		const allowedFiles = [
-			'lib/offer.ts',
-			'data/faqs.ts',
-			'data/faqs.md',
-			'pages/terms.astro',
-		]
 
 		for (const file of files) {
 			const source = await readSource(file)
-
-			if (/afternoon/i.test(source)) {
-				expect(allowed(file, allowedFiles), file).toBe(true)
-			}
-		}
-	})
-
-	it('keeps the 12-hour figure out of the demo pages and pricing', async () => {
-		const files = await sourceFiles()
-		const allowedFiles = ['lib/offer.ts', 'data/faqs.md']
-
-		for (const file of files) {
-			const source = await readSource(file)
-
-			if (/\b12 hours\b/i.test(source)) {
-				expect(allowed(file, allowedFiles), file).toBe(true)
-			}
+			expect(source, file).not.toMatch(
+				/PRODUCTION_MAX|\b12[\s-]+hours?\b|afternoon|under best circumstances/i,
+			)
 		}
 	})
 

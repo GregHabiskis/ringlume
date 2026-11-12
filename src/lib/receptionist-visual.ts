@@ -54,10 +54,10 @@ export const VISUAL_CONVERSATION = [
 ] as const;
 
 export const VISUAL_STEP_SEGMENTS = [
-	{ start: 0, end: VISUAL_CONVERSATION[1].at + VISUAL_CHECK_DURATION },
+	{ start: 0, end: VISUAL_DURATION },
 	{
 		start: VISUAL_CONVERSATION[1].at,
-		end: BOOKING_END + VISUAL_CHECK_DURATION,
+		end: VISUAL_DURATION,
 	},
 	{ start: BOOKING_END, end: VISUAL_DURATION },
 ] as const;
@@ -130,21 +130,13 @@ export function getVisualFrame(elapsed: number, activeSegment?: number) {
 			if (index < segmentIndex) {
 				stepProgress[index] = 1;
 				checkProgress[index] = 1;
-			} else if (index > segmentIndex) {
-				stepProgress[index] = 0;
-				checkProgress[index] = 0;
 			}
 		});
 	}
 	return {
 		phase,
 		complete: time === VISUAL_DURATION,
-		activeStep:
-			segmentIndex === null
-				? stepProgress.findIndex((value) => value < 1)
-				: time < VISUAL_STEP_SEGMENTS[segmentIndex].end
-					? segmentIndex
-					: -1,
+		activeStep: stepProgress.findIndex((value) => value < 1),
 		stepProgress,
 		checkProgress,
 		messages,
@@ -178,16 +170,15 @@ export function getVisualFrame(elapsed: number, activeSegment?: number) {
 	};
 }
 
-// The clock stops at each full-run or selected-segment boundary.
+// Every replay runs from its selected starting point through the final check.
 export function createVisualPlayback() {
 	let elapsed = 0;
 	let paused = false;
 	let segmentStart = 0;
-	let segmentEnd = VISUAL_DURATION;
 	let segmentIndex: number | null = null;
 	return {
 		get state() {
-			const complete = elapsed >= segmentEnd;
+			const complete = elapsed >= VISUAL_DURATION;
 			return {
 				elapsed,
 				paused,
@@ -202,10 +193,10 @@ export function createVisualPlayback() {
 		},
 		advance(delta: number) {
 			if (!paused && Number.isFinite(delta))
-				elapsed = Math.min(segmentEnd, elapsed + Math.max(0, delta));
+				elapsed = Math.min(VISUAL_DURATION, elapsed + Math.max(0, delta));
 		},
 		press() {
-			if (elapsed >= segmentEnd) {
+			if (elapsed >= VISUAL_DURATION) {
 				elapsed = segmentStart;
 				paused = false;
 			} else paused = !paused;
@@ -215,14 +206,12 @@ export function createVisualPlayback() {
 			if (!segment) return;
 			segmentIndex = index;
 			segmentStart = segment.start;
-			segmentEnd = segment.end;
 			elapsed = segment.start;
 			paused = false;
 		},
 		finish() {
 			segmentIndex = null;
 			segmentStart = 0;
-			segmentEnd = VISUAL_DURATION;
 			elapsed = VISUAL_DURATION;
 			paused = false;
 		},

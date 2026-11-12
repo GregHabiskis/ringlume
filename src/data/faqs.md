@@ -55,7 +55,7 @@ It handles routine phone calls, not in-person duties. Use it alongside your team
 
 ## How long does setup take?
 
-Timing depends on your phone system and tools. See [setup details](/terms#setup-time).
+We agree your launch timeline after reviewing your requirements and tools. Your receptionist is tested before going live. See [setup details](/terms#setup-time).
 
 ## How much does Ringlume cost?
 

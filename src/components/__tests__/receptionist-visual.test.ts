@@ -118,7 +118,7 @@ describe('homepage visual demonstration', () => {
 		expect(source).not.toContain('m5 12 4 4L19 6');
 	});
 
-	it('makes each progress card an accessible control for its own bounded event replay', async () => {
+	it('makes each progress card an accessible control to replay from its event', async () => {
 		const source = await read('components/ReceptionistVisual.astro');
 		expect(source).toContain('aria-label="Replay a storyboard event"');
 		expect(source).toContain('data-visual-step={index}');

@@ -130,6 +130,9 @@ describe('FAQ content', () => {
 	it('links to setup details instead of repeating technical lists and time claims', async () => {
 		const setup = faqItems.find((faq) => faq.id === 'setup-time')
 		expect(setup?.linkedParagraphs?.[0].href).toBe('/terms#setup-time')
+		expect(setup?.linkedParagraphs?.[0].before).toBe(
+			'We agree your launch timeline after reviewing your requirements and tools. Your receptionist is tested before going live. See ',
+		)
 		const source = await readFile(dataSourceUrl, 'utf8')
 		expect(source).not.toMatch(
 			/afternoon|under best circumstances|PRODUCTION_MAX|SUPPORTED_STACK|PBX/,

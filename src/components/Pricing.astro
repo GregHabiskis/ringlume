@@ -165,6 +165,22 @@ const mobileAlignment = {
 			]}
 		>
 			<div>
+				{
+					detailed && (
+						<p
+							class="mb-3 max-w-xl text-sm leading-relaxed text-fg-2"
+							data-setup-summary
+						>
+							We handle setup and testing, with launch timing agreed after review.{' '}
+							<a
+								href="/terms#setup-time"
+								class="underline underline-offset-4 hover:text-fg-1"
+							>
+								Setup details
+							</a>.
+						</p>
+					)
+				}
 				<p class="text-xs leading-relaxed text-fg-3">
 					Cancel anytime. Minutes reset monthly.
 				</p>

@@ -120,6 +120,7 @@ describe('terms', () => {
 		expect(source).toContain('separate from subscription charges')
 		expect(source).toContain('{ from: PLANS[0], to: PLANS[1] }')
 		expect(source).toContain('{ from: PLANS[0], to: PLANS[2] }')
+		expect(source).toContain('{ from: PLANS[2], to: PLANS[3] }')
 		expect(source).toContain(
 			'formatPrice(Math.max(0, to.setupFee - from.setupFee))',
 		)

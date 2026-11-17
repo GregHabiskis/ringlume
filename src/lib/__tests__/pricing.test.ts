@@ -2,18 +2,18 @@ import { describe, expect, it } from 'vitest'
 import { PLANS, USAGE_RATES, formatPrice } from '../pricing'
 
 describe('Ringlume plan facts', () => {
-	it('preserves the four existing monthly prices and annual totals', () => {
-		expect(PLANS.map((plan) => plan.monthly)).toEqual([299, 599, 999, 1999])
+	it('uses the approved monthly prices and annual totals', () => {
+		expect(PLANS.map((plan) => plan.monthly)).toEqual([299, 599, 999, 1599])
 		expect(PLANS.map((plan) => plan.annualTotal)).toEqual([
-			2990, 5990, 9990, 19990,
+			2990, 5990, 9990, 15990,
 		])
 		expect(PLANS.map((plan) => plan.annualMonthly)).toEqual([
-			249, 499, 832, 1666,
+			249, 499, 832, 1332,
 		])
 	})
 
-	it('preserves setup fees, allowances, concurrency and number counts', () => {
-		expect(PLANS.map((plan) => plan.setupFee)).toEqual([800, 1000, 1200, 1200])
+	it('updates setup fees while preserving allowances, concurrency and number counts', () => {
+		expect(PLANS.map((plan) => plan.setupFee)).toEqual([800, 2000, 3000, 3000])
 		expect(PLANS.map((plan) => plan.minutes)).toEqual([600, 1200, 2400, 5000])
 		expect(PLANS.map((plan) => plan.concurrentCalls)).toEqual([
 			50, 100, 200, 300,
@@ -33,6 +33,17 @@ describe('Ringlume plan facts', () => {
 		])
 	})
 
+	it('credits setup fees on upgrades, including the zero-fee Plus-to-Max upgrade', () => {
+		const [basic, pro, plus, max] = PLANS
+		expect([
+			pro.setupFee - basic.setupFee,
+			plus.setupFee - basic.setupFee,
+			plus.setupFee - pro.setupFee,
+			max.setupFee - plus.setupFee,
+		]).toEqual([1200, 2200, 1000, 0])
+		expect(max.setupFee - (basic.setupFee + 1200 + 1000)).toBe(0)
+	})
+
 	it('uses the approved SMS, transfer, and additional phone-number rates', () => {
 		expect(PLANS.map((plan) => plan.smsPerMessage)).toEqual([
 			0.04, 0.04, 0.03, 0.03,
@@ -50,7 +61,7 @@ describe('Ringlume plan facts', () => {
 			'Receptionist, lead follow-up & customer support agents',
 			'Receptionist, lead follow-up & customer support agents',
 		])
-		expect(PLANS[1].benefits).toContain('Answers calls & follows up with leads')
+		expect(PLANS[1].benefits).toContain('Answers & follows up with leads')
 		expect(PLANS.slice(2).map(({ benefits }) => benefits[1])).toEqual([
 			'Answering, follow-up & qualify',
 			'Answering, follow-up & qualify',
@@ -69,7 +80,7 @@ describe('Ringlume plan facts', () => {
 	it('formats USD without losing thousands separators', () => {
 		expect(formatPrice(299)).toBe('$299')
 		expect(formatPrice(1200)).toBe('$1,200')
-		expect(formatPrice(19990)).toBe('$19,990')
+		expect(formatPrice(15990)).toBe('$15,990')
 	})
 
 	it('labels approximate annual equivalents without changing the annual charge', () => {

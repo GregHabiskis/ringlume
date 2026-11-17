@@ -90,7 +90,7 @@ BaseLayout
     Hero                 # includes DemoSection (#demo), click-loaded Retell
     ReceptionistVisual   # #visual, one illustrative call-to-booking storyboard
     ReceptionistComparison # cited 2025 O*NET/BLS wage benchmark, not guaranteed savings
-    Pricing              # five plain-English benefits per plan; links to /pricing
+    Pricing              # plain-English benefits and plan caps; links to /pricing
     FomoSection          # #fomo, missed-call calculator only
     FAQ
     CtaSection
@@ -422,7 +422,9 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
   top-ups. Only a positive difference is due; subscription proration is separate.
   Show a short linked note below both pricing grids and keep the full policy and
   examples in `/terms#setup-fee-upgrades`. Derive example amounts from `PLANS`.
-- Homepage cards show five practical benefits. Technical allowances, integrations,
+- Homepage cards show five practical benefits on Basic/Pro and six on Plus/Max,
+  including simultaneous-call caps and included phone numbers. Plus/Max include
+  "Everything included in Pro". Other technical allowances, integrations,
   and support detail live in the `/pricing` comparison table.
 - Keep public copy short and practical. Billing mechanics, setup constraints,
   compliance qualifications, and estimate methodology live in Terms. Prices,

@@ -68,17 +68,37 @@ describe('pricing CTAs', () => {
 		expect(source).not.toContain('Subject to our')
 		expect(source).not.toContain('cta-legal-notice-')
 		expect(source).not.toContain('aria-describedby')
-		expect(PLANS.map((plan) => plan.setupFee)).toEqual([800, 1000, 1200, 1200])
+		expect(PLANS.map((plan) => plan.setupFee)).toEqual([800, 2000, 3000, 3000])
 		expect(source).toContain('formatPrice(plan.setupFee)')
 		expect(source).toContain('one-time Service Setup Fee')
 		expect(source).not.toContain('/refund')
 		expect(source).not.toMatch(/refund/i)
 	})
 
-	it('shows five plain-English benefits and links to full pricing', async () => {
+	it('shows plan caps, included numbers and Plus/Max inheritance in plain English', async () => {
 		const source = await readFile(pricingSourceUrl, 'utf8')
 		for (const plan of PLANS) {
-			expect(plan.benefits).toHaveLength(5)
+			expect(plan.benefits).toHaveLength(
+				plan.name === 'Basic' || plan.name === 'Pro' ? 5 : 6,
+			)
+			expect(plan.benefits).toContain(
+				`Up to ${plan.concurrentCalls} simultaneous calls`,
+			)
+			expect(plan.benefits).toContain(
+				`${plan.phoneNumbers} phone number${plan.phoneNumbers === 1 ? '' : 's'} included`,
+			)
+			expect([...plan.benefits]).toContain(
+				plan.name === 'Basic' || plan.name === 'Pro'
+					? 'Call recordings & daily reports'
+					: plan.support,
+			)
+			expect(
+				plan.benefits.some(
+					(benefit) => benefit === 'Everything included in Pro',
+				),
+			).toBe(
+				plan.name === 'Plus' || plan.name === 'Max',
+			)
 			expect(plan.benefits.join(' ')).not.toMatch(/CRM|HIPAA|SOC 2|concurrent/i)
 		}
 		expect(source).toContain('plan.benefits.map')

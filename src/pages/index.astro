@@ -1,40 +1,20 @@
 ---
+import CopyRegion from '../components/tina/CopyRegion.astro'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import Header from '../components/Header.astro'
 import Hero from '../components/Hero.astro'
 import ReceptionistVisual from '../components/ReceptionistVisual.astro'
-import FomoSection from '../components/FomoSection.astro'
-import ReceptionistComparison from '../components/ReceptionistComparison.astro'
-import Pricing from '../components/Pricing.astro'
-import FAQ from '../components/FAQ.astro'
-import CtaSection from '../components/CtaSection.astro'
+import HomeBody from '../components/cms-regions/marketing/HomeBody.astro'
 import Footer from '../components/Footer.astro'
-import type { FaqId } from '../data/faqs'
-
-const homepageFaqIds = [
-	'busy-calls',
-	'appointments',
-	'live-transfer',
-	'setup-time',
-	'pricing',
-] as const satisfies readonly FaqId[]
+const site = Astro.locals.site
 ---
 
-<BaseLayout
-	title="Ringlume"
-	description="Virtual receptionist for arborists. Ringlume answers calls, captures tree-care leads, and books estimates 24/7. Hear the live demo and explore plans."
->
-	<Header />
-
+<BaseLayout title={site.pages.home.title} description={site.pages.home.description}>
+	<CopyRegion region="header" page="home"><Header /></CopyRegion>
 	<main>
 		<Hero />
 		<ReceptionistVisual />
-		<ReceptionistComparison />
-		<Pricing />
-		<FomoSection />
-		<FAQ faqIds={homepageFaqIds} showAllLink compact />
-		<CtaSection />
+		<CopyRegion region="home" page="home"><HomeBody /></CopyRegion>
 	</main>
-
-	<Footer />
+	<CopyRegion region="footer" page="home"><Footer /></CopyRegion>
 </BaseLayout>

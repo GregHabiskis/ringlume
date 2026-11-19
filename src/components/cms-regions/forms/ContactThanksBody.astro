@@ -1,0 +1,36 @@
+---
+import { tinaField } from '@tinacms/astro'
+
+const site = Astro.locals.site
+const copy = site.forms.contactThanks
+---
+
+  <main class="scrim min-h-screen flex items-center justify-center px-4 py-20">
+    <div
+      class="glass glass-fill glass-regular glass-card rounded-2xl p-8 sm:p-10 max-w-md w-full text-center"
+    >
+      <a href={site.links.home} data-tina-field={tinaField(site.links, 'home')} class="inline-block mb-6">
+        <picture>
+          <source srcset="/images/logo-240.webp" type="image/webp" />
+          <img
+            src="/images/logo-240.png"
+            alt={copy.logoAlt}
+            data-tina-field={tinaField(copy, 'logoAlt')}
+            width="240"
+            height="96"
+            class="h-9 w-auto mx-auto"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </picture>
+      </a>
+
+      <p class="text-fg-1 text-lg font-semibold">
+        <span data-tina-field={tinaField(copy, 'message')}>{copy.message}</span>
+      </p>
+
+      <a href={site.links.freeDemo} data-tina-field={tinaField(site.links, 'freeDemo')} class="btn btn-primary mt-6">
+        <span data-tina-field={tinaField(copy, 'demoLabel')}>{copy.demoLabel}</span>
+      </a>
+    </div>
+  </main>

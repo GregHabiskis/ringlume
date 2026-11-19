@@ -1,5 +1,6 @@
 ---
-import { faqItems, type FaqId, type FaqItem } from '../data/faqs'
+import { getFaqItems, type FaqId, type FaqItem } from '../data/faqs'
+import { tinaField } from '@tinacms/astro'
 
 interface Props {
 	faqIds?: readonly FaqId[]
@@ -15,6 +16,9 @@ const {
 	compact = false,
 } = Astro.props
 
+const site = Astro.locals.site
+const copy = site.pages.faq
+const faqItems = getFaqItems(site.faq)
 const faqs = faqIds
 	? faqIds
 			.map((id) => faqItems.find((faq) => faq.id === id))
@@ -46,11 +50,11 @@ const faqs = faqIds
 			{
 				headingLevel === 'h1' ? (
 					<h1 id="faq-heading" class="text-h2 font-bold text-fg-1">
-						Frequently Asked <span class="gradient-green-text">Questions</span>
+						<span data-tina-field={tinaField(copy, 'heading')}>{copy.heading}</span> <span class="gradient-green-text" data-tina-field={tinaField(copy, 'accent')}>{copy.accent}</span>
 					</h1>
 				) : (
 					<h2 id="faq-heading" class="text-h2 font-bold text-fg-1">
-						Frequently Asked <span class="gradient-green-text">Questions</span>
+						<span data-tina-field={tinaField(copy, 'heading')}>{copy.heading}</span> <span class="gradient-green-text" data-tina-field={tinaField(copy, 'accent')}>{copy.accent}</span>
 					</h2>
 				)
 			}
@@ -68,6 +72,8 @@ const faqs = faqIds
 				faqs.map((faq) => {
 					const questionId = `faq-question-${faq.id}`
 					const answerId = `faq-answer-${faq.id}`
+					const key = faq.id.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase()) as keyof typeof site.faq
+					const fields: Record<string, unknown> = site.faq[key]
 
 					return (
 						<div
@@ -83,7 +89,7 @@ const faqs = faqIds
 									aria-controls={answerId}
 									data-faq-trigger
 								>
-									<span class="min-w-0 break-words">{faq.question}</span>
+									<span class="min-w-0 break-words" data-tina-field={tinaField(fields, 'question')}>{faq.question}</span>
 									<svg
 										class="h-5 w-5 flex-none text-brand-text transition-transform duration-200 motion-reduce:transition-none"
 										viewBox="0 0 24 24"
@@ -107,27 +113,28 @@ const faqs = faqIds
 								hidden
 							>
 								<div class="min-h-0 overflow-hidden px-5 pb-6 pr-14 text-sm leading-relaxed text-fg-2 sm:px-7 sm:pb-7 sm:pr-16 sm:text-base">
-									{faq.linkedParagraphs?.map((paragraph) => (
+									{faq.linkedParagraphs?.map((paragraph, index) => (
 										<p class="mb-4 last:mb-0">
-											{paragraph.before}
+											<span data-tina-field={tinaField(fields, `link${index + 1}Before`)}>{paragraph.before}</span>
 											<a
 												href={paragraph.href}
 												class="text-brand-text underline underline-offset-2 hover:opacity-80"
+												data-tina-field={tinaField(fields, `link${index + 1}Text`)}
 											>
 												{paragraph.linkText}
 											</a>
-											{paragraph.after}
+											<span data-tina-field={tinaField(fields, `link${index + 1}After`)}>{paragraph.after}</span>
 										</p>
 									))}
 
-									{faq.paragraphs?.map((paragraph) => (
-										<p class="mb-4 last:mb-0">{paragraph}</p>
+									{faq.paragraphs?.map((paragraph, index) => (
+										<p class="mb-4 last:mb-0" data-tina-field={tinaField(fields, `paragraph${index + 1}`)}>{paragraph}</p>
 									))}
 
 									{faq.list && (
 										<ul class="mt-4 list-disc space-y-2 pl-5 marker:text-brand-text">
-											{faq.list.map((item) => (
-												<li>{item}</li>
+											{faq.list.map((item, index) => (
+												<li data-tina-field={tinaField(fields, `list${index + 1}`)}>{item}</li>
 											))}
 										</ul>
 									)}
@@ -143,10 +150,11 @@ const faqs = faqIds
 			showAllLink && (
 				<div class:list={['mt-8 text-center', compact && 'faq-more']}>
 					<a
-						href="/faq"
+						href={site.links.faq}
+						data-tina-field={tinaField(site.links, 'faq')}
 						class:list={['btn', compact ? 'btn-secondary' : 'btn-primary']}
 					>
-						View all FAQs
+						{copy.viewAll}
 						<span aria-hidden="true">&rarr;</span>
 					</a>
 				</div>
@@ -219,76 +227,6 @@ const faqs = faqIds
 </style>
 
 <script>
-	const faqSection = document.querySelector<HTMLElement>('[data-faq]')
-	const faqTriggers = Array.from(
-		faqSection?.querySelectorAll<HTMLButtonElement>('[data-faq-trigger]') ?? [],
-	)
-
-	function setExpanded(trigger: HTMLButtonElement, expanded: boolean) {
-		const answerId = trigger.getAttribute('aria-controls')
-		const answer = answerId ? document.getElementById(answerId) : null
-
-		if (!answer) return
-
-		trigger.setAttribute('aria-expanded', String(expanded))
-
-		if (expanded) {
-			answer.hidden = false
-			requestAnimationFrame(() => {
-				if (trigger.getAttribute('aria-expanded') === 'true') {
-					answer.dataset.open = 'true'
-				}
-			})
-			return
-		}
-
-		answer.dataset.open = 'false'
-
-		if (
-			answer.hidden ||
-			window.matchMedia('(prefers-reduced-motion: reduce)').matches
-		) {
-			answer.hidden = true
-			return
-		}
-
-		answer.addEventListener(
-			'transitionend',
-			(event) => {
-				if (
-					event.propertyName === 'grid-template-rows' &&
-					trigger.getAttribute('aria-expanded') === 'false'
-				) {
-					answer.hidden = true
-				}
-			},
-			{ once: true },
-		)
-	}
-
-	faqTriggers.forEach((trigger, index) => {
-		trigger.addEventListener('click', () => {
-			const isExpanded = trigger.getAttribute('aria-expanded') === 'true'
-			setExpanded(trigger, !isExpanded)
-		})
-
-		trigger.addEventListener('keydown', (event) => {
-			let nextIndex: number | undefined
-
-			if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-				nextIndex = (index + 1) % faqTriggers.length
-			} else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-				nextIndex = (index - 1 + faqTriggers.length) % faqTriggers.length
-			} else if (event.key === 'Home') {
-				nextIndex = 0
-			} else if (event.key === 'End') {
-				nextIndex = faqTriggers.length - 1
-			}
-
-			if (nextIndex === undefined) return
-
-			event.preventDefault()
-			faqTriggers[nextIndex]?.focus()
-		})
-	})
+	import { initFaq } from "../scripts/faq"
+	document.querySelectorAll<HTMLElement>("[data-faq]").forEach(initFaq)
 </script>

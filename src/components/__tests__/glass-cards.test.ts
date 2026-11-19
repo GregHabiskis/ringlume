@@ -59,11 +59,14 @@ describe('uniform glass cards', () => {
 		expect(cta).not.toContain('background: linear-gradient')
 	})
 
-	it.each(['book-demo/thanks', 'contact/thanks'])(
+	it.each([
+		['book-demo/thanks', 'BookDemoThanksBody'],
+		['contact/thanks', 'ContactThanksBody'],
+	])(
 		'matches the /%s confirmation card to the pricing fill without blur or grain',
-		async (page) => {
+		async (_page, body) => {
 			const source = await readFile(
-				new URL(`../../pages/${page}.astro`, import.meta.url),
+				new URL(`../cms-regions/forms/${body}.astro`, import.meta.url),
 				'utf8',
 			)
 			expect(source).toContain('glass glass-fill glass-regular glass-card')
@@ -74,7 +77,7 @@ describe('uniform glass cards', () => {
 	it('matches FAQ and contact cards without changing the homepage FAQ preview', async () => {
 		const [faq, contact, form] = await Promise.all([
 			readComponent('FAQ'),
-			readFile(new URL('../../pages/contact.astro', import.meta.url), 'utf8'),
+			readFile(new URL('../cms-regions/forms/ContactBody.astro', import.meta.url), 'utf8'),
 			readComponent('ContactForm'),
 		])
 		expect(faq).toMatch(
@@ -91,11 +94,11 @@ describe('uniform glass cards', () => {
 		expect(form).not.toContain('grain')
 	})
 
-	it.each(['terms', 'privacy'])(
+	it.each([['terms', 'TermsBody'], ['privacy', 'PrivacyBody']])(
 		'matches the /%s legal card to homepage cards',
-		async (page) => {
+		async (_page, body) => {
 			const source = await readFile(
-				new URL(`../../pages/${page}.astro`, import.meta.url),
+				new URL(`../cms-regions/legal/${body}.astro`, import.meta.url),
 				'utf8',
 			)
 			expect(source).toContain(

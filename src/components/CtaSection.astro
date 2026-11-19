@@ -1,5 +1,7 @@
 ---
-
+import { tinaField } from '@tinacms/astro'
+const site = Astro.locals.site
+const copy = site.pages.home.closingCta
 ---
 
 <section
@@ -15,14 +17,14 @@
 				id="cta-heading"
 				class="reveal-text max-w-2xl text-h2 font-bold text-fg-1"
 			>
-				Stay on the job.<br /><span class="text-brand-text"
-					>We’ll take the call.</span
+				<span data-tina-field={tinaField(copy, 'heading')}>{copy.heading}</span><br /><span class="text-brand-text" data-tina-field={tinaField(copy, 'accent')}
+					>{copy.accent}</span
 				>
 			</h2>
 		</div>
 		<div class="flex flex-col items-stretch gap-3 sm:flex-row lg:flex-col">
-			<a href="/book-demo" class="btn btn-primary">Get Your Free Demo</a>
-			<a href="/contact" class="btn btn-quiet">Contact Us</a>
+			<a href={site.links.freeDemo} class="btn btn-primary" data-tina-field={tinaField(site.links, 'freeDemo')}><span data-tina-field={tinaField(site.shared, 'getFreeDemo')}>{site.shared.getFreeDemo}</span></a>
+			<a href={site.links.contact} class="btn btn-quiet" data-tina-field={tinaField(site.links, 'contact')}><span data-tina-field={tinaField(copy, 'contact')}>{copy.contact}</span></a>
 		</div>
 	</div>
 </section>

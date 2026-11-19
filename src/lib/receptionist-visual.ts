@@ -1,3 +1,27 @@
+import { storyboard as defaultCopy } from '../../content/site/site.json';
+import { formatCopy } from './tina/site-model';
+
+export type StoryboardCopy = typeof defaultCopy;
+export const VISUAL_MESSAGE_KEYS = [
+	'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
+] as const;
+
+export function visualValues(copy: StoryboardCopy) {
+	return {
+		...copy.sample,
+		firstName: copy.sample.name.split(/\s+/)[0],
+		requestTitle: copy.sample.request.charAt(0).toUpperCase() + copy.sample.request.slice(1),
+		locationSummary: (copy.sample.location.charAt(0).toUpperCase() + copy.sample.location.slice(1)).replace(/\s+/g, '-'),
+	};
+}
+
+export function visualCopy(copy: StoryboardCopy, path: string) {
+	const value = path.split('.').reduce<unknown>(
+		(value, key) => (value as Record<string, unknown>)[key], copy,
+	);
+	return formatCopy(String(value), visualValues(copy));
+}
+
 export const VISUAL_TRANSFERS = {
 	booking: { at: 4700, duration: 900, source: 6 },
 	summary: { at: 6500, duration: 900, source: 6 },
@@ -13,42 +37,42 @@ export const DETAIL_HIGHLIGHT_DELAY = 500;
 export const VISUAL_CONVERSATION = [
 	{
 		speaker: 'receptionist',
-		text: 'Thank you for reaching out to Ringlume. How can I help you?',
+		get text() { return visualCopy(defaultCopy, 'messages.one'); },
 		at: 200,
 	},
 	{
 		speaker: 'caller',
-		text: 'I’d like an estimate for oak removal in my front yard.',
+		get text() { return visualCopy(defaultCopy, 'messages.two'); },
 		at: 850,
 	},
 	{
 		speaker: 'receptionist',
-		text: 'Of course. May I have your name, property address, and callback number?',
+		get text() { return visualCopy(defaultCopy, 'messages.three'); },
 		at: 1500,
 	},
 	{
 		speaker: 'caller',
-		text: 'Alex Morgan. 24 Maple Lane. My number is 202-555-0148.',
+		get text() { return visualCopy(defaultCopy, 'messages.four'); },
 		at: 2250,
 	},
 	{
 		speaker: 'receptionist',
-		text: 'Thanks, Alex. There’s an estimate visit available Tuesday at 10:30. Does that work?',
+		get text() { return visualCopy(defaultCopy, 'messages.five'); },
 		at: 3100,
 	},
 	{
 		speaker: 'caller',
-		text: 'Tuesday at 10:30 works. Thank you!',
+		get text() { return visualCopy(defaultCopy, 'messages.six'); },
 		at: 3900,
 	},
 	{
 		speaker: 'receptionist',
-		text: 'You’re booked. I’ll pass the details along to the team.',
+		get text() { return visualCopy(defaultCopy, 'messages.seven'); },
 		at: 4700,
 	},
 	{
 		speaker: 'caller',
-		text: 'Perfect. See you Tuesday!',
+		get text() { return visualCopy(defaultCopy, 'messages.eight'); },
 		at: 5600,
 	},
 ] as const;
@@ -63,24 +87,31 @@ export const VISUAL_STEP_SEGMENTS = [
 ] as const;
 
 const DETAILS: Readonly<Record<number, readonly string[]>> = {
-	1: ['oak removal', 'front yard'],
-	3: ['Alex Morgan', '24 Maple Lane', '202-555-0148'],
-	4: ['Tuesday at 10:30'],
-	5: ['Tuesday at 10:30'],
+	1: ['request', 'location'],
+	3: ['name', 'address', 'phone'],
+	4: ['day', 'time'],
+	5: ['day', 'time'],
 };
 
 // Separate literal text from captured facts without injecting HTML or changing the transcript.
-export function getVisualMessageParts(index: number) {
-	const text = VISUAL_CONVERSATION[index].text;
+export function getVisualMessageParts(index: number, copy = defaultCopy) {
+	const text = visualCopy(copy, `messages.${VISUAL_MESSAGE_KEYS[index]}`);
 	const ranges = (DETAILS[index] ?? [])
+		.map((key) => copy.sample[key as keyof typeof copy.sample])
+		.filter((detail) => detail.length > 0 && text.includes(detail))
 		.map((detail) => ({
 			start: text.indexOf(detail),
 			text: detail,
 		}))
 		.sort((a, b) => a.start - b.start);
+	if ((index === 4 || index === 5) && ranges.length === 2) {
+		const end = ranges[1].start + ranges[1].text.length;
+		ranges.splice(0, 2, { start: ranges[0].start, text: text.slice(ranges[0].start, end) });
+	}
 	const parts: { text: string; detail: boolean }[] = [];
 	let position = 0;
 	for (const range of ranges) {
+		if (range.start < position) continue;
 		if (range.start > position)
 			parts.push({ text: text.slice(position, range.start), detail: false });
 		parts.push({ text: range.text, detail: true });
@@ -95,7 +126,7 @@ const progress = (time: number, start: number, duration: number) =>
 	Math.max(0, Math.min(1, (time - start) / duration));
 
 // A short silent storyboard, not a real call or a service-speed benchmark.
-export function getVisualFrame(elapsed: number, activeSegment?: number) {
+export function getVisualFrame(elapsed: number, activeSegment?: number, copy = defaultCopy) {
 	const time = Number.isFinite(elapsed)
 		? Math.max(0, Math.min(VISUAL_DURATION, elapsed))
 		: 0;
@@ -161,17 +192,17 @@ export function getVisualFrame(elapsed: number, activeSegment?: number) {
 			VISUAL_TRANSFERS.summary.duration,
 		),
 		status: [
-			'Incoming call',
-			'Ringlume is on the call',
-			'Estimate booked',
-			'Your team is in the loop',
+			visualCopy(copy, 'statuses.incoming'),
+			visualCopy(copy, 'statuses.onCall'),
+			visualCopy(copy, 'statuses.booked'),
+			visualCopy(copy, 'statuses.updated'),
 		][phase],
-		timer: `0:${String(Math.floor(Math.min(endedAt - answeredAt, Math.max(0, time - answeredAt)) / 1000)).padStart(2, '0')}`,
+		timer: formatCopy(copy.call.timer, { minutes: '0', seconds: String(Math.floor(Math.min(endedAt - answeredAt, Math.max(0, time - answeredAt)) / 1000)).padStart(2, '0') }),
 	};
 }
 
 // Every replay runs from its selected starting point through the final check.
-export function createVisualPlayback() {
+export function createVisualPlayback(getCopy: () => StoryboardCopy = () => defaultCopy) {
 	let elapsed = 0;
 	let paused = false;
 	let segmentStart = 0;
@@ -185,10 +216,10 @@ export function createVisualPlayback() {
 				complete,
 				segmentIndex,
 				label: complete
-					? 'Replay'
+					? getCopy().controls.replay
 					: paused
-						? 'Resume animation'
-						: 'Pause animation',
+						? getCopy().controls.resume
+						: getCopy().controls.pause,
 			};
 		},
 		advance(delta: number) {

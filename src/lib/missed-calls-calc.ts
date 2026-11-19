@@ -1,3 +1,8 @@
+import { calculator as defaultCopy } from '../../content/site/site.json'
+import { formatCopy } from './tina/site-model'
+
+export type CalculatorCopy = typeof defaultCopy
+
 export const CALC_FIELDS = [
 	'bookingValue',
 	'missedCallsPerWeek',
@@ -123,8 +128,9 @@ export function calculateMissedCallRevenue(
 	}
 }
 
-export function formatCurrency(value: number): string {
-	return currencyFormatter.format(Number.isFinite(value) ? value : 0)
+export function formatCurrency(value: number, copy: CalculatorCopy = defaultCopy): string {
+	return currencyFormatter.formatToParts(Number.isFinite(value) ? value : 0)
+		.map(part => part.type === 'currency' ? copy.currency : part.value).join('')
 }
 
 /**
@@ -156,11 +162,11 @@ export function formatRepeatVisits(value: number): string {
 	return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)
 }
 
-export function formatPercent(value: number): string {
+export function formatPercent(value: number, copy: CalculatorCopy = defaultCopy): string {
 	const safe = Number.isFinite(value) ? value : 0
 	const rounded = Math.round(safe * 10) / 10
 
-	return `${Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)}%`
+	return `${Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)}${copy.percent}`
 }
 
 export function formatInputValue(field: CalcField, value: number): string {
@@ -184,16 +190,25 @@ export function percentOfRange(field: CalcField, value: number): number {
 export function buildAssumptionSummary(
 	bookRate: number,
 	repeatVisits: number,
+	copy: CalculatorCopy = defaultCopy,
 ): string {
 	const rate = clampFieldValue('bookRate', bookRate)
 	const repeats = clampFieldValue('repeatVisits', repeatVisits)
 
-	return `Assuming ${formatPercent(rate)} of missed callers would book and an average of ${formatRepeatVisits(repeats)}x repeat visits.`
+	return formatCopy(copy.assumption, {
+		rate: formatPercent(rate, copy),
+		repeats: formatRepeatVisits(repeats),
+	})
 }
 
-export function buildResultSummary(result: MissedCallResult): string {
+export function buildResultSummary(result: MissedCallResult, copy: CalculatorCopy = defaultCopy): string {
 	const bookings = formatBookings(result.bookingsPerWeek)
-	const bookingWord = bookings === '1' ? 'booking' : 'bookings'
+	const bookingWord = bookings === '1' ? copy.bookingSingular : copy.bookingPlural
 
-	return `Potential missed revenue ${formatCurrency(result.annual)} per year, ${formatCurrency(result.monthly)} per month, ${bookings} ${bookingWord} per week.`
+	return formatCopy(copy.result, {
+		annual: formatCurrency(result.annual, copy),
+		monthly: formatCurrency(result.monthly, copy),
+		bookings,
+		bookingWord,
+	})
 }

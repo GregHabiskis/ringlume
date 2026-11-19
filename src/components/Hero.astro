@@ -1,7 +1,8 @@
 ---
 import DemoSection from './DemoSection.astro'
 import { getRetellConfig } from '../lib/retell-config'
-import { DEMO_FREE_MINUTES } from '../lib/offer'
+import CopyRegion from './tina/CopyRegion.astro'
+import HeroCopy from './tina/HeroCopy.astro'
 
 const retell = getRetellConfig()
 ---
@@ -17,36 +18,9 @@ const retell = getRetellConfig()
 		]}
 	>
 		<div class="hero-copy">
-			<h1 id="hero-heading" class="hero-heading font-bold text-fg-1">
-				You handle the trees.<br />
-				<span class="text-brand-text">We handle the calls.</span>
-			</h1>
-			<p class="mt-6 max-w-lg text-lead text-fg-3">
-				Virtual receptionist for arborists. Capture leads and book estimates while
-				you’re on the job.
-			</p>
-			<div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-				<a href="/book-demo" class="btn btn-primary">Get Your Free Demo</a>
-			</div>
-			<p class="mt-3 text-sm text-fg-3" data-demo-reassurance>
-				Talk to a receptionist that knows your business.
-			</p>
-			<dl
-				class="hero-facts mt-9 flex items-center gap-7 border-t border-line pt-6 max-sm:gap-0 max-sm:text-center sm:gap-10"
-			>
-				<div class="max-sm:flex-1">
-					<dt class="text-xs text-fg-3">Free Demo</dt>
-					<dd class="mt-1 text-xl font-semibold text-fg-1">
-						{DEMO_FREE_MINUTES} Min
-					</dd>
-				</div>
-				<div
-					class="border-l border-line pl-7 max-sm:flex-1 max-sm:pl-0 sm:pl-10"
-				>
-					<dt class="text-xs text-fg-3">Always Working</dt>
-					<dd class="mt-1 text-xl font-semibold text-fg-1">24/7</dd>
-				</div>
-			</dl>
+			<CopyRegion region="hero" page="home" primary>
+				<HeroCopy />
+			</CopyRegion>
 		</div>
 		<DemoSection />
 	</div>
@@ -57,14 +31,14 @@ const retell = getRetellConfig()
 		padding-block: 8rem 4rem;
 	}
 
-	.hero-heading {
+	:global(.hero-heading) {
 		font-size: clamp(2.05rem, 1.4rem + 2.7vw, 3.65rem);
 		line-height: 1.16;
 		letter-spacing: -0.045em;
 		text-wrap: balance;
 	}
 
-	.hero-facts {
+	:global(.hero-facts) {
 		max-width: 28rem;
 	}
 

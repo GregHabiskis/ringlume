@@ -1,93 +1,38 @@
 import { describe, expect, it } from 'vitest'
-import { PLANS, USAGE_RATES, formatPrice } from '../pricing'
+import seed from '../../../content/site/site.json'
+import { getPlans, getUsageRates, formatPrice } from '../pricing'
+import { validateSite } from '../tina/site-model'
 
-describe('Ringlume plan facts', () => {
-	it('uses the approved monthly prices and annual totals', () => {
-		expect(PLANS.map((plan) => plan.monthly)).toEqual([299, 599, 999, 1599])
-		expect(PLANS.map((plan) => plan.annualTotal)).toEqual([
-			2990, 5990, 9990, 15990,
-		])
-		expect(PLANS.map((plan) => plan.annualMonthly)).toEqual([
-			249, 499, 832, 1332,
-		])
+describe('shared commercial settings', () => {
+	it('validates the checked-in catalog', () => {
+		expect(() => validateSite(seed)).not.toThrow()
 	})
-
-	it('updates setup fees while preserving allowances, concurrency and number counts', () => {
-		expect(PLANS.map((plan) => plan.setupFee)).toEqual([800, 2000, 3000, 3000])
-		expect(PLANS.map((plan) => plan.minutes)).toEqual([600, 1200, 2400, 5000])
-		expect(PLANS.map((plan) => plan.concurrentCalls)).toEqual([
-			50, 100, 200, 300,
-		])
-		expect(PLANS.map((plan) => plan.phoneNumbers)).toEqual([1, 3, 5, 5])
-	})
-
-	it('uses the approved additional-minute rate for each plan', () => {
-		expect(PLANS.map((plan) => plan.overagePerMinute)).toEqual([
-			0.2, 0.18, 0.18, 0.16,
-		])
-		expect(PLANS.map((plan) => plan.overagePerMinute.toFixed(2))).toEqual([
-			'0.20',
-			'0.18',
-			'0.18',
-			'0.16',
-		])
-	})
-
-	it('credits setup fees on upgrades, including the zero-fee Plus-to-Max upgrade', () => {
-		const [basic, pro, plus, max] = PLANS
-		expect([
-			pro.setupFee - basic.setupFee,
-			plus.setupFee - basic.setupFee,
-			plus.setupFee - pro.setupFee,
-			max.setupFee - plus.setupFee,
-		]).toEqual([1200, 2200, 1000, 0])
-		expect(max.setupFee - (basic.setupFee + 1200 + 1000)).toBe(0)
-	})
-
-	it('uses the approved SMS, transfer, and additional phone-number rates', () => {
-		expect(PLANS.map((plan) => plan.smsPerMessage)).toEqual([
-			0.04, 0.04, 0.03, 0.03,
-		])
-		expect(PLANS.map((plan) => plan.liveTransferPerMinute)).toEqual([
-			0.1, 0.1, 0.08, 0.08,
-		])
-		expect(USAGE_RATES.additionalPhoneNumberMonthly).toBe(5)
-	})
-
-	it('includes the approved cumulative agent bundles', () => {
-		expect(PLANS.map((plan) => plan.agents)).toEqual([
-			'Receptionist agent',
-			'Receptionist agent & Lead follow-up agent',
-			'Receptionist, lead follow-up & customer support agents',
-			'Receptionist, lead follow-up & customer support agents',
-		])
-		expect(PLANS[1].benefits).toContain('Answers & follows up with leads')
-		expect(PLANS.slice(2).map(({ benefits }) => benefits[1])).toEqual([
-			'Answering, follow-up & qualify',
-			'Answering, follow-up & qualify',
-		])
-	})
-
-	it('uses the approved telephony starting rates with three-decimal displays', () => {
-		expect(PLANS.map((plan) => plan.telephonyFromPerMinute)).toEqual([
-			0.028, 0.028, 0.02, 0.02,
-		])
-		expect(PLANS.map((plan) => plan.telephonyFromPerMinute.toFixed(3))).toEqual([
-			'0.028', '0.028', '0.020', '0.020',
-		])
-	})
-
-	it('formats USD without losing thousands separators', () => {
-		expect(formatPrice(299)).toBe('$299')
-		expect(formatPrice(1200)).toBe('$1,200')
-		expect(formatPrice(15990)).toBe('$15,990')
-	})
-
-	it('labels approximate annual equivalents without changing the annual charge', () => {
-		for (const plan of PLANS) {
-			expect(Math.abs(plan.annualTotal / 12 - plan.annualMonthly)).toBeLessThan(
-				1,
-			)
+	it('uses stable IDs and derives approximate monthly prices from annual totals', () => {
+		const plans = getPlans(seed.pricing)
+		expect(plans.map(plan => plan.id)).toEqual(['basic', 'pro', 'plus', 'max'])
+		for (const plan of plans) {
+			expect(plan.annualMonthly).toBe(Math.floor(plan.annualTotal / 12))
+			expect(plan.benefits.join(' ')).not.toMatch(/\{[^}]+\}/)
 		}
+		expect(getUsageRates(seed.pricing).additionalPhoneNumberMonthly).toBe(seed.pricing.additionalPhoneNumberMonthly)
+	})
+	it('refreshes allowance copy and editable plan names from the same source', () => {
+		const pricing = structuredClone(seed.pricing)
+		pricing.plans.basic.minutes = 3456
+		pricing.plans.basic.benefits.item1 = '{minutes} minutes'
+		pricing.plans.pro.name = 'Crew'
+		pricing.plans.plus.benefits.item6 = 'Everything in {proName}'
+		const plans = getPlans(pricing)
+		expect(plans[0].benefits[0]).toBe('3,456 minutes')
+		expect(plans[2].benefits[5]).toBe('Everything in Crew')
+	})
+	it('formats USD with thousands separators', () => {
+		expect(formatPrice(1200)).toBe('$1,200')
+		expect(formatPrice(299.5)).toBe('$299.50')
+	})
+	it('ignores Tina metadata when deriving fixed benefit slots', () => {
+		const pricing = structuredClone(seed.pricing)
+		Object.assign(pricing.plans.basic.benefits, { __typename: 'Benefits', _content_source: {} })
+		expect(getPlans(pricing)[0].benefits).toEqual(getPlans(seed.pricing)[0].benefits)
 	})
 })

@@ -1,0 +1,8 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "ringlume",
+	"compatibility_date": "2026-11-18",
+	"compatibility_flags": ["nodejs_compat"],
+	"main": "@astrojs/cloudflare/entrypoints/server",
+	"send_email": [{ "name": "FORM_EMAIL" }]
+}

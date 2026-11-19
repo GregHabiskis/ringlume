@@ -1,0 +1,28 @@
+---
+import type { SiteContent } from '../../lib/tina/site-model'
+import RuntimeCopy from './RuntimeCopy.astro'
+import Header from '../Header.astro'
+import Footer from '../Footer.astro'
+import HeroCopy from './HeroCopy.astro'
+import HomeBody from '../cms-regions/marketing/HomeBody.astro'
+import FaqBody from '../cms-regions/marketing/FaqBody.astro'
+import PricingBody from '../cms-regions/marketing/PricingBody.astro'
+import ContactBody from '../cms-regions/forms/ContactBody.astro'
+import BookDemoBody from '../cms-regions/forms/BookDemoBody.astro'
+import ContactThanksBody from '../cms-regions/forms/ContactThanksBody.astro'
+import BookDemoThanksBody from '../cms-regions/forms/BookDemoThanksBody.astro'
+import TermsBody from '../cms-regions/legal/TermsBody.astro'
+import PrivacyBody from '../cms-regions/legal/PrivacyBody.astro'
+
+const { site, region, page } = Astro.props as { site: SiteContent; region: string; page: string }
+Astro.locals.site = site
+const regions = {
+	header: Header, footer: Footer, hero: HeroCopy, home: HomeBody, faq: FaqBody,
+	pricing: PricingBody, contact: ContactBody, bookDemo: BookDemoBody,
+	contactThanks: ContactThanksBody, bookDemoThanks: BookDemoThanksBody,
+	terms: TermsBody, privacy: PrivacyBody, runtime: RuntimeCopy,
+}
+if (!Object.hasOwn(regions, region)) throw new Error(`Missing copy region: ${region}`)
+const Component = regions[region as keyof typeof regions]
+---
+<Component page={page} />

@@ -1,0 +1,297 @@
+---
+import Pricing from '../../Pricing.astro'
+import { getPlans, getUsageRates, formatPrice } from '../../../lib/pricing'
+import { formatCopy } from '../../../lib/tina/model'
+import { tinaField } from '@tinacms/astro'
+const site = Astro.locals.site
+const copy = site.pricing.copy
+const PLANS = getPlans(site.pricing)
+const USAGE_RATES = getUsageRates(site.pricing)
+type Plan = (typeof PLANS)[number]
+type CopyKey = keyof typeof copy
+type Row = {
+	labelField: CopyKey
+	values: (string | boolean)[]
+	planField?: keyof typeof site.pricing.plans.basic
+	copyField?: CopyKey
+	sharedField?: 'additionalPhoneNumberMonthly'
+	statusLabel?: 'available'
+}
+const agentFields = {
+	pro: 'agentPro',
+	plus: 'agentPlus',
+	max: 'agentMax',
+} as const
+
+const groups: { labelField: CopyKey; rows: Row[] }[] = [
+	{
+		labelField: 'usageRates',
+		rows: [
+			{
+				labelField: 'callMinutes',
+				planField: 'minutes',
+				values: PLANS.map((plan) => plan.minutes.toLocaleString('en-US')),
+			},
+			{
+				labelField: 'additionalMinutes',
+				planField: 'overagePerMinute',
+				copyField: 'minuteRate',
+				values: PLANS.map(
+					(plan) => formatCopy(copy.minuteRate, { rate: plan.overagePerMinute.toFixed(2) }),
+				),
+			},
+			{
+				labelField: 'liveTransfers',
+				planField: 'liveTransferPerMinute',
+				copyField: 'transferRate',
+				values: PLANS.map(
+					(plan) => formatCopy(copy.transferRate, { rate: plan.liveTransferPerMinute.toFixed(2) }),
+				),
+			},
+			{
+				labelField: 'sms',
+				planField: 'smsPerMessage',
+				copyField: 'smsRate',
+				values: PLANS.map((plan) => formatCopy(copy.smsRate, { rate: plan.smsPerMessage.toFixed(2) })),
+			},
+			{
+				labelField: 'telephony',
+				planField: 'telephonyFromPerMinute',
+				copyField: 'telephonyRate',
+				values: PLANS.map(
+					(plan) => formatCopy(copy.telephonyRate, { rate: plan.telephonyFromPerMinute.toFixed(3) }),
+				),
+			},
+		],
+	},
+	{
+		labelField: 'agentNumbers',
+		rows: [
+			{
+				labelField: 'agentIncluded',
+				planField: 'agents',
+				values: PLANS.map(
+					(plan) => plan.id === 'basic' ? plan.agents : copy[agentFields[plan.id]],
+				),
+			},
+			{
+				labelField: 'simultaneousCalls',
+				planField: 'concurrentCalls',
+				values: PLANS.map((plan) => String(plan.concurrentCalls)),
+			},
+			{
+				labelField: 'phoneNumbers',
+				planField: 'phoneNumbers',
+				values: PLANS.map((plan) => String(plan.phoneNumbers)),
+			},
+			{
+				labelField: 'additionalNumbers',
+				copyField: 'additionalNumberRate',
+				sharedField: 'additionalPhoneNumberMonthly',
+				values: PLANS.map(
+					() =>
+						formatCopy(copy.additionalNumberRate, { price: formatPrice(USAGE_RATES.additionalPhoneNumberMonthly) }),
+				),
+			},
+		],
+	},
+	{
+		labelField: 'toolsReporting',
+		rows: [
+			{
+				labelField: 'connections',
+				planField: 'integrations',
+				values: PLANS.map((plan) => plan.integrations),
+			},
+			{ labelField: 'webWidget', values: PLANS.map(() => true) },
+			{ labelField: 'dashboard', values: PLANS.map(() => true) },
+			{
+				labelField: 'recordings',
+				values: PLANS.map(() => true),
+			},
+			{
+				labelField: 'multilingual',
+				planField: 'multilingual',
+				copyField: 'languages',
+				values: PLANS.map((plan) =>
+					plan.multilingual ? copy.languages : false,
+				),
+			},
+		],
+	},
+	{
+		labelField: 'supportCompliance',
+		rows: [
+			{ labelField: 'support', planField: 'support', values: PLANS.map((plan) => plan.support) },
+			{ labelField: 'hipaa', statusLabel: 'available', values: PLANS.map(() => true) },
+		],
+	},
+]
+
+const cellField = (row: Row, plan: Plan) => {
+	if (row.labelField === 'agentIncluded' && plan.id !== 'basic')
+		return tinaField(copy, agentFields[plan.id])
+	if (row.copyField) return tinaField(copy, row.copyField)
+	if (row.sharedField) return tinaField(site.pricing, row.sharedField)
+	if (row.planField)
+		return tinaField(site.pricing.plans[plan.id], row.planField)
+}
+---
+		<Pricing detailed />
+		<section
+			id="plan-comparison"
+			class="scrim content-auto scroll-mt-24 pb-20 lg:pb-28"
+			aria-labelledby="plan-comparison-heading"
+		>
+			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				<h2 id="plan-comparison-heading" class="text-h2 font-bold text-fg-1" data-tina-field={tinaField(copy, 'tableHeading')}>
+					{copy.tableHeading}
+				</h2>
+				<p
+					id="comparison-help"
+					class="mt-4 text-sm leading-relaxed text-fg-3 sm:sr-only"
+					data-tina-field={tinaField(copy, 'tableHelp')}
+				>
+					{copy.tableHelp}
+				</p>
+				<div
+					class="glass glass-fill glass-regular mt-8 overflow-x-auto rounded-3xl"
+					tabindex="0"
+					role="region"
+					aria-label={copy.tableLabel}
+					data-tina-field={tinaField(copy, 'tableLabel')}
+					aria-describedby="comparison-help"
+				>
+					<table
+						class="plan-table w-full min-w-225 table-fixed border-separate border-spacing-0 text-left text-sm"
+					>
+						<caption class="sr-only" data-tina-field={tinaField(copy, 'tableCaption')}
+							>{copy.tableCaption}</caption
+						>
+						<colgroup
+							><col class="comparison-label-column" /><col span="4" /></colgroup
+						>
+						<thead
+							><tr class="border-b border-line"
+								><th scope="col" class="p-5 font-semibold text-fg-1" data-tina-field={tinaField(copy, 'tableFeatures')}
+									>{copy.tableFeatures}</th
+								>{
+									PLANS.map((plan) => (
+										<th scope="col" class="p-5 font-semibold text-fg-1" data-tina-field={tinaField(site.pricing.plans[plan.id], 'name')}>
+											{plan.name}
+										</th>
+									))
+								}</tr
+							></thead
+						>
+						{
+							groups.map((group) => (
+								<tbody>
+									<tr>
+										<th
+											scope="rowgroup"
+											colspan={PLANS.length + 1}
+											class="bg-surface-2 px-5 py-4 text-xs font-semibold uppercase tracking-wider text-brand-text"
+										>
+											<span class="comparison-group-label" data-tina-field={tinaField(copy, group.labelField)}>{copy[group.labelField]}</span>
+										</th>
+									</tr>
+									{group.rows.map((row) => (
+										<tr>
+											<th scope="row" class="p-5 font-medium text-fg-2" data-tina-field={tinaField(copy, row.labelField)}>
+												{copy[row.labelField]}
+											</th>
+											{row.values.map((value, index) => (
+												<td class="p-5 leading-relaxed text-fg-3" data-tina-field={cellField(row, PLANS[index])}>
+													{typeof value === 'boolean' ? (
+														<>
+															<svg
+																class:list={[
+																	'h-5 w-5',
+																	value ? 'text-brand-text' : 'text-danger',
+																]}
+																viewBox="0 0 24 24"
+																fill="none"
+																stroke="currentColor"
+																stroke-width="2.5"
+																stroke-linecap="round"
+																stroke-linejoin="round"
+																aria-hidden="true"
+															>
+																<path
+																	d={value ? 'M5 12l4 4L19 6' : 'M6 6l12 12M6 18L18 6'}
+																/>
+															</svg>
+															<span class="sr-only" data-tina-field={tinaField(copy, value ? row.statusLabel ?? 'included' : 'notIncluded')}>
+																{copy[value ? row.statusLabel ?? 'included' : 'notIncluded']}
+															</span>
+														</>
+													) : <span data-tina-field={
+														row.sharedField
+															? tinaField(site.pricing, row.sharedField)
+															: row.planField && !(row.labelField === 'agentIncluded' && PLANS[index].id !== 'basic')
+																? tinaField(site.pricing.plans[PLANS[index].id], row.planField)
+																: undefined
+													}>{value}</span>}
+												</td>
+											))}
+										</tr>
+									))}
+								</tbody>
+							))
+						}
+					</table>
+				</div>
+				<p class="mt-6 text-sm text-fg-3">
+					<span data-tina-field={tinaField(copy, 'billingDetails')}>{copy.billingDetails}</span>{' '}<a
+						href="/terms#billing-details"
+						class="underline underline-offset-4 hover:text-fg-1"
+						data-tina-field={tinaField(copy, 'terms')}
+						>{copy.terms}</a
+					><span data-tina-field={tinaField(copy, 'end')}>{copy.end}</span>
+				</p>
+				<p class="mt-2 text-sm text-fg-3">
+					<span data-tina-field={tinaField(copy, 'complianceDetails')}>{copy.complianceDetails}</span>{' '}<a
+						href="/terms#service-details"
+						class="underline underline-offset-4 hover:text-fg-1"
+						data-tina-field={tinaField(copy, 'serviceRequirements')}
+						>{copy.serviceRequirements}</a
+					><span data-tina-field={tinaField(copy, 'end')}>{copy.end}</span>
+				</p>
+				<div
+					class="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between"
+				>
+					<a href={site.links.freeDemo} class="btn btn-primary" data-tina-field={tinaField(site.links, 'freeDemo')}><span data-tina-field={tinaField(site.shared, 'getFreeDemo')}>{site.shared.getFreeDemo}</span></a>
+				</div>
+			</div>
+		</section>
+<style>
+	.comparison-label-column {
+		width: 24%;
+	}
+	.plan-table :is(th, td) {
+		border-bottom: 1px solid var(--line);
+	}
+	.plan-table tbody:last-child tr:last-child :is(th, td) {
+		border-bottom: 0;
+	}
+	@media (width < 40rem) {
+		.comparison-label-column {
+			width: 10rem;
+		}
+		.plan-table tr > :first-child:not([colspan]) {
+			position: sticky;
+			left: 0;
+			z-index: 1;
+			background: var(--bg-alt);
+			box-shadow: 1px 0 0 var(--line-strong);
+		}
+		.plan-table thead tr > :first-child {
+			z-index: 2;
+		}
+		.comparison-group-label {
+			position: sticky;
+			left: 1.25rem;
+		}
+	}
+</style>

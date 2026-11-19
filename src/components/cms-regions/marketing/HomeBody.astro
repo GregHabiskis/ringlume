@@ -1,0 +1,14 @@
+---
+import ReceptionistComparison from '../../ReceptionistComparison.astro'
+import Pricing from '../../Pricing.astro'
+import FomoSection from '../../FomoSection.astro'
+import FAQ from '../../FAQ.astro'
+import CtaSection from '../../CtaSection.astro'
+import type { FaqId } from '../../../data/faqs'
+const ids = ['busy-calls', 'appointments', 'live-transfer', 'setup-time', 'pricing'] as const satisfies readonly FaqId[]
+---
+<ReceptionistComparison />
+<Pricing />
+<FomoSection />
+<FAQ faqIds={ids} showAllLink compact />
+<CtaSection />

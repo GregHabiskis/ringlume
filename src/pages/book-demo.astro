@@ -1,33 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
+import CopyRegion from '../components/tina/CopyRegion.astro'
+import BookDemoBody from '../components/cms-regions/forms/BookDemoBody.astro'
 import Header from '../components/Header.astro'
-import DemoRequestForm from '../components/DemoRequestForm.astro'
 import Footer from '../components/Footer.astro'
-import { DEMO_FREE_MINUTES } from '../lib/offer'
+import { getOffer } from '../lib/offer'
+import { formatCopy } from '../lib/tina/site-model'
+const copy = Astro.locals.site.forms.bookDemoPage
 ---
 
-<BaseLayout
-  title="Get Your Free Personalized Demo | Ringlume"
-  description={`Request a free personalized demo of a Ringlume voice agent built for your business. Test it free for up to ${DEMO_FREE_MINUTES} minutes.`}
->
-  <Header />
-
-  <main class="scrim min-h-screen pt-24 pb-20">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-16">
-        <h1 class="text-h1 font-bold text-fg-1 mb-6">
-          Get Your Free Personalized Demo
-        </h1>
-        <p class="text-lead text-fg-3">
-          A demo built for your business, free for up to {DEMO_FREE_MINUTES} minutes.
-        </p>
-      </div>
-
-      <div class="max-w-3xl mx-auto">
-        <DemoRequestForm />
-      </div>
-    </div>
-  </main>
-
-  <Footer />
+<BaseLayout title={copy.metaTitle} description={formatCopy(copy.metaDescription, { demoFreeMinutes: getOffer(Astro.locals.site.offer).demoFreeMinutes })}>
+  <CopyRegion region="header" page="bookDemo"><Header /></CopyRegion>
+  <CopyRegion region="bookDemo" page="bookDemo" primary><BookDemoBody /></CopyRegion>
+  <CopyRegion region="footer" page="bookDemo"><Footer /></CopyRegion>
 </BaseLayout>

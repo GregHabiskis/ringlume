@@ -1,5 +1,7 @@
 ---
 import MissedCallCalculator from './MissedCallCalculator.astro'
+import { tinaField } from '@tinacms/astro'
+const copy = Astro.locals.site.pages.home.calculator
 ---
 
 <section
@@ -13,14 +15,15 @@ import MissedCallCalculator from './MissedCallCalculator.astro'
 				id="fomo-heading"
 				class="reveal-text max-w-lg text-h2 font-bold text-fg-1"
 			>
-				What’s a missed call<br /><span class="text-brand-text"
-					>really costing you?</span
+				<span data-tina-field={tinaField(copy, 'heading')}>{copy.heading}</span><br /><span class="text-brand-text" data-tina-field={tinaField(copy, 'accent')}
+					>{copy.accent}</span
 				>
 			</h2>
 			<p
 				class="max-w-lg text-base leading-relaxed text-fg-3 lg:justify-self-end"
+				data-tina-field={tinaField(copy, 'description')}
 			>
-				Use your own numbers to estimate potential revenue at stake.
+				{copy.description}
 			</p>
 		</header>
 		<MissedCallCalculator />

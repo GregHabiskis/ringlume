@@ -1,7 +1,10 @@
 ---
 import { getRetellConfig } from '../lib/retell-config'
+import { tinaField } from '@tinacms/astro'
 
 const retell = getRetellConfig()
+const site = Astro.locals.site
+const copy = site.demo
 ---
 
 {
@@ -13,14 +16,19 @@ const retell = getRetellConfig()
 			data-retell-public-key={retell.voicePublicKey}
 			data-retell-agent-id={retell.voiceAgentId}
 			data-retell-recaptcha-key={retell.recaptchaKey}
+			data-demo-copy={JSON.stringify(copy)}
+			data-demo-fields={JSON.stringify({
+				text: Object.fromEntries(Object.keys(copy.text).map(key => [key, tinaField(copy.text, key as keyof typeof copy.text)])),
+				messages: Object.fromEntries(Object.keys(copy.messages).map(key => [key, tinaField(copy.messages, key as keyof typeof copy.messages)])),
+			})}
 		>
 			<div class="flex items-center justify-between gap-4 border-b border-line px-6 py-5 sm:px-8">
-				<h2 id="demo-heading" class="font-sans text-sm font-semibold text-fg-1">
-					Talk to Ava
+				<h2 id="demo-heading" class="font-sans text-sm font-semibold text-fg-1" data-demo-text="heading" data-tina-field={tinaField(copy.text, 'heading')}>
+					{copy.text.heading}
 				</h2>
 				<span class="flex items-center gap-2 text-xs text-fg-3">
 					<span class="h-1.5 w-1.5 rounded-full bg-brand" aria-hidden="true" />
-					<span data-demo-connection>Try it yourself</span>
+					<span data-demo-connection data-tina-field={tinaField(copy.text, 'idle')}>{copy.text.idle}</span>
 				</span>
 			</div>
 			<div class="signal-stage" aria-hidden="true">
@@ -42,8 +50,8 @@ const retell = getRetellConfig()
 				</div>
 			</div>
 			<div class="relative px-6 pb-7 text-center sm:px-8 sm:pb-8">
-				<p class="mb-5 text-sm text-fg-2">
-					Ringlume's virtual receptionist. A real conversation. Not a recording.
+				<p class="mb-5 text-sm text-fg-2" data-demo-text="description" data-tina-field={tinaField(copy.text, 'description')}>
+					{copy.text.description}
 				</p>
 				<div class="demo-controls">
 					<div data-demo-start-controls class="flex gap-3">
@@ -66,15 +74,17 @@ const retell = getRetellConfig()
 							>
 								<path d="M8 3H5a2 2 0 0 0-2 2c0 8.8 7.2 16 16 16a2 2 0 0 0 2-2v-3l-5-2-2 2a13 13 0 0 1-6-6l2-2-2-5Z" />
 							</svg>
-							<span data-demo-label>Try it now</span>
+							<span data-demo-label data-tina-field={tinaField(copy.text, 'start')}>{copy.text.start}</span>
 						</button>
 						<button
 							type="button"
 							data-demo-cancel
+							data-demo-text="cancel"
+							data-tina-field={tinaField(copy.text, 'cancel')}
 							class="btn btn-secondary"
 							hidden
 						>
-							Cancel
+							{copy.text.cancel}
 						</button>
 					</div>
 					<div data-demo-live class="grid grid-cols-2 gap-3" hidden>
@@ -83,48 +93,54 @@ const retell = getRetellConfig()
 							data-demo-mute
 							class="btn btn-secondary"
 							aria-pressed="false"
-							aria-label="Mute microphone"
+							aria-label={copy.text.muteLabel}
+							data-tina-field={tinaField(copy.text, 'mute')}
 						>
-							Mute
+							{copy.text.mute}
 						</button>
-						<button type="button" data-demo-end class="btn demo-end">
-							End call
+						<button type="button" data-demo-end class="btn demo-end" data-demo-text="end" data-tina-field={tinaField(copy.text, 'end')}>
+							{copy.text.end}
 						</button>
 					</div>
 				</div>
 				<div class="flex min-h-11 items-center justify-center">
-					<p id="demo-call-help" class="text-xs leading-relaxed text-fg-3">
-						Microphone required to speak.
+					<p id="demo-call-help" class="text-xs leading-relaxed text-fg-3" data-demo-text="help" data-tina-field={tinaField(copy.text, 'help')}>
+						{copy.text.help}
 					</p>
 					<button
 						type="button"
 						data-demo-audio
+						data-demo-text="audio"
+						data-tina-field={tinaField(copy.text, 'audio')}
 						class="min-h-11 text-xs text-fg-3 underline underline-offset-4 hover:text-fg-1"
 						hidden
 					>
-						No sound? Enable audio
+						{copy.text.audio}
 					</button>
 				</div>
 				<p
 					data-demo-status
+					data-tina-field={tinaField(copy.text, 'hint')}
 					role="status"
 					aria-atomic="true"
 					class="demo-status mt-3 text-sm leading-relaxed text-fg-2"
 				>
-					Try asking: &ldquo;Can I book an appointment?&rdquo;
+					{copy.text.hint}
 				</p>
 				<noscript>
-					<p class="mt-3 text-sm text-fg-3">
-						Enable JavaScript to use the live demo.
+					<p class="mt-3 text-sm text-fg-3" data-demo-text="noScript" data-tina-field={tinaField(copy.text, 'noScript')}>
+						{copy.text.noScript}
 					</p>
 				</noscript>
 			</div>
 			<div class="border-t border-line px-5 py-4 text-center">
 				<a
-					href="/book-demo"
+					href={site.links.freeDemo}
+					data-site-link="freeDemo"
+					data-tina-field={tinaField(site.links, 'freeDemo')}
 					class="text-xs text-fg-3 underline underline-offset-4 hover:text-fg-1"
 				>
-					Get your free personalized demo
+					<span data-demo-text="personalizedDemo" data-tina-field={tinaField(copy.text, 'personalizedDemo')}>{copy.text.personalizedDemo}</span>
 				</a>
 			</div>
 		</aside>
@@ -309,10 +325,17 @@ const retell = getRetellConfig()
 		formatDemoTime,
 		type DemoPhase,
 		type DemoState,
+		type DemoCopy,
 	} from '../lib/retell-demo'
 	import { loadRetellClient, prepareRetellCall } from '../lib/retell-browser'
+	import { formatCopy } from '../lib/tina/site-model'
 
 	function initDemo(section: HTMLElement): void {
+		let copy: DemoCopy = JSON.parse(section.dataset.demoCopy!)
+		const fields: Record<'text' | 'messages', Record<string, string>> = JSON.parse(section.dataset.demoFields!)
+		function mark(element: HTMLElement, group: 'text' | 'messages', key: string): void {
+			if (fields[group][key]) element.setAttribute('data-tina-field', fields[group][key])
+		}
 		const publicKey = section.dataset.retellPublicKey
 		const agentId = section.dataset.retellAgentId
 		if (!publicKey || !agentId) return
@@ -336,6 +359,9 @@ const retell = getRetellConfig()
 		let phase: DemoPhase = 'idle'
 		let connectedAt = 0
 		let timer: ReturnType<typeof setInterval> | undefined
+		function liveLabel(): string {
+			return formatCopy(copy.text.live, { time: formatDemoTime((Date.now() - connectedAt) / 1000) })
+		}
 
 		function render(state: DemoState): void {
 			const previous = phase
@@ -347,33 +373,40 @@ const retell = getRetellConfig()
 			startControls.hidden = live
 			start.disabled = connecting
 			start.setAttribute('aria-busy', String(connecting))
-			label.textContent = connecting ? 'Connecting…' : 'Try it now'
+			label.textContent = connecting ? copy.text.connecting : copy.text.start
+			mark(label, 'text', connecting ? 'connecting' : 'start')
 			cancel.hidden = !connecting
 			liveControls.hidden = !live
 			help.hidden = live
 			audio.hidden = !live
-			mute.textContent = state.muted ? 'Unmute' : 'Mute'
+			mute.textContent = state.muted ? copy.text.unmute : copy.text.mute
+			mark(mute, 'text', state.muted ? 'unmute' : 'mute')
 			mute.setAttribute('aria-pressed', String(state.muted))
 			mute.setAttribute(
 				'aria-label',
-				state.muted ? 'Unmute microphone' : 'Mute microphone',
+				state.muted ? copy.text.unmuteLabel : copy.text.muteLabel,
 			)
-			if (status.textContent !== state.message) status.textContent = state.message
+			const message = state.messageKey ? copy.messages[state.messageKey] : copy.text.hint
+			if (status.textContent !== message) status.textContent = message
+			mark(status, state.messageKey ? 'messages' : 'text', state.messageKey ?? 'hint')
+			mark(connection, 'text', live ? 'live' : phase)
 			if (live && previous !== 'live') {
 				connectedAt = Date.now()
 				const tick = () => {
-					connection.textContent = `Live · ${formatDemoTime((Date.now() - connectedAt) / 1000)}`
+					connection.textContent = liveLabel()
 				}
 				tick()
 				timer = setInterval(tick, 1000)
-			} else if (phase !== 'live') {
+			} else if (phase === 'live') {
+				connection.textContent = liveLabel()
+			} else {
 				clearInterval(timer)
 				timer = undefined
 				const labels = {
-					idle: 'Try it yourself',
-					connecting: 'Connecting…',
-					ended: 'Call ended',
-					error: 'Unable to connect',
+					idle: copy.text.idle,
+					connecting: copy.text.connecting,
+					ended: copy.text.ended,
+					error: copy.text.error,
 				}
 				connection.textContent = labels[phase]
 			}
@@ -390,11 +423,21 @@ const retell = getRetellConfig()
 		}
 
 		const controller = createDemoController({
+			copy,
 			agentId,
 			loadClient: () => loadRetellClient(publicKey),
 			prepare: () => prepareRetellCall(section.dataset.retellRecaptchaKey),
 			onChange: render,
 		})
+		window.addEventListener('ringlume:copy-change', ((event: CustomEvent<{ demo?: DemoCopy }>) => {
+			if (!event.detail.demo) return
+			copy = event.detail.demo
+			section.querySelectorAll<HTMLElement>('[data-demo-text]').forEach((element) => {
+				const key = element.dataset.demoText as keyof DemoCopy['text']
+				element.textContent = copy.text[key]
+			})
+			controller.setCopy(copy)
+		}) as EventListener)
 		start.addEventListener('click', () => void controller.start())
 		cancel.addEventListener('click', controller.end)
 		end.addEventListener('click', controller.end)

@@ -1,0 +1,25 @@
+---
+import { tinaField } from '@tinacms/astro'
+import DemoRequestForm from '../../DemoRequestForm.astro'
+import { getOffer } from '../../../lib/offer'
+import { formatCopy } from '../../../lib/tina/site-model'
+const copy = Astro.locals.site.forms.bookDemoPage
+const offer = getOffer(Astro.locals.site.offer)
+---
+
+  <main class="scrim min-h-screen pt-24 pb-20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h1 class="text-h1 font-bold text-fg-1 mb-6">
+          <span data-tina-field={tinaField(copy, 'heading')}>{copy.heading}</span>
+        </h1>
+        <p class="text-lead text-fg-3">
+          <span data-tina-field={tinaField(copy, 'intro')}>{formatCopy(copy.intro, { demoFreeMinutes: offer.demoFreeMinutes })}</span>
+        </p>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <DemoRequestForm />
+      </div>
+    </div>
+  </main>

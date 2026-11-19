@@ -1,5 +1,6 @@
 import type { RetellClient } from 'retell-client-js-sdk'
 import { DemoSetupError } from './retell-demo'
+import { demo as defaultCopy } from '../../content/site/site.json'
 
 type Recaptcha = {
 	ready(callback: () => void): void
@@ -29,7 +30,7 @@ async function loadRecaptcha(key: string): Promise<Recaptcha> {
 			window.clearTimeout(timeout)
 			script.remove()
 			reject(new DemoSetupError(
-				'The security check could not load. Check your connection or content blocker, then try again.',
+				defaultCopy.messages.securityLoadFailed, 'securityLoadFailed',
 			))
 		}
 		script.onerror = failed
@@ -55,12 +56,12 @@ export async function prepareRetellCall(
 ): Promise<string | undefined> {
 	if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
 		throw new DemoSetupError(
-			'Voice calls need HTTPS and a browser with microphone support. Open ringlume.com in a supported browser.',
+			defaultCopy.messages.unsupported, 'unsupported',
 		)
 	}
 	if (!navigator.onLine) {
 		throw new DemoSetupError(
-			'You are offline. Reconnect to the internet, then try again.',
+			defaultCopy.messages.offline, 'offline',
 		)
 	}
 	// Grant permission before creating a paid session. Always stop this temporary
@@ -72,6 +73,6 @@ export async function prepareRetellCall(
 	try {
 		return await recaptcha.execute(recaptchaKey, { action: 'web_call' })
 	} catch {
-		throw new DemoSetupError('The security check failed. Please try again.')
+		throw new DemoSetupError(defaultCopy.messages.securityFailed, 'securityFailed')
 	}
 }

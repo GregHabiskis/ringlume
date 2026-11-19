@@ -21,13 +21,13 @@ Instructions for coding agents working in this repository.
 
 | Fact                   | Value                                                       |
 | ---------------------- | ----------------------------------------------------------- |
-| Framework              | **Astro 7** (static pages + on-demand Netlify API routes)   |
+| Framework              | **Astro 7** (static pages + on-demand Worker API routes)    |
 | CSS                    | **Tailwind CSS v4** via `@tailwindcss/vite`                 |
 | Package manager        | **pnpm** (never npm / yarn / npx — use `pnpm` / `pnpm dlx`) |
-| Node                   | `>=22.12.0`                                                 |
-| Hosting                | **Netlify** (`netlify.toml` → `dist/`)                      |
-| CMS                    | **None**                                                    |
-| React / Next / Payload | **Not used**                                                |
+| Node                   | `22.23.5`                                                   |
+| Hosting                | **Cloudflare Workers** (`wrangler.jsonc`)                   |
+| CMS                    | **TinaCMS**, Git-backed JSON + TinaCloud Free                |
+| React / Next / Payload | React for Tina admin only; no Next.js or Payload             |
 
 Do **not** assume Next.js App Router, Payload CMS, or a monorepo app stack. This repo is a lean Astro landing site only.
 
@@ -38,8 +38,10 @@ Do **not** assume Next.js App Router, Payload CMS, or a monorepo app stack. This
 ```sh
 pnpm install          # install deps
 pnpm dev              # http://localhost:4321
-pnpm build            # static build → dist/
-pnpm preview          # serve dist/
+pnpm build            # production Workers build
+pnpm build:local      # credential-free verification only; never deploy
+pnpm preview          # preview the built Worker locally
+pnpm preview:local    # preview the isolated local build in Wrangler
 ```
 
 After meaningful UI/CSS changes, always run `pnpm build` and confirm it succeeds.
@@ -57,7 +59,7 @@ and `pnpm build` as verification gates. There is no lint script.
 ├── AGENTS.md                 # this file
 ├── astro.config.mjs          # Vite + Tailwind, compressHTML, inlineStylesheets
 ├── package.json              # Astro, Tailwind CSS, and build tooling
-├── netlify.toml              # build + cache/security headers
+├── wrangler.jsonc            # Cloudflare Workers deployment configuration
 ├── pnpm-lock.yaml
 ├── public/
 │   ├── fonts/                # self-hosted Comfortaa woff2 (latin + latin-ext)
@@ -101,18 +103,64 @@ Reuse this pattern for new marketing pages: layout → chrome → sections.
 
 There is **no floating contact FAB**: `ContactWidget.astro` was deleted.
 Channels (WhatsApp and support@ringlume.com) live on `/contact` only.
-Footer and CtaSection link to `/contact`, with no direct channel links.
+Footer and CtaSection use the shared Contact destination, defaulting to
+`/contact`, with no direct channel links.
 Existing legal-page contact lists remain unchanged except for the removed channel.
 
 ---
 
 ## Architecture rules
 
-1. **Static first.** Prefer zero client JS. Interactive bits are tiny vanilla `<script>` blocks inside `.astro` files (menu, pricing toggle, missed-call calculator). The hero headline is static.
-2. **No heavy frameworks.** Do not add React, Vue, Framer Motion, GSAP, analytics SDKs, or chat widgets unless explicitly requested.
+1. **Static first.** Prefer zero client JS. Interactive bits are tiny vanilla scripts (menu, pricing toggle, missed-call calculator). Shared initializers in `src/scripts/` support editor preview replacements. The hero headline is static on the public page.
+2. **No heavy public frameworks.** React is required by Tina admin, not public Astro hydration. Do not add Vue, Framer Motion, GSAP, analytics SDKs, or chat widgets unless explicitly requested.
 3. **No third-party render-blocking scripts.** The Retell Web SDK and its audio dependencies are dynamically imported only after clicking **Try it now** inside `#demo`, never at page load or through a module preload. There is no Retell popup widget.
 4. **Keep deps minimal.** The site has no payment integration, application database, account, entitlement, or webhook layer.
 5. **pnpm only.**
+
+### TinaCMS editing
+
+- The user explicitly chose TinaCMS for this project; do not add Puck, Payload,
+  or a second CMS. Setup and verification instructions are in `docs/tinacms.md`.
+- `content/site/site.json` is the single authored source for all first-party
+  website text, editable link destinations, and commercial settings. This
+  includes every existing page, legal copy, FAQs, form/button/link labels,
+  accessibility text, metadata, and
+  demo/storyboard/calculator interface messages.
+- The user approved editing prices, fees, rates, allowances, plan names and
+  limits in Tina. Numeric facts remain linked across cards, tables, comparison,
+  and Terms examples. Preserve existing values during migration, not as
+  permanently hardcoded values. The copy/facts listed elsewhere in this file
+  describe the original defaults, not restrictions on authorized CMS edits.
+- Header and footer navigation, clickable logos, and CTA destinations share
+  values in the Tina **Link URLs** group. Preserve default destinations on
+  migration; they are not hardcoded restrictions.
+- Layout, section order, routes, anchor IDs, inline reference links, form
+  actions and schema keys, calculations, and engineering/timeline constants
+  remain code-owned. There are no image-editing, block-arrangement, or
+  arbitrary-page-creation controls.
+- Homepage Hero and ReceptionistVisual stay fixed outside the replaceable
+  sections island. Hero copy alone has its own island; never replace the live
+  Retell card or storyboard during preview edits.
+- Components read validated request-specific `Astro.locals.site`. Do not use
+  default-only pricing/copy snapshots in public renderers. Pure functions may
+  accept a dictionary/settings parameter with checked-in defaults for tests.
+- Retain required `{token}` placeholders in editable sentence templates.
+  Validate settings and template tokens; never evaluate CMS strings as HTML
+  or executable JavaScript.
+- Keep active call/storyboard nodes stable during preview. Refresh their
+  current text in place without restarting calls or playback. Reinitialize
+  replaceable regions with their form values, calculator inputs, billing
+  selection, menu state, and FAQ state preserved.
+- Tests enforce content bindings, shared calculations and protected structure,
+  not old literal wording or prices that would reject legitimate CMS edits.
+- Keep `tina/tina-lock.json` in Git; generated clients and admin bundles are
+  ignored. Do not commit tokens or local verification output.
+- Production `pnpm build` requires `PUBLIC_TINA_CLIENT_ID` and secret
+  `TINA_TOKEN`. Never deploy `pnpm build:local` output or bypass the local-mode
+  deployment guards. TinaCloud handles authenticated Git-backed saves.
+- Public pages remain static. `/tina-island/[name]` is an on-demand Worker
+  preview route using experimental Tina/Astro APIs. Keep its request checks.
+  `SAMEORIGIN` framing allows the same-origin admin preview, not external embeds.
 
 ---
 
@@ -214,8 +262,8 @@ The site uses a **liquid-glass** design language, all defined in `src/styles/glo
   transfers or messages depend on the business's rules and availability.
   Do not restore the removed Capabilities/CapabilityCard demonstration or a
   second version of the same caller's story. A zero-height `#capabilities`
-  bookmark alias remains inside `#visual`; Features and its scroll-spy mapping
-  target `/#visual`. Desktop places conversation and outcomes side by side;
+  bookmark alias remains inside `#visual`; the default Features destination
+  is `/#visual`. Desktop places conversation and outcomes side by side;
   mobile stacks them with a compact single-slot calendar. Timing and example
   data live in `src/lib/receptionist-visual.ts`, covered by Vitest. The conversation
   is a continuous 18rem inbox with eight alternating, compact glass/green bubbles,
@@ -320,12 +368,13 @@ Mobile PageSpeed (LCP, FCP, CLS, INP, TBT) is a first-class concern.
 
 ### Caching
 
-`netlify.toml` already sets long-cache immutable headers for:
+`public/_headers` sets long-cache immutable headers for static assets:
 
 - `/fonts/*`, `/images/*`, `/_astro/*`
 - static extensions (`ico|svg|png|jpg|jpeg|webp|avif|woff2`)
 
-Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`). Preserve these when editing deploy config.
+It also sets `X-Content-Type-Options`, `Referrer-Policy`, and `X-Frame-Options`
+for static responses. Preserve these when editing deploy config.
 
 ---
 
@@ -336,13 +385,15 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 - One section / concern per file under `src/components/`.
 - Frontmatter (`---`) for data and imports; markup below.
 - Use Tailwind utility classes + shared utilities from `global.css`.
-- Client JS only inside a component-scoped `<script>` when necessary.
+- Client JS starts in component-scoped scripts; shared idempotent initializers
+  live in `src/scripts/`. Preview reinitialization loads only inside an iframe.
 - Use semantic HTML (`header`, `main`, `section`, `footer`, `nav`) and accessible labels on icon buttons.
 
 ### Pages
 
 - Every page wraps content in `BaseLayout` with `title` + `description`.
-- Legal pages (`privacy`, `terms`) are long static content — keep English-only unless asked otherwise.
+- Legal pages (`privacy`, `terms`) render editable CMS text with fixed markup,
+  link destinations, and anchors. Preserve the original wording on migration.
 - Do not renumber existing legal sections or rewrite unrelated legal wording
   without explicit approval. The approved technical-detail relocation adds
   Terms 2.1 (`#service-details`), 3.1 (`#billing-details`), and 3.2 (`#estimates`).
@@ -352,17 +403,18 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
 
 ### Demo-first conversion and offer facts
 
-- Primary conversion: `/book-demo`, a personalized demo request. Header CTA:
+- Default primary conversion: `/book-demo`, a personalized demo request. Header CTA:
   **Free Demo**. Hero/pricing/CtaSection CTA: **Get Your Free Demo**.
-- Secondary conversion: homepage `#demo`, the generic live Retell demo.
-  All live-demo links and launcher buttons say **Try it now**. Header links to
-  the actual `#demo` card inside the hero, using native smooth scrolling with
-  header clearance. There is no duplicate live-demo CTA beside the hero copy.
-- Header Pricing links directly to `/pricing`. There is no homepage pricing
+- Default secondary conversion: homepage `#demo`, the generic live Retell demo.
+  All live-demo links and launcher buttons say **Try it now**. The default header
+  link targets the actual `#demo` card inside the hero, using native smooth
+  scrolling with header clearance. There is no duplicate live-demo CTA beside
+  the hero copy.
+- Header Pricing defaults to `/pricing`. There is no homepage pricing
   anchor or pricing scroll-spy mapping.
-- `src/lib/offer.ts` is the single source for offer facts, `SUPPORTED_STACK`,
-  and `CAL_BOOKING_URL`. Meeting links appear only on `/book-demo/thanks`
-  and inside the Terms setup clause.
+- Offer facts and preferred-tool labels live in `content/site/site.json`;
+  `src/lib/offer.ts` selects and formats them. The shared setup meeting
+  destination is used on `/book-demo/thanks` and inside the Terms setup clause.
 - Demo delivery: **within 1 hour** by email from form submission, any time of
   day. Show this only below the demo form button and on `/book-demo/thanks`.
 - Demo allowance: **free for up to 10 minutes**, from `DEMO_FREE_MINUTES`.
@@ -387,29 +439,32 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
   confirm revised estimates. Setup dates are estimates, not guarantees.
   Business-day estimates use Saturday-Thursday, excluding U.S. federal holidays,
   in Eastern Time (America/New_York); the separate demo offer is unchanged.
-- `src/data/faqs.ts` feeds the FAQ component. `src/data/faqs.md` is a docs-only
-  mirror, checked by tests but not consumed by site generation. Keep each answer
-  short; use Terms links for technical explanations.
+- `src/data/faqs.ts` maps fixed FAQ IDs and protected links to editable
+  `site.faq` fields. There is no duplicated Markdown copy mirror.
 
-### Static Netlify forms
+### Static forms with Worker POST handlers
 
 - `DemoRequestForm.astro` uses `src/lib/demo-form.ts` for the website pattern
   and stable referral choices. Its six fields submit as `demo-request` to
-  `/book-demo/thanks`. Label the website field “Company website”; keep Terms
+  `/api/book-demo`, then redirect to `/book-demo/thanks`. Label the website
+  field “Company website”; keep Terms
   and Privacy links in the notice below the submit button.
 - `ContactForm.astro` has two required fields, email and message, and submits
-  as `contact-message` to `/contact/thanks`.
+  as `contact-message` to `/api/contact`, then redirects to `/contact/thanks`.
 - Preserve POST, hidden `form-name`, and the `bot-field` honeypot. Field names
-  are stable Netlify schema keys. No AJAX, client scripts, or captcha.
+  are stable submission keys. No AJAX, client scripts, or captcha.
 - Thanks pages use `BaseLayout noindex`, a home-linked logo, no Header/Footer,
   and the existing scene backdrop. No sitemap or robots.txt currently exists.
-- Forms work on a Netlify deploy, not localhost. Make.com delivery, notifications,
-  and the voice-platform duration cap are owner tasks outside this repository.
+- The Worker validates submissions and uses a Cloudflare email binding for
+  delivery. Redirect only after email is accepted, except to silently discard
+  honeypot submissions. Demo fulfillment and the voice-platform duration cap
+  remain owner tasks outside this repository.
 
 ### Pricing CTAs
 
-- Plan facts live in `src/lib/pricing.ts`, shared by `Pricing.astro`, the wage
-  comparison, `/pricing`, and Terms billing details. Preserve the current four prices and fees; upstream
+- Plan facts live in `content/site/site.json`; request-specific selectors in
+  `src/lib/pricing.ts` feed `Pricing.astro`, the wage comparison, `/pricing`,
+  and Terms billing details. Preserve the initial four prices and fees on migration; upstream
   Trillet agency-wide pricing is not a per-client Ringlume package cost.
 - Additional-minute rates are per-plan (`overagePerMinute`), not one global rate.
   Agent bundles (`agents`) and card benefits must stay consistent with that same
@@ -442,9 +497,10 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
   actual annual charge beside them; never calculate the charge from the rounded display.
 - Do not assert HIPAA/GDPR/SOC 2 certification from a plan name or an upstream
   platform claim. Compliance and regulated workflows require confirmed scope.
-- All four CTAs are `<a href="/book-demo">Get Your Free Demo</a>`
-  elements carrying `data-plan`. Neither homepage nor `/pricing` cards show
-  per-CTA legal notices or their `aria-describedby` references. Footer legal
+- All four pricing CTAs are links carrying `data-plan` and sharing the
+  personalized-demo destination (defaults to `/book-demo`). Neither homepage nor
+  `/pricing` cards show per-CTA legal notices or their `aria-describedby`
+  references. Footer legal
   links and the setup-fee upgrade note remain. There is no payment or checkout
   integration.
 - The only script in the section is the Monthly/Annually display toggle.
@@ -489,8 +545,8 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
   `src/lib/retell-config.ts` (`getRetellConfig()`, placeholders rejected) →
   rendered as `data-retell-*` on `#demo`. Values are baked into static HTML at
   build time; the section renders nothing if unset. Both Retell values are
-  public (browser-exposed, domain-scoped) and are listed in
-  `netlify.toml` `SECRETS_SCAN_OMIT_KEYS`. Only a Google site key belongs in
+  public (browser-exposed, domain-scoped) and are Workers build variables.
+  Only a Google site key belongs in
   `PUBLIC_RETELL_RECAPTCHA_KEY`; its secret stays in the dashboard.
 - **Domain restrictions:** the public key's known allowed origins are
   `https://ringlume.com` and `https://www.ringlume.com`. Other origins, including
@@ -514,9 +570,9 @@ Plus basic security headers (`X-Content-Type-Options`, `Referrer-Policy`, `X-Fra
   abuse-prevention settings are separate owner-managed Retell dashboard settings;
   domain restrictions alone are not comprehensive abuse protection.
 
-Keep the channel details on `/contact` unchanged. Footer and CtaSection link
-to `/contact`; neither contains WhatsApp or email links. The retired messaging
-channel is removed, including its legal-page mentions.
+Keep the channel cards on `/contact`; their destinations are editable in Tina.
+Do not add WhatsApp or email links to the footer or CtaSection. The retired
+messaging channel is removed, including its legal-page mentions.
 
 ---
 
@@ -551,12 +607,13 @@ channel is removed, including its legal-page mentions.
 
 | Setting           | Value            |
 | ----------------- | ---------------- |
-| Platform          | Netlify          |
+| Platform          | Cloudflare Workers |
 | Build command     | `pnpm build`     |
-| Publish directory | `dist`           |
-| Node version      | `22`             |
+| Configuration     | `wrangler.jsonc` |
+| Node version      | `22.23.5`        |
 
-Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
+Push-triggered deploys from Git once Workers Builds is connected. Public pages are
+static; Tina preview and form handlers run on the Worker. See `README.md` for setup.
 
 ---
 
@@ -564,8 +621,8 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 
 | Task                           | Where / how                                                |
 | ------------------------------ | ---------------------------------------------------------- |
-| Change hero copy               | `src/components/Hero.astro`                                |
-| Change pricing facts / copy    | `src/lib/pricing.ts` + `src/components/Pricing.astro`        |
+| Change website text            | Tina `/admin/`, `content/site/site.json`                    |
+| Change pricing facts / copy    | Tina pricing settings; selectors in `src/lib/pricing.ts`    |
 | Detailed plan comparison       | `src/pages/pricing.astro`                                  |
 | Wage comparison / source       | `src/components/ReceptionistComparison.astro`              |
 | Change meeting URL / offer facts | `src/lib/offer.ts`                                      |
@@ -578,7 +635,7 @@ Push-triggered deploys from Git. No server runtime, no edge middleware in-repo.
 | Landing section order          | `src/pages/index.astro`                                    |
 | Receptionist storyboard / timing | `src/components/ReceptionistVisual.astro` + `src/lib/receptionist-visual.ts` |
 | Talk to Ava (Retell)          | `src/components/DemoSection.astro` + `PUBLIC_RETELL_*`      |
-| Cache / security headers       | `netlify.toml`                                             |
+| Static cache / security headers | `public/_headers`                                         |
 | New page                       | `src/pages/<slug>.astro` + link from Header/Footer         |
 
 ### Adding a new below-fold section

@@ -1,0 +1,913 @@
+{
+	"links": {
+		"home": "/",
+		"liveDemo": "/#demo",
+		"features": "/#visual",
+		"pricing": "/pricing",
+		"faq": "/faq",
+		"contact": "/contact",
+		"freeDemo": "/book-demo",
+		"terms": "/terms",
+		"privacy": "/privacy",
+		"planComparison": "#plan-comparison",
+		"whatsapp": "https://wa.me/8801951284128",
+		"email": "mailto:support@ringlume.com",
+		"setupMeeting": "https://cal.com/ringlume/meeting"
+	},
+	"pricing": {
+		"plans": {
+			"basic": {
+				"name": "Basic",
+				"monthly": 299,
+				"annualTotal": 2990,
+				"setupFee": 800,
+				"minutes": 600,
+				"overagePerMinute": 0.2,
+				"smsPerMessage": 0.04,
+				"liveTransferPerMinute": 0.1,
+				"telephonyFromPerMinute": 0.028,
+				"concurrentCalls": 50,
+				"phoneNumbers": 1,
+				"agents": "Receptionist agent",
+				"integrations": "1 calendar & CRM integration",
+				"support": "Email support",
+				"multilingual": false,
+				"description": "For independent arborists",
+				"benefits": {
+					"item1": "{minutes} call minutes / month",
+					"item2": "Answers calls around the clock",
+					"item3": "Up to {concurrentCalls} simultaneous calls",
+					"item4": "{phoneNumbers} phone number included",
+					"item5": "Call recordings & daily reports"
+				},
+				"recommended": false
+			},
+			"pro": {
+				"name": "Pro",
+				"monthly": 599,
+				"annualTotal": 5990,
+				"setupFee": 2000,
+				"minutes": 1200,
+				"overagePerMinute": 0.18,
+				"smsPerMessage": 0.04,
+				"liveTransferPerMinute": 0.1,
+				"telephonyFromPerMinute": 0.028,
+				"concurrentCalls": 100,
+				"phoneNumbers": 3,
+				"agents": "Receptionist agent & Lead follow-up agent",
+				"integrations": "Custom integrations",
+				"support": "Email support",
+				"multilingual": true,
+				"description": "For growing crews",
+				"benefits": {
+					"item1": "{minutes} call minutes / month",
+					"item2": "Answers & follows up with leads",
+					"item3": "Up to {concurrentCalls} simultaneous calls",
+					"item4": "{phoneNumbers} phone numbers included",
+					"item5": "Call recordings & daily reports"
+				},
+				"recommended": true
+			},
+			"plus": {
+				"name": "Plus",
+				"monthly": 999,
+				"annualTotal": 9990,
+				"setupFee": 3000,
+				"minutes": 2400,
+				"overagePerMinute": 0.18,
+				"smsPerMessage": 0.03,
+				"liveTransferPerMinute": 0.08,
+				"telephonyFromPerMinute": 0.02,
+				"concurrentCalls": 200,
+				"phoneNumbers": 5,
+				"agents": "Receptionist, lead follow-up & customer support agents",
+				"integrations": "Custom integrations",
+				"support": "Priority email & chat support",
+				"multilingual": true,
+				"description": "For busy tree-care offices",
+				"benefits": {
+					"item1": "{minutes} call minutes / month",
+					"item2": "Answering, follow-up & qualify",
+					"item3": "Up to {concurrentCalls} simultaneous calls",
+					"item4": "{phoneNumbers} phone numbers included",
+					"item5": "Priority email & chat support",
+					"item6": "Everything included in {proName}"
+				},
+				"recommended": false
+			},
+			"max": {
+				"name": "Max",
+				"monthly": 1599,
+				"annualTotal": 15990,
+				"setupFee": 3000,
+				"minutes": 5000,
+				"overagePerMinute": 0.16,
+				"smsPerMessage": 0.03,
+				"liveTransferPerMinute": 0.08,
+				"telephonyFromPerMinute": 0.02,
+				"concurrentCalls": 300,
+				"phoneNumbers": 5,
+				"agents": "Receptionist, lead follow-up & customer support agents",
+				"integrations": "Custom integrations",
+				"support": "Dedicated priority support",
+				"multilingual": true,
+				"description": "For high-volume operations",
+				"benefits": {
+					"item1": "{minutes} call minutes / month",
+					"item2": "Answering, follow-up & qualify",
+					"item3": "Up to {concurrentCalls} simultaneous calls",
+					"item4": "{phoneNumbers} phone numbers included",
+					"item5": "Dedicated priority support",
+					"item6": "Everything included in {proName}"
+				},
+				"recommended": false
+			}
+		},
+		"additionalPhoneNumberMonthly": 5,
+		"benchmarkAnnualWage": 38010,
+		"benchmarkYear": 2025,
+		"copy": {
+			"heading": "A plan for your",
+			"accent": "next stage of growth.",
+			"description": "Try a free demo before choosing your plan.",
+			"compareFeatures": "Compare every feature",
+			"explorePricing": "Explore full pricing",
+			"pricesUsd": "Prices in USD.",
+			"billingPeriod": "Billing period",
+			"monthly": "Monthly",
+			"annually": "Annually",
+			"savings": "Save ~17%",
+			"mostPopular": "Most Popular",
+			"approximate": "~",
+			"perMonth": "/ mo",
+			"billedMonthly": "Billed monthly",
+			"billedAnnually": "Billed {price} annually",
+			"setupFee": "+ {price} one-time Service Setup Fee",
+			"overage": "${rate} / min overage",
+			"setupIntro": "We handle setup and testing, with launch timing agreed after review.",
+			"setupDetails": "Setup details",
+			"end": ".",
+			"cancelNotice": "Cancel anytime. Minutes reset monthly.",
+			"upgradeNotice": "Upgrading? Pay only the setup-fee difference.",
+			"tableHeading": "Compare plans.",
+			"tableHelp": "Swipe to compare on mobile.",
+			"tableLabel": "Plan comparison",
+			"tableCaption": "Ringlume plan allowances, usage rates, and features",
+			"tableFeatures": "Features & usage",
+			"usageRates": "Usage & rates",
+			"callMinutes": "Call minutes each month",
+			"additionalMinutes": "Additional call minutes",
+			"liveTransfers": "Live call transfers",
+			"sms": "SMS messages",
+			"telephony": "Ringlume telephony",
+			"agentNumbers": "Agents & phone numbers",
+			"agentIncluded": "Agent included",
+			"simultaneousCalls": "Simultaneous calls, up to",
+			"phoneNumbers": "Phone numbers included",
+			"additionalNumbers": "Additional phone numbers",
+			"toolsReporting": "Tools & reporting",
+			"connections": "Calendar & CRM connections",
+			"webWidget": "Web call & chat widget",
+			"dashboard": "User Dashboard",
+			"recordings": "Daily call recordings & reports",
+			"multilingual": "Multilingual support",
+			"supportCompliance": "Support & compliance",
+			"support": "Support",
+			"hipaa": "HIPAA & BAA Compliance",
+			"available": "Available",
+			"included": "Included",
+			"notIncluded": "Not included",
+			"languages": "32 languages",
+			"minuteRate": "${rate} / minute",
+			"transferRate": "${rate}/minute",
+			"smsRate": "${rate}/SMS",
+			"telephonyRate": "From ${rate}/min",
+			"additionalNumberRate": "{price}/month",
+			"agentPro": "Receptionist & Lead follow-up agent",
+			"agentPlus": "Receptionist, Lead follow-up, & Qualification agent",
+			"agentMax": "Receptionist, Lead follow-up, & Qualification agent",
+			"billingDetails": "Billing, setup, and service details:",
+			"terms": "Terms of Service",
+			"complianceDetails": "HIPAA/BAA availability requires confirmed scope and configuration. See",
+			"serviceRequirements": "service requirements"
+		}
+	},
+	"offer": {
+		"demoFreeMinutes": 10,
+		"demoDeliveryHours": 1,
+		"deliveryTemplate": "{hours} {hourUnit}",
+		"hourSingular": "hour",
+		"hourPlural": "hours",
+		"supportedStack": {
+			"phone": {
+				"ringlume": "a VoIP number from Ringlume",
+				"twilio": "Twilio",
+				"telnyx": "Telnyx"
+			},
+			"calendar": {
+				"google": "Google Calendar"
+			},
+			"booking": {
+				"cal": "Cal.com",
+				"calendly": "Calendly"
+			},
+			"crm": {
+				"hubspot": "HubSpot",
+				"salesforce": "Salesforce",
+				"zoho": "Zoho CRM",
+				"gohighlevel": "GoHighLevel"
+			}
+		},
+		"listConjunction": "or",
+		"listSeparator": ", "
+	},
+	"shared": {
+		"nav": {
+			"home": "Home",
+			"demo": "Try it now",
+			"features": "Features",
+			"pricing": "Pricing",
+			"faq": "FAQ",
+			"contact": "Contact",
+			"freeDemo": "Free Demo",
+			"mainLabel": "Main",
+			"menuLabel": "Toggle menu"
+		},
+		"footer": {
+			"freeDemo": "Free Demo",
+			"terms": "Terms",
+			"privacy": "Privacy",
+			"contact": "Contact",
+			"label": "Footer",
+			"copyright": "© {year} Ringlume. All rights reserved."
+		},
+		"logoAlt": "Ringlume",
+		"defaultTitle": "Ringlume",
+		"defaultDescription": "A virtual receptionist for service businesses that answers calls, qualifies leads, and books appointments 24/7.",
+		"getFreeDemo": "Get Your Free Demo",
+		"tryNow": "Try it now",
+		"manifestName": "Ringlume",
+		"manifestShortName": "Ringlume"
+	},
+	"pages": {
+		"home": {
+			"title": "Ringlume",
+			"description": "Virtual receptionist for arborists. Ringlume answers calls, captures tree-care leads, and books estimates 24/7. Hear the live demo and explore plans.",
+			"hero": {
+				"heading": "You handle the trees.",
+				"accent": "We handle the calls.",
+				"description": "Virtual receptionist for arborists. Capture leads and book estimates while you’re on the job.",
+				"reassurance": "Talk to a receptionist that knows your business.",
+				"freeDemo": "Free Demo",
+				"minutes": "{minutes} Min",
+				"alwaysWorking": "Always Working",
+				"alwaysValue": "24/7"
+			},
+			"comparison": {
+				"heading": "More call coverage.",
+				"accent": "Less hiring overhead.",
+				"caption": "Monthly price comparison",
+				"wageLabel": "Receptionist wages alone",
+				"perMonth": "/mo",
+				"planLabel": "Ringlume {plan}",
+				"annualWage": "U.S. median receptionist wage: {wage}/year.",
+				"source": "Source:",
+				"sourceLink": "O*NET OnLine, {year} BLS median wage",
+				"qualification": ". Wages exclude benefits and payroll taxes. Ringlume does not replace in-person duties. Not guaranteed savings.",
+				"details": "Comparison details",
+				"end": "."
+			},
+			"closingCta": {
+				"heading": "Stay on the job.",
+				"accent": "We’ll take the call.",
+				"contact": "Contact Us"
+			},
+			"calculator": {
+				"heading": "What’s a missed call",
+				"accent": "really costing you?",
+				"description": "Use your own numbers to estimate potential revenue at stake."
+			}
+		},
+		"faq": {
+			"title": "Frequently Asked Questions | Ringlume",
+			"description": "Find answers about Ringlume call answering, appointment booking, customer questions, call transfers, setup, pricing, and subscription management.",
+			"heading": "Frequently Asked",
+			"accent": "Questions",
+			"viewAll": "View all FAQs"
+		},
+		"pricing": {
+			"title": "Pricing | Ringlume",
+			"description": "Compare Ringlume’s Basic, Pro, Plus, and Max plans. See monthly and annual prices, included call minutes, setup fees, and usage rates."
+		}
+	},
+	"forms": {
+		"contact": {
+			"ariaLabel": "Contact form",
+			"honeypot": "Don't fill this out if you're human",
+			"emailLabel": "Email",
+			"messageLabel": "Message",
+			"submitLabel": "Send message",
+			"consentBefore": "By submitting you agree to our ",
+			"privacyLabel": "Privacy Policy",
+			"consentAfter": "."
+		},
+		"demo": {
+			"ariaLabel": "Demo request form",
+			"honeypot": "Don't fill this out if you're human",
+			"firstNameLabel": "First name",
+			"lastNameLabel": "Last name",
+			"emailLabel": "Business email",
+			"websiteLabel": "Company website",
+			"websiteTitle": "Enter your company website, like example.com",
+			"phoneLabel": "Phone number",
+			"referralLabel": "How did you hear about us?",
+			"optionalLabel": "(optional)",
+			"referralPlaceholder": "Select one",
+			"referralGoogle": "Google search",
+			"referralFacebook": "Facebook",
+			"referralTwitter": "X/Twitter",
+			"referralYoutube": "YouTube",
+			"referralPerson": "Referral from someone",
+			"referralAssistant": "Virtual assistant (ChatGPT, Claude, etc.)",
+			"referralOther": "Other",
+			"submitLabel": "Get my free demo",
+			"delivery": "Your demo link arrives by email within {deliveryMax}, any time of day. ",
+			"consentBefore": "By submitting you agree to our ",
+			"termsLabel": "Terms of Service",
+			"consentBetween": " and ",
+			"privacyLabel": "Privacy Policy",
+			"consentAfter": "."
+		},
+		"contactPage": {
+			"metaTitle": "Contact Us | Ringlume",
+			"metaDescription": "Get in touch with Ringlume. Reach out via WhatsApp or email with questions about our virtual receptionist service.",
+			"heading": "Contact Us",
+			"whatsappLabel": "WhatsApp",
+			"whatsappDisplay": "+8801951-284128",
+			"emailLabel": "Email",
+			"emailDisplay": "support@ringlume.com"
+		},
+		"bookDemoPage": {
+			"metaTitle": "Get Your Free Personalized Demo | Ringlume",
+			"metaDescription": "Request a free personalized demo of a Ringlume voice agent built for your business. Test it free for up to {demoFreeMinutes} minutes.",
+			"heading": "Get Your Free Personalized Demo",
+			"intro": "A demo built for your business, free for up to {demoFreeMinutes} minutes."
+		},
+		"contactThanks": {
+			"metaTitle": "Message Received | Ringlume",
+			"metaDescription": "Thanks for contacting Ringlume.",
+			"logoAlt": "Ringlume",
+			"message": "Message received. We'll reply by email.",
+			"demoLabel": "Get your free demo"
+		},
+		"bookDemoThanks": {
+			"metaTitle": "Demo Request Received | Ringlume",
+			"metaDescription": "Your personalized Ringlume demo is on its way.",
+			"logoAlt": "Ringlume",
+			"message": "Request received. We're building your demo and will email the link within {deliveryMax}.",
+			"tryLabel": "Try it now",
+			"bookingLabel": "Prefer to talk? Book a call"
+		}
+	},
+	"demo": {
+		"text": {
+			"heading": "Talk to Ava",
+			"idle": "Try it yourself",
+			"description": "Ringlume's virtual receptionist. A real conversation. Not a recording.",
+			"start": "Try it now",
+			"cancel": "Cancel",
+			"mute": "Mute",
+			"end": "End call",
+			"help": "Microphone required to speak.",
+			"audio": "No sound? Enable audio",
+			"hint": "Try asking: “Can I book an appointment?”",
+			"noScript": "Enable JavaScript to use the live demo.",
+			"personalizedDemo": "Get your free personalized demo",
+			"connecting": "Connecting…",
+			"unmute": "Unmute",
+			"muteLabel": "Mute microphone",
+			"unmuteLabel": "Unmute microphone",
+			"ended": "Call ended",
+			"error": "Unable to connect",
+			"live": "Live · {time}"
+		},
+		"messages": {
+			"permissionBlocked": "Microphone access was blocked. Allow it in your browser settings, then try again.",
+			"microphoneMissing": "No microphone was found. Connect one, then try again.",
+			"microphoneBusy": "Your microphone could not start. Check whether another app is using it, then try again.",
+			"unauthorized": "The demo could not authorize this call. Try again on ringlume.com or request a personalized demo below.",
+			"busy": "The demo is busy. Please wait a moment and try again.",
+			"connectionFailed": "The connection failed. Check your internet connection, then try again.",
+			"loadFailed": "The demo could not load. Please try again or request a personalized demo below.",
+			"connecting": "Allow microphone access if prompted. Connecting…",
+			"timeout": "The connection timed out. Check microphone permission and your connection, then try again.",
+			"audioEnabled": "Audio enabled. Check your speaker volume if you cannot hear the agent.",
+			"audioBlocked": "Audio is blocked. Allow sound or autoplay for this site in your browser settings, then select Enable audio.",
+			"offline": "You are offline. Reconnect to the internet, then try again.",
+			"securityLoadFailed": "The security check could not load. Check your connection or content blocker, then try again.",
+			"unsupported": "Voice calls need HTTPS and a browser with microphone support. Open ringlume.com in a supported browser.",
+			"securityFailed": "The security check failed. Please try again.",
+			"connected": "Connected. You can speak now.",
+			"ended": "Call ended.",
+			"cancelled": "Call cancelled."
+		}
+	},
+	"storyboard": {
+		"heading": "A call comes in.",
+		"headingAccent": "Ringlume takes it from here.",
+		"subtitle": "Watch a tree-care request become a booked estimate.",
+		"example": "Illustrative example",
+		"transcript": "A fictional after-hours call to {company}. It captures {name}’s request for {request} at {address}, books an agreed {day} estimate, and prepares a summary for the team. Booking follows the business’s availability and rules. This is a silent, condensed illustration, not a live dashboard or a timing claim.",
+		"sample": {
+			"company": "Ringlume",
+			"name": "Alex Morgan",
+			"address": "24 Maple Lane",
+			"phone": "202-555-0148",
+			"request": "oak removal",
+			"location": "front yard",
+			"day": "Tuesday",
+			"time": "10:30",
+			"callTime": "9:47 PM"
+		},
+		"messages": {
+			"one": "Thank you for reaching out to {company}. How can I help you?",
+			"two": "I’d like an estimate for {request} in my {location}.",
+			"three": "Of course. May I have your name, property address, and callback number?",
+			"four": "{name}. {address}. My number is {phone}.",
+			"five": "Thanks, {firstName}. There’s an estimate visit available {day} at {time}. Does that work?",
+			"six": "{day} at {time} works. Thank you!",
+			"seven": "You’re booked. I’ll pass the details along to the team.",
+			"eight": "Perfect. See you {day}!"
+		},
+		"speakers": {
+			"caller": "Caller",
+			"receptionist": "Receptionist",
+			"transcriptReceptionist": "{company}",
+			"prefix": "{speaker}: ",
+			"openingQuote": "“",
+			"closingQuote": "”"
+		},
+		"controls": {
+			"pause": "Pause animation",
+			"resume": "Resume animation",
+			"replay": "Replay",
+			"progress": "Replay a storyboard event",
+			"from": "Replay from {label}",
+			"stepNumber": "0{number}"
+		},
+		"stages": {
+			"answered": "Call answered",
+			"booked": "Estimate booked",
+			"updated": "Team updated"
+		},
+		"statuses": {
+			"incoming": "Incoming call",
+			"onCall": "{company} is on the call",
+			"booked": "Estimate booked",
+			"updated": "Your team is in the loop"
+		},
+		"call": {
+			"afterHours": "· After hours",
+			"subtitle": "One less call to miss.",
+			"incoming": "Your crew’s off the clock.",
+			"incomingSubtitle": "Your receptionist isn’t.",
+			"region": "Illustrative tree-care conversation",
+			"counter": "{current} / {total}",
+			"speaking": "{speaker} is speaking",
+			"captured": "Conversation captured",
+			"example": "Example conversation",
+			"timer": "{minutes}:{seconds}"
+		},
+		"calendar": {
+			"label": "Your calendar",
+			"earlyTime": "9:00",
+			"earlyEvent": "Crew check-in",
+			"available": "Available for an estimate",
+			"visit": "Estimate visit",
+			"request": "{requestTitle}",
+			"details": "{name} · {address}",
+			"lateTime": "12:00"
+		},
+		"summary": {
+			"label": "Ready for your team",
+			"title": "{name} · Estimate booked",
+			"details": "{locationSummary} {request}. {day}, {time}.",
+			"callback": "Callback: {phone}",
+			"waiting": "Call details will appear here."
+		},
+		"footnote": {
+			"lead": "Booking is one possible outcome.",
+			"body": "Ringlume can instead transfer the call or take a message, following your rules and availability.",
+			"try": "Try it now",
+			"arrow": "↗"
+		}
+	},
+	"calculator": {
+		"label": "Missed revenue calculator",
+		"potential": "Potential missed revenue",
+		"perYear": "per year",
+		"monthly": "Monthly",
+		"bookings": "Bookings",
+		"perWeek": "/ week",
+		"disclaimer": "Estimate only, not guaranteed revenue.",
+		"details": "How it’s calculated",
+		"end": ".",
+		"bookingValue": "Average booking value",
+		"currency": "$",
+		"missedCalls": "Missed calls per week",
+		"calls": "calls",
+		"adjust": "Adjust assumptions",
+		"bookRate": "Missed callers who would book",
+		"percent": "%",
+		"repeatVisits": "Average repeat visits",
+		"times": "x",
+		"assumption": "Assuming {rate} of missed callers would book and an average of {repeats}x repeat visits.",
+		"result": "Potential missed revenue {annual} per year, {monthly} per month, {bookings} {bookingWord} per week.",
+		"bookingSingular": "booking",
+		"bookingPlural": "bookings"
+	},
+	"faq": {
+		"busyCalls": {
+			"question": "Can Ringlume answer calls when we're busy or unavailable?",
+			"paragraph1": "Yes. Ringlume answers 24/7, including when your team is busy, on-site, or off the clock."
+		},
+		"urgentCalls": {
+			"question": "Can Ringlume handle urgent calls?",
+			"paragraph1": "It can flag urgent business requests and contact your team using your rules. It is not an emergency service."
+		},
+		"professionalExpertise": {
+			"question": "What happens when a caller needs professional expertise?",
+			"paragraph1": "Ringlume collects the details and books a visit or transfers the call. It does not replace professional judgment."
+		},
+		"appointments": {
+			"question": "Can Ringlume book appointments automatically?",
+			"paragraph1": "Yes. It checks your connected calendar and books appointments using your availability and scheduling rules."
+		},
+		"leadInformation": {
+			"question": "What information can Ringlume collect from a new lead?",
+			"paragraph1": "You choose what to collect, such as:",
+			"list1": "Name and contact details",
+			"list2": "Service address",
+			"list3": "Work needed",
+			"list4": "Preferred time and urgency"
+		},
+		"businessQuestions": {
+			"question": "Can Ringlume answer questions about our business and services?",
+			"paragraph1": "Yes. It uses your approved services, hours, service areas, prices, and FAQs."
+		},
+		"pricingQuestions": {
+			"question": "What if customers ask about pricing?",
+			"paragraph1": "It shares approved prices or books an estimate. It should not guess."
+		},
+		"differentServices": {
+			"question": "Can Ringlume handle different services or types of inquiries?",
+			"paragraph1": "Yes. Set different questions, booking steps, and handoff rules for each service you offer."
+		},
+		"unknownAnswer": {
+			"question": "What happens if Ringlume doesn't know the answer?",
+			"paragraph1": "It can take a message or hand the call to your team instead of guessing."
+		},
+		"liveTransfer": {
+			"question": "Can important calls be transferred to a real person?",
+			"paragraph1": "Yes. When enabled, it transfers calls to your team using the rules you choose."
+		},
+		"callFollowUp": {
+			"question": "Will we know what happened after every call?",
+			"paragraph1": "Yes. Call summaries, recordings, and caller details are available on all plans through your dashboard."
+		},
+		"receptionistStaff": {
+			"question": "Does Ringlume replace my receptionist or office staff?",
+			"paragraph1": "It handles routine phone calls, not in-person duties. Use it alongside your team or for overflow calls."
+		},
+		"setupTime": {
+			"question": "How long does setup take?",
+			"link1Before": "We agree your launch timeline after reviewing your requirements and tools. Your receptionist is tested before going live. See ",
+			"link1Text": "setup details",
+			"link1After": "."
+		},
+		"pricing": {
+			"question": "How much does Ringlume cost?",
+			"link1Before": "See our ",
+			"link1Text": "plans",
+			"link1After": " for prices, minutes, and setup fees."
+		},
+		"upgradeSubscription": {
+			"question": "How do I upgrade my subscription plan?",
+			"link1Before": "Use our ",
+			"link1Text": "Contact page",
+			"link1After": " to request an upgrade. We’ll confirm the change by email."
+		},
+		"cancelSubscription": {
+			"question": "How do I cancel my subscription plan?",
+			"paragraph1": "Cancellation takes effect at the end of your current billing period. We’ll email confirmation.",
+			"link1Before": "Request cancellation through our ",
+			"link1Text": "Contact page",
+			"link1After": "."
+		}
+	},
+	"legal": {
+		"terms": {
+			"metaTitle": "Terms & Conditions | Ringlume",
+			"rateLabels": {
+				"perMinute": "/minute",
+				"perSms": "/SMS",
+				"telephonyFrom": "from"
+			},
+			"metaDescription": "Terms and conditions governing Ringlume's virtual receptionist and automated call-handling services.",
+			"acceptance": {
+				"headingText1": "1. Acceptance of Terms",
+				"paragraph1Text1": "By accessing or using the services provided by Ringlume (\"Company,\" \"we,\" \"us,\" or \"our\"), including our virtual receptionist services and automated call-handling and voice-processing technology, plus all related software, platforms, and communication tools (collectively, the \"Services\"), you (\"Client,\" \"you,\" or \"your\") agree to be bound by these Terms & Conditions (\"Terms\"). If you do not agree to all of these Terms, you are expressly prohibited from using the Services and must discontinue use immediately.",
+				"paragraph2Text1": "These Terms constitute a legally binding agreement between you and Ringlume. We reserve the right to update, modify, or replace these Terms at any time without prior notice. Continued use of the Services following any changes constitutes acceptance of those changes."
+			},
+			"services": {
+				"headingText1": "2. Description of Services",
+				"paragraph1Text1": "Ringlume provides virtual receptionist and automated call-handling services for businesses, including but not limited to:",
+				"item1Text1": "Virtual receptionist services for inbound and outbound call handling",
+				"item2Text1": "Automated appointment scheduling and calendar management",
+				"item3Text1": "Scheduled outbound calling campaigns",
+				"item4Text1": "Call summaries, transcripts, and reporting dashboards",
+				"item5Text1": "Setup using your business information and call-handling preferences",
+				"item6Text1": "Integration services for customer management systems, SMS, email, and third-party platforms",
+				"paragraph2Text1": "The specific features, capabilities, and scope of the Services are detailed in your active subscription plan and may be updated or modified by Ringlume from time to time to improve functionality and service quality.",
+				"paragraph3Text1": "Every plan includes a User Dashboard and daily call recordings and reports. Web calls and web chat widgets are also included on all plans; usage charges are governed by",
+				"paragraph3Text2": "section 3.1",
+				"paragraph3Text3": ". Agent bundles, included call minutes and phone numbers, simultaneous-call limits, calendar and CRM connections, multilingual support, and support levels are set out in the",
+				"paragraph3Text4": "plan comparison",
+				"paragraph3Text5": "for your selected plan.",
+				"subheading1Text1": "2.1 Configuration and Integrations",
+				"paragraph4Text1": "Your phone setup, calendar, CRM, and any special compliance requirements are reviewed before setup. Custom integrations depend on the tools and agreed scope. No compliance certification or regulated workflow is guaranteed by choosing a plan. Preferred tools and launch estimates are explained in",
+				"paragraph4Text2": "section 7.1",
+				"paragraph4Text3": ".",
+				"paragraph5Text1": "HIPAA support and a Business Associate Agreement (BAA) are available on all plans through Trillet. Use involving protected health information requires confirmation of the applicable BAA, configuration, and agreed scope before processing begins."
+			},
+			"billing": {
+				"headingText1": "3. Subscription Terms & Billing",
+				"paragraph1Text1": "Ringlume offers four subscription plans: {planNames}. Each plan is available with monthly or annual billing. The subscription fee and billing interval are the amounts and terms shown on the Ringlume Pricing page at the time of purchase.",
+				"paragraph2Text1": "Subscription charges renew automatically at the selected billing interval until cancelled. Customers can manage or cancel a subscription by contacting us through our Contact page, and we confirm the cancellation timing and effective date before the change takes effect.",
+				"paragraph3Text1": "A one-time Service Setup Fee applies when shown on the Ringlume Pricing page. It is displayed before payment and is charged with the initial transaction; it is not a recurring subscription charge. Applicable taxes are calculated and displayed before payment.",
+				"paragraph4Text1": "All fees are quoted in United States Dollars (USD) unless otherwise specified. Our payment provider processes payment and billing records for Ringlume and provides invoices or receipts, payment-method management, and hosted billing tools. Ringlume manually sets up and manages the Services, including the dashboard access included with every plan.",
+				"paragraph5Text1": "No refunds.",
+				"paragraph5Text2": "All fees, including subscription charges and the one-time Service Setup Fee, are non-refundable, except where a refund is required by applicable law.",
+				"subheading1Text1": "3.1 Usage Rates, Annual Billing, and Plan Changes",
+				"paragraph6Text1": "Included minutes reset monthly. Extra call-minute rates are",
+				"paragraph6Text2": ". Annual subscriptions are charged at the full annual total shown on the Pricing page; displayed monthly equivalents are approximate, not monthly charges.",
+				"item1Text1": "Live call transfers:",
+				"item1Text2": ".",
+				"item2Text1": "SMS messages:",
+				"item2Text2": ".",
+				"item3Text1": "Ringlume telephony:",
+				"item3Text2": ". These carrier charges apply to calls routed through a phone number in addition to standard call usage.",
+				"item4Text1": "Additional phone numbers:",
+				"item4Text2": "per additional number per month, beyond the numbers included in your plan.",
+				"paragraph7Text1": "Voice conversations through a website widget or web call use the same monthly call-minute allowance and standard per-minute rates as phone calls, including your plan's additional-minute rate once the allowance is exhausted. Web calls do not use a phone line, so no telephony fee applies. This exemption does not make web-call usage free.",
+				"paragraph8Text1": "Text messages exchanged through the web chat widget are counted as SMS messages for billing purposes and charged at your plan's SMS rate. In a type-or-talk session, where a visitor switches between typing and speaking, the voice portion is billed as call usage and the typed messages are billed at SMS rates. Including a widget in your plan does not waive these usage charges.",
+				"paragraph9Text1": "Request upgrades or cancellation through our",
+				"paragraph9Text2": "Contact page",
+				"paragraph9Text3": ". Upgrades are charged at the prorated difference for the rest of the current billing period. Cancellation takes effect at the end of the current billing period. We confirm changes by email.",
+				"subheading2Text1": "3.2 Illustrative Estimates and Wage Comparisons",
+				"paragraph10Text1": "The missed-call calculator multiplies missed calls per week by the assumed booking rate, booking value, repeat-visit multiplier, and 52 weeks. Monthly estimates divide that result by 12. These are illustrative assumptions, not promised bookings or revenue. Actual recovered revenue depends on call volume, lead quality, scheduling capacity, and other factors.",
+				"paragraph11Text1": "The wage comparison divides the cited U.S. annual median receptionist wage by 12 and rounds to the nearest dollar. Wages exclude benefits and payroll taxes and do not cover 24/7 staffing. Ringlume handles phone calls and scheduling, not in-person reception or every administrative duty. This comparison does not guarantee savings.",
+				"subheading3Text1": "3.3 Setup Fees When Upgrading",
+				"paragraph12Text1": "When you upgrade, the total Service Setup Fees already paid count toward the new plan's Service Setup Fee. This includes your initial setup payment and any setup-fee top-ups paid on earlier upgrades. You pay only the remaining difference, not the full setup fee again. If your previous setup payments already cover the new plan's setup fee, no additional setup fee is due.",
+				"item5Text1": "to",
+				"item5Text2": ":",
+				"item5Text3": "already paid toward a",
+				"item5Text4": "setup fee means only",
+				"item5Text5": "extra.",
+				"paragraph13Text1": "This setup-fee credit is separate from subscription charges and any prorated subscription difference due when upgrading."
+			},
+			"intellectualProperty": {
+				"headingText1": "4. Intellectual Property & Licensing",
+				"paragraph1Text1": "All branded assets, visual compositions, written content, and digital materials created specifically for the Client by Ringlume under an active subscription (\"Client Deliverables\") shall be considered the property of the Client upon full payment of the applicable subscription fees, subject to the terms herein.",
+				"paragraph2Text1": "Ringlume provides value-added managed Services that build on and utilize licensed third-party technology infrastructure. Ringlume configures, integrates, deploys, optimizes, brands, and supports the Services delivered to the Client.",
+				"paragraph3Text1": "The Client is granted a limited, non-exclusive, non-transferable license to use the Services and any Client Deliverables for the duration of their active subscription. This license does not include the right to resell, sublicense, redistribute, or commercially exploit the underlying call-handling technology, voice models, automation frameworks, or platform infrastructure.",
+				"paragraph4Text1": "All underlying models, language-processing engines, voice-synthesis systems, base software frameworks, and platform infrastructure used to deliver the Services are owned solely by the applicable third-party infrastructure providers. Ringlume claims no ownership interest in that underlying technology beyond its rights under applicable licenses.",
+				"paragraph5Text1": "Ringlume retains ownership of its branding, reusable configurations, workflows, implementation methods, integrations, and other service-layer materials created on top of the licensed infrastructure. Client Deliverables created specifically for the Client remain subject to the ownership and licensing terms stated above.",
+				"paragraph6Text1": "Ringlume remains responsible to the Client for the Services, pricing, support, service administration, cancellations, and billing inquiries. Payments are processed by a third-party payment provider that handles charges, billing records, invoices or receipts, and payment-method management. That payment provider is not responsible for the Services themselves."
+			},
+			"acceptableUse": {
+				"headingText1": "5. Acceptable Use",
+				"paragraph1Text1": "The Client agrees not to use, or permit any third party to use, the Services for:",
+				"item1Text1": "Unlawful, fraudulent, deceptive, threatening, abusive, or harassing communications",
+				"item2Text1": "Communications that violate the Telephone Consumer Protection Act (TCPA), CAN-SPAM Act, Canada's Anti-Spam Legislation (CASL), or any other applicable telemarketing, marketing, or consent law",
+				"item3Text1": "Emergency response, life-safety, safety-critical dispatch, or any use in which a delay, error, or service interruption could result in death, personal injury, or property damage",
+				"item4Text1": "Debt collection, healthcare, financial-services, or other regulated communications without appropriate legal and compliance review, authorization, and safeguards",
+				"item5Text1": "Any communication that fails to satisfy applicable consent, call-recording disclosure, identification, do-not-call, or opt-out requirements",
+				"paragraph2Text1": "Ringlume may suspend or terminate access to the Services where it reasonably determines that the Client's use violates this section or applicable law."
+			},
+			"dataCollection": {
+				"headingText1": "6. Data Collection & Call Recording",
+				"paragraph1Text1": "The Services involve the collection, processing, and storage of various categories of data, including but not limited to telephone call recordings, voice transcripts, caller identification information, appointment schedules, and interaction logs. By using the Services, you consent to the collection and processing of this data in accordance with our Privacy Policy.",
+				"paragraph2Text1": "All inbound and outbound telephone calls managed through Ringlume's automated call-handling and voice-processing system may be recorded, transcribed, and stored for quality checks, service improvement and training, compliance, and reporting purposes. Call recordings and transcripts are accessible through the Client dashboard and may be retained for the duration of the subscription plus any period required by applicable law.",
+				"paragraph3Text1": "The Client is responsible for ensuring that all applicable federal, state, and local laws regarding call recording consent are followed. Ringlume provides tools for automated call recording disclosure but does not assume legal liability for compliance with jurisdiction-specific recording consent requirements."
+			},
+			"availability": {
+				"headingText1": "7. Service Availability & Uptime",
+				"paragraph1Text1": "Ringlume endeavors to maintain high availability of the Services, targeting 99.9% uptime for the automated call-handling platform. However, scheduled maintenance windows, system upgrades, and unforeseen technical circumstances may temporarily affect service availability. The Company will provide reasonable advance notice for scheduled maintenance when practicable.",
+				"subheading1Text1": "7.1 Setup Time and Compatible Tools",
+				"paragraph2Text1": "Ringlume handles setup for your agreed call flows and connections. We confirm an estimated launch date for the agreed scope, not a universal turnaround. A demo is a preview, not a production deployment.",
+				"item1Text1": "Review and scope.",
+				"item1Text2": "Straightforward setups use existing, tested configurations for inbound call handling and agreed phone or calendar connections. Custom code, PBX changes, CRM workflows, multiple locations, and regulated requirements are scoped individually. Setup scope is subject to your plan's allowances.",
+				"item2Text1": "Information and access.",
+				"item2Text2": "We schedule setup once the scope is confirmed and we have your approved business information and required account access, including services, hours, service areas, booking rules, and escalation contacts as applicable. Your launch estimate includes our setup queue, configuration, and testing, with customer review time agreed with you.",
+				"item3Text1": "Test and approve.",
+				"item3Text2": "We test the agreed answers, lead capture, booking, transfers, and fallback handling where applicable. You review and approve the receptionist before we connect or change live call routing. Ready for testing is not the same as live: launch means your approved receptionist is connected to your phone line and ready to take real customer calls.",
+				"paragraph3Text1": "These are recommended tools, not requirements or guarantees of native integration. Compatibility, permissions, and the features needed are checked before we confirm your estimate:",
+				"item4Text1": "for phone service",
+				"item5Text1": "for the calendar",
+				"item6Text1": "for booking appointments",
+				"item7Text1": "a well-known CRM such as",
+				"paragraph4Text1": "Choosing a plan or a preferred tool does not guarantee a launch date. Number porting, third-party approvals, missing access, customer review delays, or changes to requirements can extend the timeline. If timing changes, we explain the reason and confirm a revised estimate with you.",
+				"paragraph5Text1": "Business days, when used in an estimate, mean Saturday through Thursday, excluding U.S. federal holidays, in Eastern Time (America/New_York). Setup dates are estimates, not guarantees. Production estimates do not change the separate demo-delivery offer.",
+				"paragraph6Text1": "Discuss your setup by",
+				"paragraph6Text2": "booking a meeting",
+				"paragraph6Text3": ", or by email, WhatsApp, or phone call (see our",
+				"paragraph6Text4": "Contact page",
+				"paragraph6Text5": ")."
+			},
+			"liability": {
+				"headingText1": "8. Limitation of Liability",
+				"paragraph1Text1": "To the maximum extent permitted by applicable law, Ringlume, its officers, directors, employees, agents, and affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, business opportunities, or goodwill, arising out of or in connection with the use of the Services, regardless of the theory of liability.",
+				"paragraph2Text1": "In no event shall the total aggregate liability of Ringlume exceed the total amount of subscription fees paid by the Client during the twelve (12)-month period immediately preceding the event giving rise to the claim."
+			},
+			"indemnification": {
+				"headingText1": "9. Indemnification",
+				"paragraph1Text1": "You agree to indemnify, defend, and hold harmless Ringlume and its officers, directors, employees, agents, and affiliates from and against any and all claims, liabilities, damages, losses, costs, and expenses (including reasonable attorneys' fees) arising out of or in connection with your use of the Services, your violation of these Terms, or your violation of any rights of a third party."
+			},
+			"governingLaw": {
+				"headingText1": "10. Governing Law & Dispute Resolution",
+				"paragraph1Text1": "These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which Ringlume operates, without regard to its conflict of law provisions. Any dispute arising out of or relating to these Terms or the Services shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association."
+			},
+			"severability": {
+				"headingText1": "11. Severability",
+				"paragraph1Text1": "If any provision of these Terms is found to be unenforceable or invalid by a court of competent jurisdiction, that provision shall be limited or eliminated to the minimum extent necessary so that these Terms shall otherwise remain in full force and effect."
+			},
+			"contact": {
+				"headingText1": "12. Contact Information",
+				"paragraph1Text1": "If you have any questions about these Terms & Conditions, please contact us:",
+				"item1Text1": "Email:",
+				"item1Text2": "support@ringlume.com",
+				"item2Text1": "WhatsApp:",
+				"item2Text2": "+8801951284128"
+			},
+			"title": "Terms & Conditions",
+			"lastUpdated": "Last Updated: November 6, 2026",
+			"planListConjunction": "and"
+		},
+		"privacy": {
+			"metaTitle": "Privacy Policy | Ringlume",
+			"metaDescription": "How Ringlume collects, processes, stores, and protects data used for automated call-handling, including call records, voice transcripts, and contact information.",
+			"introduction": {
+				"headingText1": "1. Introduction",
+				"paragraph1Text1": "Ringlume (\"Company,\" \"we,\" \"us,\" or \"our\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, store, and safeguard your personal information and data when you use our virtual receptionist and automated call-handling and voice-processing technology, plus all related software, platforms, and communication tools (collectively, the \"Services\").",
+				"paragraph2Text1": "By using the Services, you consent to the collection and processing of your data as described in this Privacy Policy. If you do not agree with our data practices, please discontinue use of the Services immediately."
+			},
+			"informationCollected": {
+				"headingText1": "2. Information We Collect",
+				"paragraph1Text1": "We collect various categories of information to provide and improve our Services:",
+				"subheading1Text1": "2.1 Information You Provide Directly",
+				"item1Text1": "Information provided for service setup or support, such as your name, email address, business name, and phone number",
+				"item2Text1": "Billing and payment information processed through our payment provider, such as billing address and transaction details. Ringlume does not receive your full card number.",
+				"item3Text1": "Business documents uploaded to set up the service with information about your business",
+				"item4Text1": "Communications sent to us via email, WhatsApp, or other channels",
+				"subheading2Text1": "2.2 Information Collected Automatically",
+				"item5Text1": "Website usage data (pages visited, time spent, click patterns, device information)",
+				"item6Text1": "IP addresses and approximate geolocation data",
+				"item7Text1": "Browser type, operating system, and device identifiers",
+				"item8Text1": "Cookies and similar tracking technologies",
+				"subheading3Text1": "2.3 Call and Voice Data",
+				"item9Text1": "Telephone call recordings (both inbound and outbound)",
+				"item10Text1": "Complete voice transcripts and conversation logs",
+				"item11Text1": "Caller identification information (phone numbers, caller ID data)",
+				"item12Text1": "Call metadata (duration, timestamps, call outcome, transfer status)",
+				"item13Text1": "Sentiment analysis results and emotional context indicators",
+				"item14Text1": "Appointment and scheduling data extracted from calls",
+				"subheading4Text1": "2.4 Third-Party Integration Data",
+				"item15Text1": "Customer records synchronized through connected integrations",
+				"item16Text1": "Contact information imported from third-party platforms",
+				"item17Text1": "Calendar and scheduling data from connected calendar services"
+			},
+			"dataUse": {
+				"headingText1": "3. How We Use Your Data",
+				"paragraph1Text1": "We use the information we collect for the following purposes:",
+				"item1Text1": "Service Delivery:",
+				"item1Text2": "To provide, operate, maintain, and improve the virtual receptionist and related automated call-handling services",
+				"item2Text1": "Service Setup & Improvement:",
+				"item2Text2": "To set up how the service handles calls using your business-specific data and improve response accuracy and conversation quality",
+				"item3Text1": "Call Processing:",
+				"item3Text2": "To record, transcribe, analyze, and store telephone communications processed through the Services",
+				"item4Text1": "Appointment Management:",
+				"item4Text2": "To schedule, confirm, and manage appointments based on caller interactions",
+				"item5Text1": "Reporting & Analytics:",
+				"item5Text2": "To generate post-call reports, performance analytics, and business reports",
+				"item6Text1": "Automated Follow-up Actions:",
+				"item6Text2": "To trigger SMS confirmations, email notifications, customer-record updates, and follow-up sequences",
+				"item7Text1": "Customer Support:",
+				"item7Text2": "To respond to inquiries, troubleshoot issues, and provide technical assistance",
+				"item8Text1": "Legal Compliance:",
+				"item8Text2": "To comply with applicable laws, regulations, and legal processes",
+				"item9Text1": "Security:",
+				"item9Text2": "To detect, prevent, and address fraud, unauthorized access, and other malicious activity"
+			},
+			"storageSecurity": {
+				"headingText1": "4. Data Storage & Security",
+				"paragraph1Text1": "We implement enterprise-grade security measures to protect your data, including:",
+				"item1Text1": "Encryption:",
+				"item1Text2": "All data is encrypted in transit using TLS 1.3 and at rest using AES-256 encryption standards",
+				"item2Text1": "Secure Infrastructure:",
+				"item2Text2": "Data is stored on SOC 2 Type II-compliant cloud infrastructure with redundant backups",
+				"item3Text1": "Access Controls:",
+				"item3Text2": "Strict role-based access controls ensure only authorized personnel can access sensitive data",
+				"item4Text1": "Regular Audits:",
+				"item4Text2": "We conduct regular security assessments and penetration testing to identify and address vulnerabilities",
+				"item5Text1": "Incident Response:",
+				"item5Text2": "We maintain a comprehensive incident response plan to address any security breaches promptly",
+				"paragraph2Text1": "While we implement robust security measures, no method of electronic transmission or storage is 100% secure. We cannot guarantee absolute security but will promptly notify affected users in the event of a data breach as required by applicable law."
+			},
+			"callRecording": {
+				"headingText1": "5. Call Recording & Transcription Policy",
+				"paragraph1Text1": "Our automated call-handling and voice-processing service records and transcribes telephone conversations for the following purposes:",
+				"item1Text1": "Quality checks and ongoing improvement of response accuracy",
+				"item2Text1": "Training data used to improve how the service understands callers and generates responses",
+				"item3Text1": "Compliance documentation and dispute resolution",
+				"item4Text1": "Business analytics and performance reporting",
+				"item5Text1": "Automated follow-up actions after calls (SMS confirmations, customer-record updates, etc.)",
+				"paragraph2Text1": "Call recordings and their associated transcripts are stored securely and are accessible exclusively through the Client dashboard. Recordings are retained for the duration of the active subscription and for a period of ninety (90) days following subscription termination, after which they are permanently deleted unless retention is required by applicable law.",
+				"paragraph3Text1": "Important:",
+				"paragraph3Text2": "The Client is solely responsible for ensuring compliance with all applicable federal, state, and local call recording consent laws in their jurisdiction. Ringlume provides tools that automatically tell callers when a call may be recorded but assumes no liability for the Client's compliance with recording consent requirements."
+			},
+			"dataSharing": {
+				"headingText1": "6. Data Sharing & Third Parties",
+				"paragraph1Text1": "We do not sell, rent, or trade your personal information to third parties for their marketing purposes. We may share your data in the following limited circumstances:",
+				"item1Text1": "Service Providers:",
+				"item1Text2": "With trusted third-party vendors who assist in operating our Services, including cloud hosting, telecommunications providers, and our payment provider for payment processing and billing, bound by applicable data processing obligations",
+				"item2Text1": "Legal Requirements:",
+				"item2Text2": "When required by law, subpoena, court order, or governmental regulation",
+				"item3Text1": "Business Transfers:",
+				"item3Text2": "In connection with a merger, acquisition, or sale of assets, with prior notice to affected users",
+				"item4Text1": "With Your Consent:",
+				"item4Text2": "When you explicitly authorize data sharing with specific third parties through the platform settings"
+			},
+			"dataRights": {
+				"headingText1": "7. Your Data Rights",
+				"paragraph1Text1": "Depending on your jurisdiction, you may have the following rights regarding your personal data:",
+				"item1Text1": "Access:",
+				"item1Text2": "Request a copy of all personal data we hold about you",
+				"item2Text1": "Correction:",
+				"item2Text2": "Request correction of inaccurate or incomplete data",
+				"item3Text1": "Deletion:",
+				"item3Text2": "Request deletion of your personal data, subject to legal retention requirements",
+				"item4Text1": "Portability:",
+				"item4Text2": "Request a machine-readable copy of your data for transfer to another service",
+				"item5Text1": "Restriction:",
+				"item5Text2": "Request restriction of processing in certain circumstances",
+				"item6Text1": "Objection:",
+				"item6Text2": "Object to processing based on legitimate interests",
+				"item7Text1": "Withdraw Consent:",
+				"item7Text2": "Withdraw previously given consent at any time",
+				"paragraph2Text1": "To exercise any of these rights, please contact us at support@ringlume.com. We will respond to your request within thirty (30) days."
+			},
+			"retention": {
+				"headingText1": "8. Data Retention",
+				"paragraph1Text1": "We retain your data for as long as necessary to provide the Services and fulfill the purposes described in this Privacy Policy:",
+				"item1Text1": "Customer and Service Data:",
+				"item1Text2": "Retained for the duration of the active subscription plus 90 days",
+				"item2Text1": "Call Recordings & Transcripts:",
+				"item2Text2": "Retained for the duration of the active subscription plus 90 days",
+				"item3Text1": "Payment Records:",
+				"item3Text2": "Our payment provider retains payment records, and Ringlume retains billing records it receives, for seven (7) years where required by tax and financial regulations",
+				"item4Text1": "Analytics Data:",
+				"item4Text2": "Aggregated and anonymized data may be retained indefinitely for service improvement"
+			},
+			"cookies": {
+				"headingText1": "9. Cookies & Tracking Technologies",
+				"paragraph1Text1": "Our website and third-party payment or billing tools may use cookies and similar tracking technologies to support functionality and enhance your experience:",
+				"item1Text1": "Essential Cookies:",
+				"item1Text2": "Required for basic website functionality and security",
+				"item2Text1": "Analytics Cookies:",
+				"item2Text2": "Help us understand how visitors interact with our website",
+				"item3Text1": "Preference Cookies:",
+				"item3Text2": "Remember your settings and preferences",
+				"paragraph2Text1": "You can control cookie preferences through your browser settings. Disabling essential cookies may affect website functionality."
+			},
+			"children": {
+				"headingText1": "10. Children's Privacy",
+				"paragraph1Text1": "Our Services are not directed to individuals under the age of 18. We do not knowingly collect personal information from children. If you become aware that a child has provided us with personal information, please contact us immediately, and we will take steps to delete such information."
+			},
+			"policyChanges": {
+				"headingText1": "11. Changes to This Privacy Policy",
+				"paragraph1Text1": "We reserve the right to update or modify this Privacy Policy at any time. Changes will be effective immediately upon posting on this page with an updated revision date. We encourage you to review this Privacy Policy periodically. Your continued use of the Services after any changes constitutes acceptance of the updated Privacy Policy."
+			},
+			"contact": {
+				"headingText1": "12. Contact Us",
+				"paragraph1Text1": "If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:",
+				"item1Text1": "Email:",
+				"item1Text2": "support@ringlume.com",
+				"item2Text1": "WhatsApp:",
+				"item2Text2": "+8801951284128"
+			},
+			"title": "Privacy Policy",
+			"lastUpdated": "Last Updated: August 8, 2026"
+		}
+	}
+}

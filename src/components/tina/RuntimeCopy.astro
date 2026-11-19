@@ -1,0 +1,16 @@
+---
+const { page } = Astro.props as { page: string }
+import { getPageMeta } from '../../lib/tina/site-meta'
+const site = Astro.locals.site
+const payload = {
+	links: page === 'home' ? site.links : undefined,
+	demo: page === 'home' ? site.demo : undefined,
+	storyboard: page === 'home' ? site.storyboard : undefined,
+	calculator: page === 'home' ? site.calculator : undefined,
+	pricing: ['home', 'pricing'].includes(page) ? site.pricing : undefined,
+	offer: ['home', 'pricing', 'bookDemo', 'bookDemoThanks', 'terms'].includes(page) ? site.offer : undefined,
+	meta: getPageMeta(site, page),
+}
+const serialized = JSON.stringify(payload).replace(/</g, '\\u003c')
+---
+<script type="application/json" data-ringlume-copy set:html={serialized} />

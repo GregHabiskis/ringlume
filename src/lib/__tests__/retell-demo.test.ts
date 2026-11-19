@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { demo as defaultCopy } from '../../../content/site/site.json'
 import {
 	createDemoController,
 	DemoSetupError,
@@ -214,6 +215,69 @@ describe('inline Retell call lifecycle', () => {
 		playback.resolve()
 		await enabling
 		expect(demo.latest().message).toBe('Call ended.')
+	})
+
+	it('refreshes live copy without reconnecting, unmuting, or ending the active call', async () => {
+		const demo = setup()
+		await demo.controller.start()
+		const { call, hooks } = demo.sessions[0]
+		hooks.onStatus('live')
+		demo.controller.toggleMute()
+		const copy = structuredClone(defaultCopy)
+		copy.messages.connected = 'Speak with Ava now.'
+		demo.controller.setCopy(copy)
+		expect(demo.latest()).toMatchObject({
+			phase: 'live', muted: true, messageKey: 'connected', message: 'Speak with Ava now.',
+		})
+		expect(demo.createWebCall).toHaveBeenCalledOnce()
+		expect(call.end).not.toHaveBeenCalled()
+		expect(call.unmute).not.toHaveBeenCalled()
+	})
+
+	it('keeps a pending connection and its original timeout when copy changes', async () => {
+		const permission = deferred<string | undefined>()
+		const demo = setup({ prepare: () => permission.promise })
+		const starting = demo.controller.start()
+		vi.advanceTimersByTime(44000)
+		const copy = structuredClone(defaultCopy)
+		copy.messages.connecting = 'Waiting for your microphone.'
+		copy.messages.timeout = 'Please check your connection.'
+		demo.controller.setCopy(copy)
+		expect(demo.latest().message).toBe('Waiting for your microphone.')
+		expect(vi.getTimerCount()).toBe(1)
+		vi.advanceTimersByTime(1000)
+		expect(demo.latest()).toMatchObject({
+			phase: 'error', messageKey: 'timeout', message: 'Please check your connection.',
+		})
+		permission.resolve(undefined)
+		await starting
+		expect(demo.createWebCall).not.toHaveBeenCalled()
+	})
+
+	it('refreshes an existing permission error from its semantic key and uses new copy on retry', async () => {
+		const demo = setup({ prepare: async () => { throw new DOMException('', 'NotAllowedError') } })
+		await demo.controller.start()
+		const copy = structuredClone(defaultCopy)
+		copy.messages.permissionBlocked = 'Please allow your microphone.'
+		copy.messages.connecting = 'Ava is connecting.'
+		demo.controller.setCopy(copy)
+		expect(demo.latest()).toMatchObject({
+			phase: 'error', messageKey: 'permissionBlocked', message: 'Please allow your microphone.',
+		})
+		const retry = demo.controller.start()
+		expect(demo.latest().message).toBe('Ava is connecting.')
+		await retry
+		expect(demo.latest().message).toBe('Please allow your microphone.')
+		expect(demo.createWebCall).not.toHaveBeenCalled()
+	})
+
+	it('resolves browser setup errors using the active dictionary rather than the original message', async () => {
+		const demo = setup({ prepare: async () => { throw new DemoSetupError('Old browser message', 'unsupported') } })
+		await demo.controller.start()
+		const copy = structuredClone(defaultCopy)
+		copy.messages.unsupported = 'Open a supported browser.'
+		demo.controller.setCopy(copy)
+		expect(demo.latest().message).toBe('Open a supported browser.')
 	})
 })
 

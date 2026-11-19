@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { calculator as copy } from '../../../content/site/site.json';
+import { formatCopy } from '../tina/site-model';
 
 import {
 	bookingsPrecision,
@@ -143,11 +145,23 @@ describe('missed-calls calculator', () => {
 
 	it('builds the collapsed helper and settled status copy', () => {
 		expect(buildAssumptionSummary(30, 1.2)).toBe(
-			'Assuming 30% of missed callers would book and an average of 1.2x repeat visits.',
+			formatCopy(copy.assumption, { rate: formatPercent(30), repeats: '1.2' }),
 		);
 
 		expect(buildResultSummary(calculateMissedCallRevenue())).toBe(
-			'Potential missed revenue $93,600 per year, $7,800 per month, 3 bookings per week.',
+			formatCopy(copy.result, { annual: formatCurrency(93600), monthly: formatCurrency(7800), bookings: '3', bookingWord: copy.bookingPlural }),
 		);
+	});
+
+	it('uses edited templates, units and singular labels without changing the maths', () => {
+		const edited = { ...copy, currency: 'USD ', percent: ' percent',
+			assumption: '{repeats} repeat, {rate} conversion',
+			result: '{bookings} {bookingWord}: {annual} / {monthly}',
+			bookingSingular: 'appointment', bookingPlural: 'appointments' };
+		expect(buildAssumptionSummary(30, 1.2, edited)).toBe('1.2 repeat, 30 percent conversion');
+		expect(buildResultSummary(calculateMissedCallRevenue({ missedCallsPerWeek: 1, bookRate: 100 }), edited))
+			.toBe('1 appointment: USD 31,200 / USD 2,600');
+		expect(buildResultSummary(calculateMissedCallRevenue(), edited))
+			.toBe('3 appointments: USD 93,600 / USD 7,800');
 	});
 });

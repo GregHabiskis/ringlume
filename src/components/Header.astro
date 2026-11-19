@@ -1,30 +1,37 @@
 ---
+import { tinaField } from '@tinacms/astro'
+import { isCurrentNavigation } from '../lib/header-navigation'
+const copy = Astro.locals.site.shared
+const destinations = Astro.locals.site.links
 const navLinks = [
-  { label: 'Home', href: '/' },
-  { label: 'Try it now', href: '/#demo' },
-  { label: 'Features', href: '/#visual' },
-  { label: 'Pricing', href: '/pricing' },
-  { label: 'FAQ', href: '/faq' },
-  { label: 'Contact', href: '/contact' },
-]
+  { key: 'home', destination: 'home', label: copy.nav.home, href: destinations.home },
+  { key: 'demo', destination: 'liveDemo', label: copy.nav.demo, href: destinations.liveDemo },
+  { key: 'features', destination: 'features', label: copy.nav.features, href: destinations.features },
+  { key: 'pricing', destination: 'pricing', label: copy.nav.pricing, href: destinations.pricing },
+  { key: 'faq', destination: 'faq', label: copy.nav.faq, href: destinations.faq },
+  { key: 'contact', destination: 'contact', label: copy.nav.contact, href: destinations.contact },
+] as const
 
-const path = Astro.url.pathname.replace(/\/+$/, '') || '/'
-const isCurrent = (href: string) =>
-  href.includes('#') ? false : (href.replace(/\/+$/, '') || '/') === path
+// Tina's Astro container doesn't use the preview page's URL.
+const previewPaths: Record<string, string> = {
+  home: '/', pricing: '/pricing', faq: '/faq', contact: '/contact',
+  bookDemo: '/book-demo', terms: '/terms', privacy: '/privacy',
+}
+const { page } = Astro.props as { page?: string }
+const currentUrl = page && Object.hasOwn(previewPaths, page)
+  ? new URL(previewPaths[page], Astro.url)
+  : Astro.url
+const path = currentUrl.pathname.replace(/\/+$/, '') || '/'
 // Landing page: the hero is section one, so Home ships with
 // aria-current="location" and the scroll-spy script moves it from there.
 // Every other route keeps the static exact-path "page" marker.
 const isIndex = path === '/'
-const currentAttr = (href: string) =>
-  isIndex
-    ? href === '/'
-      ? 'location'
-      : undefined
-    : isCurrent(href)
-      ? 'page'
-      : undefined
+const currentLink = navLinks.find(link => isCurrentNavigation(link.href, currentUrl))
+const currentAttr = (link: typeof navLinks[number]) =>
+  link === currentLink ? (isIndex ? 'location' : 'page') : undefined
 ---
 
+<div data-header-root>
 <header
   class="pointer-events-none fixed inset-x-0 top-0 z-40 px-3 pt-3 sm:px-4 lg:px-6 lg:pt-4"
 >
@@ -32,16 +39,16 @@ const currentAttr = (href: string) =>
     data-nav
     data-spy={isIndex || undefined}
     class="nav-pill glass glass-regular grain refract pointer-events-auto relative mx-auto flex h-14 max-w-7xl items-center justify-between rounded-full px-4 sm:px-5 lg:h-16 lg:px-6"
-    aria-label="Main"
+    aria-label={copy.nav.mainLabel}
   >
     <!-- Logo -->
-    <a href="/" class="group flex shrink-0 items-center gap-3">
+    <a href={destinations.home} data-tina-field={tinaField(destinations, 'home')} class="group flex shrink-0 items-center gap-3">
       <div class="transition-transform duration-300 group-hover:scale-105">
         <picture>
           <source srcset="/images/logo-240.webp" type="image/webp" />
           <img
             src="/images/logo-240.png"
-            alt="Ringlume"
+            alt={copy.logoAlt}
             width="240"
             height="96"
             class="h-8 w-auto lg:h-9"
@@ -59,27 +66,29 @@ const currentAttr = (href: string) =>
         <a
           href={link.href}
           data-nav-link
-          aria-current={currentAttr(link.href)}
+          data-tina-field={tinaField(destinations, link.destination)}
+          aria-current={currentAttr(link)}
           class="relative whitespace-nowrap rounded-full px-2.5 py-2 text-[13px] font-medium text-fg-2 transition-colors duration-200 hover:text-fg-1 lg:px-3.5 lg:text-sm"
         >
-          {link.label}
+          <span data-tina-field={tinaField(copy.nav, link.key)}>{link.label}</span>
         </a>
       ))}
     </div>
 
     <div class="flex items-center gap-2">
       <a
-        href="/book-demo"
+        href={destinations.freeDemo}
+        data-tina-field={tinaField(destinations, 'freeDemo')}
         class="btn btn-primary hidden whitespace-nowrap px-5 py-2.5 text-[13px] md:inline-flex lg:px-6 lg:text-sm"
       >
-        Free Demo
+        <span data-tina-field={tinaField(copy.nav, 'freeDemo')}>{copy.nav.freeDemo}</span>
       </a>
 
       <!-- Mobile Menu Button -->
       <button
         id="mobile-menu-toggle"
         class="menu-toggle inline-flex md:hidden"
-        aria-label="Toggle menu"
+        aria-label={copy.nav.menuLabel}
         aria-expanded="false"
         aria-controls="mobile-menu"
       >
@@ -106,16 +115,19 @@ const currentAttr = (href: string) =>
       <a
         href={link.href}
         data-nav-link
-        aria-current={currentAttr(link.href)}
+        data-tina-field={tinaField(destinations, link.destination)}
+        aria-current={currentAttr(link)}
         class="rounded-2xl px-4 py-3 text-sm font-medium text-fg-2 transition-colors duration-200 hover:bg-white/[0.06] hover:text-fg-1"
       >
-        {link.label}
+        <span data-tina-field={tinaField(copy.nav, link.key)}>{link.label}</span>
       </a>
     ))}
-    <a href="/book-demo" class="btn btn-primary mt-3 w-full text-sm">
-      Free Demo
+    <a href={destinations.freeDemo} data-tina-field={tinaField(destinations, 'freeDemo')} class="btn btn-primary mt-3 w-full text-sm">
+      <span data-tina-field={tinaField(copy.nav, 'freeDemo')}>{copy.nav.freeDemo}</span>
     </a>
   </div>
+</div>
+
 </div>
 
 <style>
@@ -218,238 +230,7 @@ const currentAttr = (href: string) =>
 </style>
 
 <script>
-  import { getAnchorTarget, prepareAnchorLayout } from '../lib/anchor-navigation'
-
-  const toggle = document.getElementById('mobile-menu-toggle')
-  const menu = document.getElementById('mobile-menu')
-
-  function setMenu(open: boolean) {
-    menu?.classList.toggle('hidden', !open)
-    toggle?.setAttribute('aria-expanded', String(open))
-  }
-
-  if (toggle && menu) {
-    toggle.addEventListener('click', () => {
-      setMenu(menu.classList.contains('hidden'))
-    })
-
-    // Any drawer link closes it, including same-page section anchors
-    // where no page reload would clear the state.
-    menu.addEventListener('click', (e) => {
-      if (e.target instanceof Element && e.target.closest('a')) {
-        setMenu(false)
-      }
-    })
-
-    document.addEventListener('click', (e) => {
-      const target = e.target as Node | null
-      if (!menu.classList.contains('hidden') && !menu.contains(target) && !toggle.contains(target)) {
-        setMenu(false)
-      }
-    })
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !menu.classList.contains('hidden')) {
-        setMenu(false)
-        toggle.focus()
-      }
-    })
-
-    // The toggle and drawer are md:hidden; above 768px nothing may stay open.
-    window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => {
-      if (e.matches) setMenu(false)
-    })
-  }
-
-  // Condense the pill on scroll (visual only).
-  const nav = document.querySelector<HTMLElement>('[data-nav]')
-  if (nav) {
-    const sync = () => nav.toggleAttribute('data-condensed', window.scrollY > 12)
-    sync()
-    window.addEventListener('scroll', sync, { passive: true })
-  }
-
-  // Liquid indicator that slides between nav items. The indicator is
-  // absolutely positioned inside [data-nav-links] (that container is the
-  // `relative` containing block), so every measurement is taken against
-  // its box with getBoundingClientRect: exact, and structurally unable
-  // to land on the logo.
-  const linksBox = document.querySelector<HTMLElement>('[data-nav-links]')
-  const indicator = linksBox?.querySelector<HTMLElement>('.nav-indicator')
-  const links = linksBox
-    ? Array.from(linksBox.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'))
-    : []
-
-  function currentLink() {
-    return links.find((link) => link.hasAttribute('aria-current'))
-  }
-
-  let shown: HTMLAnchorElement | undefined
-
-  function moveTo(el: HTMLAnchorElement | undefined) {
-    shown = el
-    if (!indicator || !linksBox) return
-    if (!el) {
-      indicator.classList.remove('is-active')
-      return
-    }
-    const box = linksBox.getBoundingClientRect()
-    const rect = el.getBoundingClientRect()
-    indicator.style.width = `${rect.width}px`
-    indicator.style.height = `${rect.height}px`
-    indicator.style.transform = `translate(${rect.left - box.left}px, ${rect.top - box.top}px)`
-    indicator.classList.add('is-active')
-  }
-
-  // Re-measure the resting target after resize, webfont swap, or reflow.
-  const rest = () => moveTo(shown ?? currentLink())
-
-  links.forEach((link) => {
-    link.addEventListener('pointerenter', () => moveTo(link))
-    link.addEventListener('focus', () => moveTo(link))
-  })
-
-  linksBox?.addEventListener('pointerleave', () => {
-    moveTo(currentLink())
-  })
-
-  rest()
-  window.addEventListener('resize', rest)
-  document.fonts?.ready.then(rest)
-  if (linksBox && 'ResizeObserver' in window) {
-    new ResizeObserver(rest).observe(linksBox)
-  }
-
-  // Scroll-spy (index only, signalled by data-spy on the nav): ONE
-  // IntersectionObserver maps section position on the page to the active
-  // link. Use an explicit mapping for page sections and their links.
-  // Bands without a link (the FOMO strip) keep the previous active link.
-  if (nav?.hasAttribute('data-spy')) {
-    // Prepare direct fragment visits as well as clicks within the homepage.
-    prepareAnchorLayout(getAnchorTarget(window.location.hash))
-
-    const allLinks = Array.from(
-      document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'),
-    )
-    const sections: [selector: string, href: string][] = [
-      ['#demo', '/#demo'], // nested in the hero; takes over at its anchor position
-      ['main > section:first-child', '/'], // hero → Home
-      ['#visual', '/#visual'],
-      ['#faq', '/faq'],
-      ['#contact', '/contact'],
-    ]
-    const pairs = sections.flatMap(([selector, href]) => {
-      const el = document.querySelector<HTMLElement>(selector)
-      return el && allLinks.some((l) => l.getAttribute('href') === href)
-        ? [{ el, href }]
-        : []
-    })
-
-    let activeHref: string | null = null
-    let locked = false
-    let lockTimer = 0
-
-    function applyActive(href: string) {
-      if (href === activeHref) return
-      activeHref = href
-      for (const link of allLinks) {
-        if (link.getAttribute('href') === href)
-          link.setAttribute('aria-current', 'location')
-        else link.removeAttribute('aria-current')
-      }
-      // The indicator follows the active link; it lives inside
-      // [data-nav-links], so it can never land on the logo.
-      moveTo(links.find((l) => l.getAttribute('href') === href))
-    }
-
-    // Active = the section covering the upper-third line of the viewport
-    // (34% — exactly where the observer's rootMargin band ends). The
-    // sticky-header clearance (-80px) prunes sections that are already
-    // fully above the band. The nested demo takes precedence only once
-    // it reaches its anchor clearance, keeping Home active at page load.
-    // Unlinked sections keep the previous active link.
-    function pick(): string | null {
-      const line = window.innerHeight * 0.34
-      for (const { el, href } of pairs) {
-        const r = el.getBoundingClientRect()
-        if (
-          el.id === 'demo' &&
-          r.top > parseFloat(getComputedStyle(el).scrollMarginTop) + 1
-        )
-          continue
-        if (r.top < line && r.bottom > line) return href
-      }
-      return null
-    }
-
-    function sync() {
-      if (locked) return
-      const href = pick()
-      if (href !== null) applyActive(href)
-    }
-
-    // Synchronous state at script run: adopt the server-rendered marker
-    // first, then reconcile immediately (covers restored scroll).
-    activeHref =
-      document
-        .querySelector('[data-nav-link][aria-current]')
-        ?.getAttribute('href') ?? null
-    sync()
-
-    const observer = new IntersectionObserver(sync, {
-      rootMargin: '-80px 0px -66% 0px',
-    })
-    for (const { el } of pairs) observer.observe(el)
-
-    // Lock only the active-link indicator during native smooth scrolling.
-    // This fallback changes highlighting, never the page's scroll position.
-    const unlock = () => {
-      clearTimeout(lockTimer)
-      locked = false
-      sync()
-    }
-    if ('onscrollend' in window)
-      window.addEventListener('scrollend', unlock)
-
-    document.addEventListener('click', (event) => {
-      if (
-        event.defaultPrevented ||
-        event.button !== 0 ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.altKey
-      )
-        return
-      const link =
-        event.target instanceof Element
-          ? event.target.closest<HTMLAnchorElement>('a[href]')
-          : null
-      if (
-        !link ||
-        link.hasAttribute('download') ||
-        (link.target && link.target !== '_self')
-      )
-        return
-
-      const url = new URL(link.href, window.location.href)
-      if (
-        url.origin !== window.location.origin ||
-        url.pathname !== window.location.pathname ||
-        url.search !== window.location.search
-      )
-        return
-      const target = getAnchorTarget(url.hash)
-      if (!target) return
-
-      // Expand intervening placeholders before the browser's default action.
-      // Do not preventDefault or issue a second programmatic scroll.
-      prepareAnchorLayout(target)
-      const pair = pairs.find(({ el }) => el === target || el.contains(target))
-      if (pair) applyActive(pair.href)
-      locked = true
-      clearTimeout(lockTimer)
-      lockTimer = window.setTimeout(unlock, 2000)
-    })
-  }
+  import { initHeader } from '../scripts/header'
+  const root = document.querySelector<HTMLElement>('[data-header-root]')
+  if (root) initHeader(root)
 </script>

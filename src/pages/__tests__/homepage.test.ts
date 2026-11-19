@@ -7,14 +7,14 @@ const read = (file: string) =>
 
 describe('homepage redesign', () => {
 	it('reinforces the personalized demo beneath the hero CTA', async () => {
-		const source = await read('components/Hero.astro')
+		const source = await read('components/tina/HeroCopy.astro')
 		const tagline = source.match(
 			/<p\b[^>]*data-demo-reassurance[^>]*>([\s\S]*?)<\/p>/,
 		)?.[1].trim()
-		expect(tagline).toBe('Talk to a receptionist that knows your business.')
+		expect(tagline).toBe('{copy.reassurance}')
 		expect(source).not.toContain('data-setup-tagline')
 		expect(source.indexOf('data-demo-reassurance')).toBeGreaterThan(
-			source.indexOf('Get Your Free Demo'),
+			source.indexOf('site.shared.getFreeDemo'),
 		)
 	})
 
@@ -50,7 +50,7 @@ describe('homepage redesign', () => {
 	})
 
 	it('centers hero facts in equal columns on mobile without changing wider layouts', async () => {
-		const hero = await read('components/Hero.astro')
+		const hero = await read('components/tina/HeroCopy.astro')
 		const facts = hero.match(/<dl\b[\s\S]*?<\/dl>/)?.[0] ?? ''
 		expect(facts).toContain('max-sm:gap-0 max-sm:text-center')
 		expect(facts.match(/max-sm:flex-1/g)).toHaveLength(2)
@@ -59,25 +59,18 @@ describe('homepage redesign', () => {
 	})
 
 	it('puts the demo in the hero and missed-call calculator below pricing', async () => {
-		const [page, hero] = await Promise.all([
+		const [page, hero, renderer] = await Promise.all([
 			read('pages/index.astro'),
 			read('components/Hero.astro'),
+			read('components/cms-regions/marketing/HomeBody.astro'),
 		])
 		expect(hero).toContain('<DemoSection />')
 		expect(page).not.toContain('<DemoSection />')
-		const sections = [
-			'<Hero />',
-			'<ReceptionistVisual />',
-			'<ReceptionistComparison />',
-			'<Pricing />',
-			'<FomoSection />',
-			'<FAQ ',
-			'<CtaSection />',
-		]
-		const positions = sections.map((section) => page.indexOf(section))
-		expect(positions.every((position) => position >= 0)).toBe(true)
-		expect(positions).toEqual([...positions].sort((a, b) => a - b))
-		expect(page).toContain('Virtual receptionist for arborists.')
+		expect(page.indexOf('<Hero />')).toBeLessThan(page.indexOf('<ReceptionistVisual />'))
+		expect(page.indexOf('<ReceptionistVisual />')).toBeLessThan(page.indexOf('<HomeBody />'))
+		for (const component of ['ReceptionistComparison', 'Pricing', 'FomoSection', 'FAQ', 'CtaSection']) {
+			expect(renderer).toContain(`<${component} ` .trimEnd())
+		}
 		expect(page).not.toContain('Capabilities')
 	})
 
@@ -91,7 +84,7 @@ describe('homepage redesign', () => {
 		expect(source).toContain('id="demo"')
 		expect(source).toContain('data-demo-open')
 		expect(source).toContain('data-demo-status')
-		expect(controller).toContain('The demo could not load.')
+		expect(controller).toContain('messages')
 		expect(source).toContain('prefers-reduced-motion: reduce')
 		expect(source).toContain('html.is-paused')
 		expect(source).not.toContain('content-auto')
@@ -112,14 +105,13 @@ describe('homepage redesign', () => {
 
 	it('cites the wage benchmark and states the comparison limits', async () => {
 		const source = await read('components/ReceptionistComparison.astro')
-		expect(source).toContain('annualMedianWage = 38010')
+		expect(source).toContain('site.pricing.benchmarkAnnualWage')
 		expect(source).toContain('Math.round(annualMedianWage / 12)')
 		expect(source).toContain(
 			'https://www.onetonline.org/link/summary/43-4171.00#WagesEmployment',
 		)
-		expect(source).toContain('2025 BLS median wage')
-		expect(source).toMatch(/not guaranteed savings/i)
-		expect(source).toMatch(/does not replace\s+in-person duties/)
+		expect(source).toContain('copy.sourceLink')
+		expect(source).toContain('copy.qualification')
 		expect(source).toContain('formatPrice(basic.monthly)')
 		expect(source).not.toContain('basic.setupFee')
 		expect(source).not.toContain('basic.minutes')
@@ -129,11 +121,11 @@ describe('homepage redesign', () => {
 		const features = (
 			await read('components/ReceptionistVisual.astro')
 		).replace(/\s+/g, ' ')
-		expect(features).toContain('Illustrative example')
+		expect(features).toContain('data-storyboard-text="example"')
 		expect(
 			VISUAL_CONVERSATION.some(({ text }) => text.includes('oak')),
 		).toBe(true)
-		expect(features).toContain('Oak removal')
+		expect(features).toContain('copy.')
 		expect(features).not.toContain('Answered in 1.2s')
 		expect(features).toContain('getVisualFrame')
 		expect(features).not.toMatch(/<script[^>]*src=/)

@@ -1,11 +1,31 @@
 // @ts-check
 import { defineConfig } from 'astro/config'
 import tailwindcss from '@tailwindcss/vite'
-import netlify from '@astrojs/netlify'
+import cloudflare from '@astrojs/cloudflare'
+import tina from '@tinacms/astro/integration'
+import { tinaAdminDevRedirect } from '@tinacms/astro/vite'
+
+// Do not copy build credentials into generated Worker preview artifacts.
+process.env.CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV = 'false'
 
 export default defineConfig({
+  integrations: [tina()],
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(), tinaAdminDevRedirect(),
+      {
+        name: 'tina-runtime-token',
+        enforce: 'pre',
+        transform(code, id) {
+          if (id.replaceAll('\\', '/').endsWith('/tina/__generated__/client.ts')) {
+            // Keep the CLI's literal secret out of Worker bundles; use the environment.
+            const replaced = code.replace(/token:\s*"(?:\\.|[^"\\])*"/, 'token: process.env.TINA_TOKEN')
+            if (replaced === code) throw new Error('Unexpected Tina client token format')
+            return { code: replaced, map: null }
+          }
+        },
+      },
+    ],
     build: {
       cssMinify: true,
       // lightningcss drops -webkit-backdrop-filter for baseline targets;
@@ -22,15 +42,6 @@ export default defineConfig({
     port: 4321,
   },
   output: 'static',
-  adapter: netlify({
-    // Dev-only: this project has no netlify/edge-functions and no edge
-    // middleware, so skip the Deno edge-functions emulator in `astro dev`
-    // (its spawn fails on Deno >=2.9: `deno eval --allow-scripts` is
-    // rejected). Production builds/deploys are unaffected.
-    devFeatures: {
-      environmentVariables: false,
-      images: true,
-      edgeFunctions: false,
-    },
-  }),
+  session: false,
+  adapter: cloudflare({ imageService: 'passthrough', prerenderEnvironment: 'node' }),
 })

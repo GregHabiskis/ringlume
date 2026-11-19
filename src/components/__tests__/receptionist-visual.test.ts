@@ -9,18 +9,47 @@ const read = async (path: string) =>
 
 describe('homepage visual demonstration', () => {
 	it('keeps one demonstration between the hero and cost comparison', async () => {
-		const [page, component] = await Promise.all([
+		const [page, component, body] = await Promise.all([
 			read('pages/index.astro'),
 			read('components/ReceptionistVisual.astro'),
+			read('components/cms-regions/marketing/HomeBody.astro'),
 		]);
 		expect(page).toMatch(
-			/<Hero\s*\/>\s*<ReceptionistVisual\s*\/>\s*<ReceptionistComparison\s*\/>/,
+			/<Hero\s*\/>\s*<ReceptionistVisual\s*\/>\s*<CopyRegion region="home" page="home"><HomeBody\s*\/><\/CopyRegion>/,
 		);
+		expect(body).toMatch(/---\s*<ReceptionistComparison\s*\/>\s*<Pricing\s*\/>/);
 		expect(page.match(/<ReceptionistVisual\s*\/>/g)).toHaveLength(1);
+		expect(body).not.toContain('ReceptionistVisual');
 		expect(page).not.toContain('Capabilities');
 		expect(component).toContain('id="visual"');
 		expect(component).toContain('aria-labelledby="visual-heading"');
 		expect(component).toContain('id="visual-heading"');
+	});
+
+	it('binds all static text lanes and refreshes the stable active DOM without resetting playback', async () => {
+		const source = await read('components/ReceptionistVisual.astro');
+		const {storyboard} = JSON.parse(await readFile(
+			new URL('../../../content/site/site.json', import.meta.url), 'utf8',
+		));
+		for (const key of ['heading', 'headingAccent', 'subtitle', 'example', 'transcript'])
+			expect(source).toContain(`data-storyboard-text="${key}"`);
+		for (const group of ['calendar', 'summary', 'footnote'])
+			for (const key of Object.keys(storyboard[group]))
+				expect(source).toContain(`data-storyboard-text="${group}.${key}"`);
+		for (const key of ['region', 'incoming', 'incomingSubtitle', 'subtitle', 'afterHours'])
+			expect(source).toContain(`data-storyboard-${key === 'region' ? 'aria' : 'text'}="call.${key}"`);
+		for (const key of ['counter', 'speaking', 'captured', 'example'])
+			expect(source).toContain(`copy.call.${key}`);
+		expect(source).toContain('const copy = site.storyboard');
+		expect(source).toContain('data-storyboard-copy={JSON.stringify(copy)}');
+		expect(source).toContain('data-tina-field={field(');
+		expect(source).toContain("window.addEventListener('ringlume:copy-change'");
+		const refresh = source.match(/function refreshCopy\(next: StoryboardCopy\) \{(.*?)window.addEventListener/)?.[1] ?? '';
+		expect(refresh).toContain('getVisualMessageParts(');
+		expect(refresh).toContain("step.setAttribute('aria-label'");
+		expect(refresh).toContain('render()');
+		expect(refresh).not.toMatch(/clock\.(?:press|advance|finish|playSegment)|syncPlayback|innerHTML|setInterval|setTimeout/);
+		expect(source).not.toContain('set:html');
 	});
 
 	it('preserves legacy Features bookmarks without restoring a second section', async () => {
@@ -33,15 +62,10 @@ describe('homepage visual demonstration', () => {
 
 	it('labels fictional activity and qualifies the booking flow', async () => {
 		const source = await read('components/ReceptionistVisual.astro');
-		expect(source).toContain('Illustrative example');
-		expect(source).toContain('A fictional after-hours call to Ringlume.');
-		expect(source).toContain('Booking is one possible outcome.');
-		expect(source).toContain(
-			'Ringlume can instead transfer the call or take a message, following your rules and availability.',
-		);
-		expect(source).toContain('not a live dashboard or a timing claim');
-		expect(source).toContain('href="/#demo"');
-		expect(source).toContain('Try it now');
+		for (const key of ['example', 'transcript', 'footnote.lead', 'footnote.body'])
+			expect(source).toContain(`data-storyboard-text="${key}"`);
+		expect(source).toContain('href={site.links.liveDemo}');
+		expect(source).toContain('data-storyboard-text="footnote.try"');
 	});
 
 	it('keeps alternative outcomes readable without waiting for the animation', async () => {
@@ -49,8 +73,8 @@ describe('homepage visual demonstration', () => {
 		const footnote =
 			source.match(/<div class="visual-footnote">([\s\S]*?)<\/div>/)?.[1] ?? '';
 		const explanation = footnote.match(/<p>([\s\S]*?)<\/p>/)?.[1] ?? '';
-		expect(footnote).toContain('Booking is one possible outcome.');
-		expect(footnote).toContain('transfer the call or take a message');
+		expect(footnote).toContain("text('footnote.lead')");
+		expect(footnote).toContain("text('footnote.body')");
 		expect(explanation).not.toMatch(
 			/aria-hidden|data-visual-(?:scene|exchange|reply)/,
 		);
@@ -60,7 +84,7 @@ describe('homepage visual demonstration', () => {
 	it('server-renders a finished example and an accessible non-announcing transcript', async () => {
 		const source = await read('components/ReceptionistVisual.astro');
 		expect(source).toContain(
-			'const finalFrame = getVisualFrame(VISUAL_DURATION)',
+			'const finalFrame = getVisualFrame(VISUAL_DURATION, undefined, copy)',
 		);
 		expect(source).toContain('data-phase={finalFrame.phase}');
 		expect(source).toContain('data-visual-message');
@@ -120,10 +144,10 @@ describe('homepage visual demonstration', () => {
 
 	it('makes each progress card an accessible control to replay from its event', async () => {
 		const source = await read('components/ReceptionistVisual.astro');
-		expect(source).toContain('aria-label="Replay a storyboard event"');
+		expect(source).toContain("aria-label={text('controls.progress')}");
 		expect(source).toContain('data-visual-step={index}');
 		expect(source).toContain(
-			'aria-label={`Replay from ${label.toLowerCase()}`}',
+			'aria-label={formatCopy(copy.controls.from, {label: copy.stages[key].toLowerCase()})}',
 		);
 		expect(source).toContain('clock.playSegment(index)');
 		expect(source).toContain('getVisualFrame(');
@@ -164,7 +188,7 @@ describe('homepage visual demonstration', () => {
 
 	it('highlights literal captured facts and flies the two outcomes from measured inbox origins', async () => {
 		const source = await read('components/ReceptionistVisual.astro');
-		expect(source).toContain('getVisualMessageParts(index)');
+		expect(source).toContain('getVisualMessageParts(index, copy)');
 		expect(source).toContain('<mark class="visual-detail">');
 		expect(source).toContain('frame.highlights[index]');
 		expect(source).toContain('getVisualTransferOrigin(');
@@ -179,13 +203,8 @@ describe('homepage visual demonstration', () => {
 
 	it('matches the named UI labels to the call subtitle and makes the company name larger', async () => {
 		const source = await read('components/ReceptionistVisual.astro');
-		expect(source).toContain('class="visual-company-name">Ringlume');
-		expect(source).toContain(
-			'class="visual-label visual-ui-label">Your calendar',
-		);
-		expect(source).toMatch(
-			/class="visual-label visual-ui-label">\s*Ready for your team/,
-		);
+		for (const key of ['sample.company', 'calendar.label', 'summary.label'])
+			expect(source).toContain(`data-storyboard-text="${key}"`);
 		for (const selector of [
 			'.visual-call-title',
 			'.visual-ui-label',

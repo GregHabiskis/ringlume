@@ -1,0 +1,215 @@
+---
+import { tinaField } from '@tinacms/astro'
+import { formatCopy } from '../../../lib/tina/model'
+import {
+  formatList,
+  getOffer,
+} from '../../../lib/offer'
+import { getPlans, getUsageRates, formatPrice } from '../../../lib/pricing'
+
+const site = Astro.locals.site
+const copy = site.legal.terms
+const offer = getOffer(site.offer)
+const SUPPORTED_STACK = offer.supportedStack
+const PLANS = getPlans(site.pricing)
+const USAGE_RATES = getUsageRates(site.pricing)
+const planNames = formatList(PLANS.map(plan => plan.name), copy.planListConjunction, offer.listSeparator)
+
+const overageRates = PLANS.map(
+  (plan) => `${plan.name}: $${plan.overagePerMinute.toFixed(2)}${copy.rateLabels.perMinute}`,
+).join('; ')
+
+const transferRates = PLANS.map(
+  (plan) => `${plan.name}: $${plan.liveTransferPerMinute.toFixed(2)}${copy.rateLabels.perMinute}`,
+).join('; ')
+
+const smsRates = PLANS.map(
+  (plan) => `${plan.name}: $${plan.smsPerMessage.toFixed(2)}${copy.rateLabels.perSms}`,
+).join('; ')
+
+const telephonyRates = PLANS.map(
+  (plan) => `${plan.name}: ${copy.rateLabels.telephonyFrom} $${plan.telephonyFromPerMinute.toFixed(3)}${copy.rateLabels.perMinute}`,
+).join('; ')
+
+const setupUpgradeExamples = [
+  { from: PLANS[0], to: PLANS[1] },
+  { from: PLANS[0], to: PLANS[2] },
+  { from: PLANS[2], to: PLANS[3] },
+]
+---
+
+  <main class="scrim min-h-screen pt-24 pb-20">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-h1 font-bold text-fg-1 mb-4" data-tina-field={tinaField(copy, 'title')}>{copy.title}</h1>
+      <p class="text-fg-3 mb-12" data-tina-field={tinaField(copy, 'lastUpdated')}>{copy.lastUpdated}</p>
+
+      <div class="glass glass-fill glass-regular glass-card max-w-none space-y-10 rounded-[32px] p-6 sm:p-10 lg:p-14">
+
+        <!-- 1. Acceptance of Terms -->
+        <section>
+          <h2 class="text-2xl font-bold text-fg-1 mb-4" data-tina-field={tinaField(copy.acceptance, 'headingText1')}>{copy.acceptance.headingText1}</h2>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.acceptance, 'paragraph1Text1')}>{copy.acceptance.paragraph1Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.acceptance, 'paragraph2Text1')}>{copy.acceptance.paragraph2Text1}</p>
+        </section>
+
+        <!-- 2. Description of Services -->
+        <section>
+          <h2 class="text-2xl font-bold text-fg-1 mb-4" data-tina-field={tinaField(copy.services, 'headingText1')}>{copy.services.headingText1}</h2>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.services, 'paragraph1Text1')}>{copy.services.paragraph1Text1}</p>
+          <ul class="list-disc list-inside text-fg-2 space-y-2 mt-4 ml-4">
+            <li data-tina-field={tinaField(copy.services, 'item1Text1')}>{copy.services.item1Text1}</li>
+            <li data-tina-field={tinaField(copy.services, 'item2Text1')}>{copy.services.item2Text1}</li>
+            <li data-tina-field={tinaField(copy.services, 'item3Text1')}>{copy.services.item3Text1}</li>
+            <li data-tina-field={tinaField(copy.services, 'item4Text1')}>{copy.services.item4Text1}</li>
+            <li data-tina-field={tinaField(copy.services, 'item5Text1')}>{copy.services.item5Text1}</li>
+            <li data-tina-field={tinaField(copy.services, 'item6Text1')}>{copy.services.item6Text1}</li>
+          </ul>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.services, 'paragraph2Text1')}>{copy.services.paragraph2Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4">{" "}<span data-tina-field={tinaField(copy.services, 'paragraph3Text1')}>{copy.services.paragraph3Text1}</span>{" "}<a href="#billing-details" class="text-brand-text underline underline-offset-2"><span data-tina-field={tinaField(copy.services, 'paragraph3Text2')}>{copy.services.paragraph3Text2}</span></a><span data-tina-field={tinaField(copy.services, 'paragraph3Text3')}>{copy.services.paragraph3Text3}</span>{" "}<a href="/pricing#plan-comparison" class="text-brand-text underline underline-offset-2"><span data-tina-field={tinaField(copy.services, 'paragraph3Text4')}>{copy.services.paragraph3Text4}</span></a>{" "}<span data-tina-field={tinaField(copy.services, 'paragraph3Text5')}>{copy.services.paragraph3Text5}</span>{" "}</p>
+          <h3 id="service-details" class="scroll-mt-24 text-lg font-semibold text-fg-1 mt-8 mb-3" data-tina-field={tinaField(copy.services, 'subheading1Text1')}>{copy.services.subheading1Text1}</h3>
+          <p class="text-fg-2 leading-relaxed">{" "}<span data-tina-field={tinaField(copy.services, 'paragraph4Text1')}>{copy.services.paragraph4Text1}</span>{" "}<a href="#setup-time" class="text-brand-text underline underline-offset-2"><span data-tina-field={tinaField(copy.services, 'paragraph4Text2')}>{copy.services.paragraph4Text2}</span></a><span data-tina-field={tinaField(copy.services, 'paragraph4Text3')}>{copy.services.paragraph4Text3}</span>{" "}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.services, 'paragraph5Text1')}>{copy.services.paragraph5Text1}</p>
+        </section>
+
+        <!-- 3. Subscription Terms & Billing -->
+        <section>
+          <h2 class="text-2xl font-bold text-fg-1 mb-4" data-tina-field={tinaField(copy.billing, 'headingText1')}>{copy.billing.headingText1}</h2>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.billing, 'paragraph1Text1')}>{formatCopy(copy.billing.paragraph1Text1, { planNames })}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.billing, 'paragraph2Text1')}>{copy.billing.paragraph2Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.billing, 'paragraph3Text1')}>{copy.billing.paragraph3Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.billing, 'paragraph4Text1')}>{copy.billing.paragraph4Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4">
+            <strong class="text-fg-1"><span data-tina-field={tinaField(copy.billing, 'paragraph5Text1')}>{copy.billing.paragraph5Text1}</span></strong>{" "}<span data-tina-field={tinaField(copy.billing, 'paragraph5Text2')}>{copy.billing.paragraph5Text2}</span>{" "}</p>
+          <h3 id="billing-details" class="scroll-mt-24 text-lg font-semibold text-fg-1 mt-8 mb-3" data-tina-field={tinaField(copy.billing, 'subheading1Text1')}>{copy.billing.subheading1Text1}</h3>
+          <p class="text-fg-2 leading-relaxed">{" "}<span data-tina-field={tinaField(copy.billing, 'paragraph6Text1')}>{copy.billing.paragraph6Text1}</span>{" "}{overageRates}<span data-tina-field={tinaField(copy.billing, 'paragraph6Text2')}>{copy.billing.paragraph6Text2}</span>{" "}</p>
+          <ul class="list-disc list-inside text-fg-2 space-y-2 mt-4 ml-4">
+            <li><span data-tina-field={tinaField(copy.billing, 'item1Text1')}>{copy.billing.item1Text1}</span>{" "}{transferRates}<span data-tina-field={tinaField(copy.billing, 'item1Text2')}>{copy.billing.item1Text2}</span></li>
+            <li><span data-tina-field={tinaField(copy.billing, 'item2Text1')}>{copy.billing.item2Text1}</span>{" "}{smsRates}<span data-tina-field={tinaField(copy.billing, 'item2Text2')}>{copy.billing.item2Text2}</span></li>
+            <li><span data-tina-field={tinaField(copy.billing, 'item3Text1')}>{copy.billing.item3Text1}</span>{" "}{telephonyRates}<span data-tina-field={tinaField(copy.billing, 'item3Text2')}>{copy.billing.item3Text2}</span></li>
+            <li>{" "}<span data-tina-field={tinaField(copy.billing, 'item4Text1')}>{copy.billing.item4Text1}</span>{" "}{formatPrice(USAGE_RATES.additionalPhoneNumberMonthly)}{" "}<span data-tina-field={tinaField(copy.billing, 'item4Text2')}>{copy.billing.item4Text2}</span>{" "}</li>
+          </ul>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.billing, 'paragraph7Text1')}>{copy.billing.paragraph7Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.billing, 'paragraph8Text1')}>{copy.billing.paragraph8Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4">{" "}<span data-tina-field={tinaField(copy.billing, 'paragraph9Text1')}>{copy.billing.paragraph9Text1}</span>{" "}<a href="/contact" class="text-brand-text underline underline-offset-2"><span data-tina-field={tinaField(copy.billing, 'paragraph9Text2')}>{copy.billing.paragraph9Text2}</span></a><span data-tina-field={tinaField(copy.billing, 'paragraph9Text3')}>{copy.billing.paragraph9Text3}</span>{" "}</p>
+          <h3 id="estimates" class="scroll-mt-24 text-lg font-semibold text-fg-1 mt-8 mb-3" data-tina-field={tinaField(copy.billing, 'subheading2Text1')}>{copy.billing.subheading2Text1}</h3>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.billing, 'paragraph10Text1')}>{copy.billing.paragraph10Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.billing, 'paragraph11Text1')}>{copy.billing.paragraph11Text1}</p>
+          <h3 id="setup-fee-upgrades" class="scroll-mt-24 text-lg font-semibold text-fg-1 mt-8 mb-3" data-tina-field={tinaField(copy.billing, 'subheading3Text1')}>{copy.billing.subheading3Text1}</h3>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.billing, 'paragraph12Text1')}>{copy.billing.paragraph12Text1}</p>
+          <ul class="list-disc list-inside text-fg-2 space-y-2 mt-4 ml-4">
+            {setupUpgradeExamples.map(({ from, to }) => (
+              <li>
+                {from.name}{" "}<span data-tina-field={tinaField(copy.billing, 'item5Text1')}>{copy.billing.item5Text1}</span>{" "}{to.name}<span data-tina-field={tinaField(copy.billing, 'item5Text2')}>{copy.billing.item5Text2}</span>{" "}{formatPrice(from.setupFee)}{" "}<span data-tina-field={tinaField(copy.billing, 'item5Text3')}>{copy.billing.item5Text3}</span>{" "}{formatPrice(to.setupFee)}{" "}<span data-tina-field={tinaField(copy.billing, 'item5Text4')}>{copy.billing.item5Text4}</span>{" "}{formatPrice(Math.max(0, to.setupFee - from.setupFee))}{" "}<span data-tina-field={tinaField(copy.billing, 'item5Text5')}>{copy.billing.item5Text5}</span>{" "}</li>
+            ))}
+          </ul>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.billing, 'paragraph13Text1')}>{copy.billing.paragraph13Text1}</p>
+        </section>
+        <!-- 4. Intellectual Property & Licensing -->
+        <section>
+          <h2 class="text-2xl font-bold text-fg-1 mb-4" data-tina-field={tinaField(copy.intellectualProperty, 'headingText1')}>{copy.intellectualProperty.headingText1}</h2>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.intellectualProperty, 'paragraph1Text1')}>{copy.intellectualProperty.paragraph1Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.intellectualProperty, 'paragraph2Text1')}>{copy.intellectualProperty.paragraph2Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.intellectualProperty, 'paragraph3Text1')}>{copy.intellectualProperty.paragraph3Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.intellectualProperty, 'paragraph4Text1')}>{copy.intellectualProperty.paragraph4Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.intellectualProperty, 'paragraph5Text1')}>{copy.intellectualProperty.paragraph5Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.intellectualProperty, 'paragraph6Text1')}>{copy.intellectualProperty.paragraph6Text1}</p>
+        </section>
+
+        <!-- 5. Acceptable Use -->
+        <section>
+          <h2 class="text-2xl font-bold text-fg-1 mb-4" data-tina-field={tinaField(copy.acceptableUse, 'headingText1')}>{copy.acceptableUse.headingText1}</h2>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.acceptableUse, 'paragraph1Text1')}>{copy.acceptableUse.paragraph1Text1}</p>
+          <ul class="list-disc list-inside text-fg-2 space-y-2 mt-4 ml-4">
+            <li data-tina-field={tinaField(copy.acceptableUse, 'item1Text1')}>{copy.acceptableUse.item1Text1}</li>
+            <li data-tina-field={tinaField(copy.acceptableUse, 'item2Text1')}>{copy.acceptableUse.item2Text1}</li>
+            <li data-tina-field={tinaField(copy.acceptableUse, 'item3Text1')}>{copy.acceptableUse.item3Text1}</li>
+            <li data-tina-field={tinaField(copy.acceptableUse, 'item4Text1')}>{copy.acceptableUse.item4Text1}</li>
+            <li data-tina-field={tinaField(copy.acceptableUse, 'item5Text1')}>{copy.acceptableUse.item5Text1}</li>
+          </ul>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.acceptableUse, 'paragraph2Text1')}>{copy.acceptableUse.paragraph2Text1}</p>
+        </section>
+
+        <!-- 6. Data Collection & Call Recording -->
+        <section>
+          <h2 class="text-2xl font-bold text-fg-1 mb-4" data-tina-field={tinaField(copy.dataCollection, 'headingText1')}>{copy.dataCollection.headingText1}</h2>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.dataCollection, 'paragraph1Text1')}>{copy.dataCollection.paragraph1Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.dataCollection, 'paragraph2Text1')}>{copy.dataCollection.paragraph2Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.dataCollection, 'paragraph3Text1')}>{copy.dataCollection.paragraph3Text1}</p>
+        </section>
+
+        <!-- 7. Service Availability & SLA -->
+        <section>
+          <h2 class="text-2xl font-bold text-fg-1 mb-4" data-tina-field={tinaField(copy.availability, 'headingText1')}>{copy.availability.headingText1}</h2>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.availability, 'paragraph1Text1')}>{copy.availability.paragraph1Text1}</p>
+
+          <h3
+            id="setup-time"
+            class="scroll-mt-16 lg:scroll-mt-20 text-lg font-semibold text-fg-1 mt-8 mb-3"
+           data-tina-field={tinaField(copy.availability, 'subheading1Text1')}>{copy.availability.subheading1Text1}</h3>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.availability, 'paragraph2Text1')}>{copy.availability.paragraph2Text1}</p>
+          <ol class="list-decimal list-inside text-fg-2 space-y-4 mt-4 ml-4 leading-relaxed">
+            <li>
+              <strong class="text-fg-1"><span data-tina-field={tinaField(copy.availability, 'item1Text1')}>{copy.availability.item1Text1}</span></strong>{" "}<span data-tina-field={tinaField(copy.availability, 'item1Text2')}>{copy.availability.item1Text2}</span>{" "}</li>
+            <li>
+              <strong class="text-fg-1"><span data-tina-field={tinaField(copy.availability, 'item2Text1')}>{copy.availability.item2Text1}</span></strong>{" "}<span data-tina-field={tinaField(copy.availability, 'item2Text2')}>{copy.availability.item2Text2}</span>{" "}</li>
+            <li>
+              <strong class="text-fg-1"><span data-tina-field={tinaField(copy.availability, 'item3Text1')}>{copy.availability.item3Text1}</span></strong>{" "}<span data-tina-field={tinaField(copy.availability, 'item3Text2')}>{copy.availability.item3Text2}</span>{" "}</li>
+          </ol>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.availability, 'paragraph3Text1')}>{copy.availability.paragraph3Text1}</p>
+          <ul class="list-disc list-inside text-fg-2 space-y-2 mt-4 ml-4">
+            <li>{formatList(SUPPORTED_STACK.phone, offer.listConjunction, offer.listSeparator)}{" "}<span data-tina-field={tinaField(copy.availability, 'item4Text1')}>{copy.availability.item4Text1}</span></li>
+            <li>{formatList(SUPPORTED_STACK.calendar, offer.listConjunction, offer.listSeparator)}{" "}<span data-tina-field={tinaField(copy.availability, 'item5Text1')}>{copy.availability.item5Text1}</span></li>
+            <li>{formatList(SUPPORTED_STACK.booking, offer.listConjunction, offer.listSeparator)}{" "}<span data-tina-field={tinaField(copy.availability, 'item6Text1')}>{copy.availability.item6Text1}</span></li>
+            <li>{" "}<span data-tina-field={tinaField(copy.availability, 'item7Text1')}>{copy.availability.item7Text1}</span>{" "}{formatList(SUPPORTED_STACK.crm, offer.listConjunction, offer.listSeparator)}
+            </li>
+          </ul>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.availability, 'paragraph4Text1')}>{copy.availability.paragraph4Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.availability, 'paragraph5Text1')}>{copy.availability.paragraph5Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4">{" "}<span data-tina-field={tinaField(copy.availability, 'paragraph6Text1')}>{copy.availability.paragraph6Text1}</span>{" "}<a
+              href={site.links.setupMeeting}
+              data-tina-field={tinaField(site.links, 'setupMeeting')}
+              class="text-brand-text underline underline-offset-2 hover:opacity-80"
+            >{" "}<span data-tina-field={tinaField(copy.availability, 'paragraph6Text2')}>{copy.availability.paragraph6Text2}</span>{" "}</a><span data-tina-field={tinaField(copy.availability, 'paragraph6Text3')}>{copy.availability.paragraph6Text3}</span>{" "}<a
+              href="/contact"
+              class="text-brand-text underline underline-offset-2 hover:opacity-80"
+            >{" "}<span data-tina-field={tinaField(copy.availability, 'paragraph6Text4')}>{copy.availability.paragraph6Text4}</span>{" "}</a><span data-tina-field={tinaField(copy.availability, 'paragraph6Text5')}>{copy.availability.paragraph6Text5}</span>{" "}</p>
+        </section>
+
+        <!-- 8. Limitation of Liability -->
+        <section>
+          <h2 class="text-2xl font-bold text-fg-1 mb-4" data-tina-field={tinaField(copy.liability, 'headingText1')}>{copy.liability.headingText1}</h2>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.liability, 'paragraph1Text1')}>{copy.liability.paragraph1Text1}</p>
+          <p class="text-fg-2 leading-relaxed mt-4" data-tina-field={tinaField(copy.liability, 'paragraph2Text1')}>{copy.liability.paragraph2Text1}</p>
+        </section>
+
+        <!-- 9. Indemnification -->
+        <section>
+          <h2 class="text-2xl font-bold text-fg-1 mb-4" data-tina-field={tinaField(copy.indemnification, 'headingText1')}>{copy.indemnification.headingText1}</h2>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.indemnification, 'paragraph1Text1')}>{copy.indemnification.paragraph1Text1}</p>
+        </section>
+
+        <!-- 10. Governing Law -->
+        <section>
+          <h2 class="text-2xl font-bold text-fg-1 mb-4" data-tina-field={tinaField(copy.governingLaw, 'headingText1')}>{copy.governingLaw.headingText1}</h2>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.governingLaw, 'paragraph1Text1')}>{copy.governingLaw.paragraph1Text1}</p>
+        </section>
+
+        <!-- 11. Severability -->
+        <section>
+          <h2 class="text-2xl font-bold text-fg-1 mb-4" data-tina-field={tinaField(copy.severability, 'headingText1')}>{copy.severability.headingText1}</h2>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.severability, 'paragraph1Text1')}>{copy.severability.paragraph1Text1}</p>
+        </section>
+
+        <!-- 12. Contact -->
+        <section>
+          <h2 class="text-2xl font-bold text-fg-1 mb-4" data-tina-field={tinaField(copy.contact, 'headingText1')}>{copy.contact.headingText1}</h2>
+          <p class="text-fg-2 leading-relaxed" data-tina-field={tinaField(copy.contact, 'paragraph1Text1')}>{copy.contact.paragraph1Text1}</p>
+          <ul class="list-none text-fg-2 space-y-2 mt-4">
+            <li><strong class="text-fg-1"><span data-tina-field={tinaField(copy.contact, 'item1Text1')}>{copy.contact.item1Text1}</span></strong>{" "}<span data-tina-field={tinaField(copy.contact, 'item1Text2')}>{copy.contact.item1Text2}</span></li>
+            <li><strong class="text-fg-1"><span data-tina-field={tinaField(copy.contact, 'item2Text1')}>{copy.contact.item2Text1}</span></strong>{" "}<span data-tina-field={tinaField(copy.contact, 'item2Text2')}>{copy.contact.item2Text2}</span></li>
+          </ul>
+        </section>
+
+      </div>
+    </div>
+  </main>

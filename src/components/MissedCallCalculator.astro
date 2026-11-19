@@ -12,10 +12,13 @@ import {
 	percentOfRange,
 } from '../lib/missed-calls-calc'
 
+import { tinaField } from '@tinacms/astro'
+const copy = Astro.locals.site.calculator
+
 const defaults = MISSED_CALL_DEFAULTS
 const limits = MISSED_CALL_LIMITS
 const result = calculateMissedCallRevenue(defaults)
-const helper = buildAssumptionSummary(defaults.bookRate, defaults.repeatVisits)
+const helper = buildAssumptionSummary(defaults.bookRate, defaults.repeatVisits, copy)
 
 const missedPercent = percentOfRange(
 	'missedCallsPerWeek',
@@ -29,7 +32,9 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 	class="glass glass-fill glass-regular glass-card mx-auto max-w-7xl rounded-3xl p-4 sm:p-6 md:p-8"
 	data-missed-calculator
 	role="group"
-	aria-label="Missed revenue calculator"
+	aria-label={copy.label}
+	data-tina-field={tinaField(copy, 'label')}
+	data-calc-copy-json={JSON.stringify(copy)}
 >
 	<div class="grid gap-4 sm:gap-6 md:grid-cols-2 md:gap-0">
 		<div
@@ -38,38 +43,38 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 			<div
 				class="calc-output-card relative overflow-hidden rounded-2xl border border-line p-4 sm:p-5"
 			>
-				<p class="calc-label">Potential missed revenue</p>
+				<p class="calc-label" data-calc-copy="potential" data-tina-field={tinaField(copy, 'potential')}>{copy.potential}</p>
 				<p class="mt-1.5">
 					<span
 						class="calc-annual gradient-green-text"
-						data-calc-annual>{formatCurrency(result.annual)}</span
+						data-calc-annual>{formatCurrency(result.annual, copy)}</span
 					>
 				</p>
-				<p class="calc-caption mt-1">per year</p>
+				<p class="calc-caption mt-1" data-calc-copy="perYear" data-tina-field={tinaField(copy, 'perYear')}>{copy.perYear}</p>
 
 				<div class="mt-5 border-t border-line pt-4">
 					<div class="grid grid-cols-2 gap-4">
 						<div class="min-w-0 overflow-hidden">
-							<p class="calc-mini-label">Monthly</p>
+							<p class="calc-mini-label" data-calc-copy="monthly" data-tina-field={tinaField(copy, 'monthly')}>{copy.monthly}</p>
 							<p class="calc-secondary-value mt-1" data-calc-monthly>
-								{formatCurrency(result.monthly)}
+								{formatCurrency(result.monthly, copy)}
 							</p>
 						</div>
 						<div class="min-w-0 overflow-hidden">
-							<p class="calc-mini-label">Bookings</p>
+							<p class="calc-mini-label" data-calc-copy="bookings" data-tina-field={tinaField(copy, 'bookings')}>{copy.bookings}</p>
 							<p class="calc-secondary-value mt-1">
 								<span data-calc-bookings
 									>{formatBookings(result.bookingsPerWeek)}</span
 								>
-								<span class="calc-unit">/ week</span>
+								<span class="calc-unit" data-calc-copy="perWeek" data-tina-field={tinaField(copy, 'perWeek')}>{copy.perWeek}</span>
 							</p>
 						</div>
 					</div>
 				</div>
 
 				<p class="calc-footnote mt-4">
-					Estimate only, not guaranteed revenue.
-					<a href="/terms#estimates" class="underline underline-offset-4 hover:text-fg-1">How it’s calculated</a>.
+					<span data-calc-copy="disclaimer" data-tina-field={tinaField(copy, 'disclaimer')}>{copy.disclaimer}</span>
+					<a data-calc-copy="details" data-tina-field={tinaField(copy, 'details')} href="/terms#estimates" class="underline underline-offset-4 hover:text-fg-1">{copy.details}</a><span data-calc-copy="end" data-tina-field={tinaField(copy, 'end')}>{copy.end}</span>
 				</p>
 
 				<p
@@ -85,13 +90,13 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 		<div class="min-w-0 md:col-start-1 md:row-start-1 md:pr-8">
 			<div class="flex flex-col gap-4">
 				<div>
-					<label class="calc-label block" for="calc-booking-value">
-						Average booking value
+					<label class="calc-label block" for="calc-booking-value" data-calc-copy="bookingValue" data-tina-field={tinaField(copy, 'bookingValue')}>
+						{copy.bookingValue}
 					</label>
 					<div
 						class="calc-field mt-2 flex h-11 items-center rounded-full border border-line px-4"
 					>
-						<span class="calc-prefix" aria-hidden="true">$</span>
+						<span class="calc-prefix" aria-hidden="true" data-calc-copy="currency" data-tina-field={tinaField(copy, 'currency')}>{copy.currency}</span>
 						<input
 							id="calc-booking-value"
 							class="calc-text-input ml-1.5 w-full"
@@ -113,8 +118,8 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 							id="calc-missed-label"
 							class="calc-label min-w-0 flex-1 leading-snug"
 							for="calc-missed-value"
-						>
-							Missed calls per week
+						 data-calc-copy="missedCalls" data-tina-field={tinaField(copy, 'missedCalls')}>
+							{copy.missedCalls}
 						</label>
 						<div
 							class="calc-field flex h-11 w-[5.5rem] shrink-0 items-center rounded-full border border-line px-3"
@@ -134,7 +139,7 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 								data-calc-field="missedCallsPerWeek"
 								data-calc-kind="text"
 							/>
-							<span class="calc-suffix ml-1" aria-hidden="true">calls</span>
+							<span class="calc-suffix ml-1" aria-hidden="true" data-calc-copy="calls" data-tina-field={tinaField(copy, 'calls')}>{copy.calls}</span>
 						</div>
 					</div>
 
@@ -170,8 +175,8 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 						data-calc-acc-toggle
 					>
 						<span class="min-w-0">
-							<span class="calc-acc-title block">Adjust assumptions</span>
-							<span class="calc-acc-helper mt-0.5 block" data-calc-helper>
+							<span class="calc-acc-title block" data-calc-copy="adjust" data-tina-field={tinaField(copy, 'adjust')}>{copy.adjust}</span>
+							<span class="calc-acc-helper mt-0.5 block" data-calc-helper data-tina-field={tinaField(copy, 'assumption')}>
 								{helper}
 							</span>
 						</span>
@@ -205,8 +210,8 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 											id="calc-rate-label"
 											class="calc-label min-w-0 flex-1 leading-snug"
 											for="calc-rate-value"
-										>
-											Missed callers who would book
+										 data-calc-copy="bookRate" data-tina-field={tinaField(copy, 'bookRate')}>
+											{copy.bookRate}
 										</label>
 										<div
 											class="calc-field flex h-11 w-[4.75rem] shrink-0 items-center rounded-full border border-line px-3"
@@ -223,7 +228,7 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 												data-calc-field="bookRate"
 												data-calc-kind="text"
 											/>
-											<span class="calc-suffix ml-1" aria-hidden="true">%</span>
+											<span class="calc-suffix ml-1" aria-hidden="true" data-calc-copy="percent" data-tina-field={tinaField(copy, 'percent')}>{copy.percent}</span>
 										</div>
 									</div>
 
@@ -237,7 +242,7 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 											data-calc-tooltip
 											aria-hidden="true"
 										>
-											{formatPercent(defaults.bookRate)}
+											{formatPercent(defaults.bookRate, copy)}
 										</span>
 										<input
 											id="calc-rate-range"
@@ -260,8 +265,8 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 											id="calc-repeat-label"
 											class="calc-label min-w-0 flex-1 leading-snug"
 											for="calc-repeat-value"
-										>
-											Average repeat visits
+										 data-calc-copy="repeatVisits" data-tina-field={tinaField(copy, 'repeatVisits')}>
+											{copy.repeatVisits}
 										</label>
 										<div
 											class="calc-field flex h-11 w-[4.75rem] shrink-0 items-center rounded-full border border-line px-3"
@@ -281,7 +286,7 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 												data-calc-field="repeatVisits"
 												data-calc-kind="text"
 											/>
-											<span class="calc-suffix ml-1" aria-hidden="true">x</span>
+											<span class="calc-suffix ml-1" aria-hidden="true" data-calc-copy="times" data-tina-field={tinaField(copy, 'times')}>{copy.times}</span>
 										</div>
 									</div>
 
@@ -295,7 +300,7 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 											data-calc-tooltip
 											aria-hidden="true"
 										>
-											{formatRepeatVisits(defaults.repeatVisits)}x
+											{formatRepeatVisits(defaults.repeatVisits)}{copy.times}
 										</span>
 										<input
 											id="calc-repeat-range"
@@ -321,329 +326,8 @@ const repeatPercent = percentOfRange('repeatVisits', defaults.repeatVisits)
 </div>
 
 <script>
-	import {
-		CALC_FIELDS,
-		MISSED_CALL_DEFAULTS,
-		bookingsPrecision,
-		buildAssumptionSummary,
-		buildResultSummary,
-		calculateMissedCallRevenue,
-		clampFieldValue,
-		formatBookings,
-		formatCurrency,
-		formatInputValue,
-		formatPercent,
-		formatRepeatVisits,
-		parseNumericInput,
-		percentOfRange,
-		sanitizeNumericText,
-		type CalcField,
-		type MissedCallResult,
-	} from '../lib/missed-calls-calc'
-
-	const root = document.querySelector<HTMLElement>('[data-missed-calculator]')
-
-	if (root) {
-		init(root)
-	}
-
-	function init(calculator: HTMLElement) {
-		const annualEl = calculator.querySelector<HTMLElement>('[data-calc-annual]')
-		const monthlyEl =
-			calculator.querySelector<HTMLElement>('[data-calc-monthly]')
-		const bookingsEl =
-			calculator.querySelector<HTMLElement>('[data-calc-bookings]')
-		const helperEl =
-			calculator.querySelector<HTMLElement>('[data-calc-helper]')
-		const statusEl =
-			calculator.querySelector<HTMLElement>('[data-calc-status]')
-
-		if (!annualEl || !monthlyEl || !bookingsEl) return
-
-		const annualOutput = annualEl
-		const monthlyOutput = monthlyEl
-		const bookingsOutput = bookingsEl
-
-		const state: Record<CalcField, number> = { ...MISSED_CALL_DEFAULTS }
-
-		const groups = new Map<
-			CalcField,
-			{
-				text?: HTMLInputElement
-				range?: HTMLInputElement
-				wrap?: HTMLElement
-				tooltip?: HTMLElement
-			}
-		>()
-
-		for (const field of CALC_FIELDS) {
-			const text = calculator.querySelector<HTMLInputElement>(
-				`[data-calc-field="${field}"][data-calc-kind="text"]`,
-			)
-			const range = calculator.querySelector<HTMLInputElement>(
-				`[data-calc-field="${field}"][data-calc-kind="range"]`,
-			)
-			const wrap = range?.closest<HTMLElement>('[data-calc-slider-wrap]')
-			const tooltip = wrap?.querySelector<HTMLElement>('[data-calc-tooltip]')
-
-			groups.set(field, {
-				text: text ?? undefined,
-				range: range ?? undefined,
-				wrap: wrap ?? undefined,
-				tooltip: tooltip ?? undefined,
-			})
-		}
-
-		const initialResult = calculateMissedCallRevenue(state)
-		const tweens = new Map<HTMLElement, { value: number; frame: number }>()
-		tweens.set(annualOutput, { value: initialResult.annual, frame: 0 })
-		tweens.set(monthlyOutput, { value: initialResult.monthly, frame: 0 })
-		tweens.set(bookingsOutput, {
-			value: initialResult.bookingsPerWeek,
-			frame: 0,
-		})
-
-		const hideTimers = new WeakMap<HTMLElement, number>()
-		const reducedMotion = window.matchMedia(
-			'(prefers-reduced-motion: reduce)',
-		)
-		let statusTimer: number | undefined
-
-		for (const field of CALC_FIELDS) {
-			const group = groups.get(field)
-			if (!group) continue
-
-			if (group.text) {
-				const text = group.text
-
-				text.parentElement?.addEventListener('click', (event) => {
-					if (event.target !== text) text.focus()
-				})
-
-				text.addEventListener('focus', () => {
-					requestAnimationFrame(() => text.select())
-				})
-
-				text.addEventListener('input', () => {
-					const clean = sanitizeNumericText(field, text.value)
-					if (text.value !== clean) text.value = clean
-
-					const parsed = parseNumericInput(field, clean)
-					if (!Number.isFinite(parsed)) return
-
-					state[field] = parsed
-					render()
-				})
-
-				text.addEventListener('blur', () => {
-					const value = clampFieldValue(field, state[field])
-					state[field] = value
-					text.value = formatInputValue(field, value)
-					render()
-				})
-
-				text.addEventListener('keydown', (event) => {
-					if (event.key === 'Enter') {
-						event.preventDefault()
-						text.blur()
-					}
-				})
-			}
-
-			if (group.range) {
-				const range = group.range
-				const wrap = group.wrap
-
-				range.addEventListener('input', () => {
-					const value = Number(range.value)
-					if (!Number.isFinite(value)) return
-
-					state[field] = value
-					render()
-					if (wrap) showTooltip(wrap)
-				})
-
-				range.addEventListener('focus', () => {
-					if (wrap) showTooltip(wrap)
-				})
-
-				range.addEventListener('blur', () => {
-					if (wrap) hideTooltip(wrap)
-				})
-
-				range.addEventListener('pointerdown', () => {
-					if (wrap) showTooltip(wrap)
-				})
-
-				range.addEventListener('pointerup', (event) => {
-					if (wrap && event.pointerType === 'touch') {
-						hideTooltip(wrap, 800)
-					}
-				})
-
-				range.addEventListener('pointercancel', () => {
-					if (wrap) hideTooltip(wrap, 800)
-				})
-
-				range.addEventListener('keydown', () => {
-					if (wrap) showTooltip(wrap)
-				})
-			}
-		}
-
-		const accordionButton = calculator.querySelector<HTMLButtonElement>(
-			'[data-calc-acc-toggle]',
-		)
-		const accordionPanel = calculator.querySelector<HTMLElement>(
-			'[data-calc-acc-panel]',
-		)
-
-		if (accordionButton && accordionPanel) {
-			accordionButton.addEventListener('click', () => {
-				const open = accordionButton.getAttribute('aria-expanded') !== 'true'
-				accordionButton.setAttribute('aria-expanded', String(open))
-				accordionPanel.dataset.open = String(open)
-
-				if (open) {
-					accordionPanel.removeAttribute('inert')
-				} else {
-					accordionPanel.setAttribute('inert', '')
-				}
-			})
-		}
-
-		syncVisuals()
-
-		function render() {
-			const next = calculateMissedCallRevenue(state)
-			const digits = bookingsPrecision(next.bookingsPerWeek)
-
-			animateNumber(annualOutput, next.annual, formatCurrency)
-			animateNumber(monthlyOutput, next.monthly, formatCurrency)
-			animateNumber(bookingsOutput, next.bookingsPerWeek, (value) =>
-				formatBookings(value, digits),
-			)
-
-			if (helperEl) {
-				helperEl.textContent = buildAssumptionSummary(
-					state.bookRate,
-					state.repeatVisits,
-				)
-			}
-
-			syncVisuals()
-			scheduleStatus(next)
-		}
-
-		function syncVisuals() {
-			for (const field of CALC_FIELDS) {
-				const group = groups.get(field)
-				if (!group) continue
-
-				const value = clampFieldValue(field, state[field])
-
-				if (group.range) group.range.value = String(value)
-				if (group.text && document.activeElement !== group.text) {
-					group.text.value = formatInputValue(field, value)
-				}
-				if (group.wrap) {
-					group.wrap.style.setProperty(
-						'--pct',
-						String(percentOfRange(field, value)),
-					)
-				}
-				if (group.tooltip) {
-					group.tooltip.textContent = tooltipValue(field, value)
-				}
-			}
-		}
-
-		function tooltipValue(field: CalcField, value: number): string {
-			if (field === 'bookRate') return formatPercent(value)
-			if (field === 'repeatVisits') return `${formatRepeatVisits(value)}x`
-			return String(Math.round(value))
-		}
-
-		function animateNumber(
-			element: HTMLElement,
-			target: number,
-			format: (value: number) => string,
-		) {
-			const entry = tweens.get(element) ?? { value: target, frame: 0 }
-
-			if (entry.frame) cancelAnimationFrame(entry.frame)
-
-			if (
-				reducedMotion.matches ||
-				!Number.isFinite(target) ||
-				Math.abs(target - entry.value) < 0.0001
-			) {
-				entry.value = target
-				entry.frame = 0
-				element.textContent = format(target)
-				tweens.set(element, entry)
-				return
-			}
-
-			const from = entry.value
-			const startedAt = performance.now()
-
-			const tick = (now: number) => {
-				const progress = Math.min(1, (now - startedAt) / 480)
-				const eased = 1 - Math.pow(1 - progress, 3)
-				const value = from + (target - from) * eased
-
-				entry.value = value
-				element.textContent = format(value)
-
-				if (progress < 1) {
-					entry.frame = requestAnimationFrame(tick)
-				} else {
-					entry.value = target
-					entry.frame = 0
-					element.textContent = format(target)
-				}
-			}
-
-			entry.frame = requestAnimationFrame(tick)
-			tweens.set(element, entry)
-		}
-
-		function showTooltip(wrap: HTMLElement) {
-			const timer = hideTimers.get(wrap)
-			if (timer) {
-				window.clearTimeout(timer)
-				hideTimers.delete(wrap)
-			}
-			wrap.classList.add('is-active')
-		}
-
-		function hideTooltip(wrap: HTMLElement, delay = 0) {
-			const timer = hideTimers.get(wrap)
-			if (timer) window.clearTimeout(timer)
-
-			if (delay > 0) {
-				const nextTimer = window.setTimeout(() => {
-					wrap.classList.remove('is-active')
-					hideTimers.delete(wrap)
-				}, delay)
-				hideTimers.set(wrap, nextTimer)
-				return
-			}
-
-			wrap.classList.remove('is-active')
-			hideTimers.delete(wrap)
-		}
-
-		function scheduleStatus(next: MissedCallResult) {
-			if (!statusEl) return
-			if (statusTimer) window.clearTimeout(statusTimer)
-
-			statusTimer = window.setTimeout(() => {
-				statusEl.textContent = buildResultSummary(next)
-			}, 900)
-		}
-	}
+	import { initCalculator } from "../scripts/calculator"
+	document.querySelectorAll<HTMLElement>("[data-missed-calculator]").forEach(initCalculator)
 </script>
 
 <style>

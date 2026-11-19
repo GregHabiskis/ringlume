@@ -1,9 +1,14 @@
+import { demo as defaultCopy } from '../../content/site/site.json'
+
+export type DemoCopy = typeof defaultCopy
+export type DemoMessageKey = keyof DemoCopy['messages']
 export type DemoPhase = 'idle' | 'connecting' | 'live' | 'ended' | 'error'
 
 export type DemoState = {
 	phase: DemoPhase
 	muted: boolean
 	message: string
+	messageKey?: DemoMessageKey
 }
 
 export type DemoCall = {
@@ -27,32 +32,41 @@ export type DemoClient = {
 	}): DemoCall
 }
 
-export class DemoSetupError extends Error {}
+export class DemoSetupError extends Error {
+	constructor(message: string, readonly copyKey?: DemoMessageKey) {
+		super(message)
+	}
+}
 
-export function getDemoError(error: unknown): string {
-	if (error instanceof DemoSetupError) return error.message
+export function getDemoErrorKey(error: unknown): DemoMessageKey {
+	if (error instanceof DemoSetupError) return error.copyKey ?? 'loadFailed'
 	const detail = error as { name?: string; message?: string; status?: number }
 	const name = detail?.name ?? ''
 	const message = detail?.message ?? ''
 	if (name === 'NotAllowedError' || /permission denied/i.test(message)) {
-		return 'Microphone access was blocked. Allow it in your browser settings, then try again.'
+		return 'permissionBlocked'
 	}
 	if (name === 'NotFoundError' || /device not found/i.test(message)) {
-		return 'No microphone was found. Connect one, then try again.'
+		return 'microphoneMissing'
 	}
 	if (name === 'NotReadableError' || name === 'AbortError') {
-		return 'Your microphone could not start. Check whether another app is using it, then try again.'
+		return 'microphoneBusy'
 	}
 	if (detail?.status === 401 || detail?.status === 403) {
-		return 'The demo could not authorize this call. Try again on ringlume.com or request a personalized demo below.'
+		return 'unauthorized'
 	}
 	if (detail?.status === 429) {
-		return 'The demo is busy. Please wait a moment and try again.'
+		return 'busy'
 	}
 	if (/fetch|network|connection|offline/i.test(message)) {
-		return 'The connection failed. Check your internet connection, then try again.'
+		return 'connectionFailed'
 	}
-	return 'The demo could not load. Please try again or request a personalized demo below.'
+	return 'loadFailed'
+}
+
+export function getDemoError(error: unknown, copy: DemoCopy = defaultCopy): string {
+	if (error instanceof DemoSetupError && !error.copyKey) return error.message
+	return copy.messages[getDemoErrorKey(error)]
 }
 
 export function formatDemoTime(seconds: number): string {
@@ -69,7 +83,9 @@ export function createDemoController(options: {
 	prepare(): Promise<string | undefined>
 	onChange(state: DemoState): void
 	connectTimeoutMs?: number
+	copy?: DemoCopy
 }) {
+	let copy = options.copy ?? defaultCopy
 	let state: DemoState = { phase: 'idle', muted: false, message: '' }
 	let call: DemoCall | undefined
 	let attempt = 0
@@ -85,12 +101,12 @@ export function createDemoController(options: {
 		timeout = undefined
 	}
 
-	function finish(phase: 'ended' | 'error', message: string): void {
+	function finish(phase: 'ended' | 'error', messageKey: DemoMessageKey): void {
 		attempt++
 		clearConnectionTimeout()
 		const previous = call
 		call = undefined
-		update({ phase, muted: false, message })
+		update({ phase, muted: false, messageKey, message: copy.messages[messageKey] })
 		// Ignore callbacks from the old call, including those emitted by end().
 		void previous?.end().catch(() => {})
 	}
@@ -101,12 +117,13 @@ export function createDemoController(options: {
 		update({
 			phase: 'connecting',
 			muted: false,
-			message: 'Allow microphone access if prompted. Connecting…',
+			messageKey: 'connecting',
+			message: copy.messages.connecting,
 		})
 		timeout = setTimeout(() => {
 			finish(
 				'error',
-				'The connection timed out. Check microphone permission and your connection, then try again.',
+				'timeout',
 			)
 		}, options.connectTimeoutMs ?? 45000)
 
@@ -123,21 +140,21 @@ export function createDemoController(options: {
 					onStatus(status) {
 						if (current !== attempt || status !== 'live') return
 						clearConnectionTimeout()
-						update({ phase: 'live', message: 'Connected. You can speak now.' })
+						update({ phase: 'live', messageKey: 'connected', message: copy.messages.connected })
 						// Playback may still need an explicit user gesture; the card
 						// retains an Enable audio control throughout the live call.
 						void call?.startAudioPlayback().catch(() => {})
 					},
 					onEnd() {
-						if (current === attempt) finish('ended', 'Call ended.')
+						if (current === attempt) finish('ended', 'ended')
 					},
 					onError(error) {
-						if (current === attempt) finish('error', getDemoError(error))
+						if (current === attempt) finish('error', getDemoErrorKey(error))
 					},
 				},
 			})
 		} catch (error) {
-			if (current === attempt) finish('error', getDemoError(error))
+			if (current === attempt) finish('error', getDemoErrorKey(error))
 		}
 	}
 
@@ -145,7 +162,7 @@ export function createDemoController(options: {
 		if (state.phase !== 'connecting' && state.phase !== 'live') return
 		finish(
 			'ended',
-			state.phase === 'connecting' ? 'Call cancelled.' : 'Call ended.',
+			state.phase === 'connecting' ? 'cancelled' : 'ended',
 		)
 	}
 
@@ -156,7 +173,7 @@ export function createDemoController(options: {
 			else call.mute()
 			update({ muted: !state.muted })
 		} catch (error) {
-			finish('error', getDemoError(error))
+			finish('error', getDemoErrorKey(error))
 		}
 	}
 
@@ -167,13 +184,15 @@ export function createDemoController(options: {
 			await call.startAudioPlayback()
 			if (current === attempt) {
 				update({
-					message: 'Audio enabled. Check your speaker volume if you cannot hear the agent.',
+					messageKey: 'audioEnabled',
+					message: copy.messages.audioEnabled,
 				})
 			}
 		} catch {
 			if (current === attempt) {
 				update({
-					message: 'Audio is blocked. Allow sound or autoplay for this site in your browser settings, then select Enable audio.',
+					messageKey: 'audioBlocked',
+					message: copy.messages.audioBlocked,
 				})
 			}
 		}
@@ -183,10 +202,15 @@ export function createDemoController(options: {
 		if (state.phase === 'connecting' || state.phase === 'live') {
 			finish(
 				'error',
-				'You are offline. Reconnect to the internet, then try again.',
+				'offline',
 			)
 		}
 	}
 
-	return { start, end, toggleMute, enableAudio, offline }
+	function setCopy(next: DemoCopy): void {
+		copy = next
+		update({ message: state.messageKey ? copy.messages[state.messageKey] : '' })
+	}
+
+	return { start, end, toggleMute, enableAudio, offline, setCopy }
 }

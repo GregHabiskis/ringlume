@@ -1,15 +1,20 @@
 ---
-import { PLANS, formatPrice } from '../lib/pricing'
+import { getPlans, formatPrice } from '../lib/pricing'
+import { tinaField } from '@tinacms/astro'
+import { formatCopy } from '../lib/tina/model'
 
 interface Props {
 	detailed?: boolean
 }
 
 const { detailed = false } = Astro.props
+const site = Astro.locals.site
+const copy = site.pricing.copy
+const plans = getPlans(site.pricing)
 const Heading = detailed ? 'h1' : 'h2'
 const detailsLink = detailed
-	? { href: '#plan-comparison', label: 'Compare every feature' }
-	: { href: '/pricing', label: 'Explore full pricing' }
+	? { href: site.links.planComparison, label: copy.compareFeatures }
+	: { href: site.links.pricing, label: copy.explorePricing }
 const mobileAlignment = {
 	billing:
 		!detailed && 'max-sm:flex-col max-sm:justify-center max-sm:text-center',
@@ -23,6 +28,7 @@ const mobileAlignment = {
 		detailed ? 'pb-16 lg:pb-24' : 'py-16 lg:py-24',
 	]}
 	aria-labelledby="pricing-heading"
+	data-pricing-section
 >
 	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 		<header class="mb-8 grid gap-5 lg:grid-cols-2 lg:items-end lg:gap-16">
@@ -30,14 +36,15 @@ const mobileAlignment = {
 				id="pricing-heading"
 				class="reveal-text max-w-xl text-h2 font-bold text-fg-1"
 			>
-				A plan for your<br /><span class="text-brand-text"
-					>next stage of growth.</span
+				<span data-tina-field={tinaField(copy, 'heading')}>{copy.heading}</span><br /><span class="text-brand-text" data-tina-field={tinaField(copy, 'accent')}
+					>{copy.accent}</span
 				>
 			</Heading>
 			<p
 				class="max-w-lg text-base leading-relaxed text-fg-3 lg:justify-self-end"
+				data-tina-field={tinaField(copy, 'description')}
 			>
-				Try a free demo before choosing your plan.
+				{copy.description}
 			</p>
 		</header>
 
@@ -47,27 +54,31 @@ const mobileAlignment = {
 				mobileAlignment.billing,
 			]}
 		>
-			<p class="text-xs text-fg-3">Prices in USD.</p>
+			<p class="text-xs text-fg-3" data-tina-field={tinaField(copy, 'pricesUsd')}>{copy.pricesUsd}</p>
 			<div
 				class="glass glass-fill glass-regular inline-flex rounded-full p-1"
 				role="group"
-				aria-label="Billing period"
+				aria-label={copy.billingPeriod}
+				data-tina-field={tinaField(copy, 'billingPeriod')}
 			>
 				<button
 					type="button"
 					id="monthly-btn"
+					data-tina-field={tinaField(copy, 'monthly')}
 					aria-pressed="true"
 					class="pricing-toggle toggle-active min-h-11 rounded-full px-4 text-xs font-semibold"
-					>Monthly</button
+					>{copy.monthly}</button
 				>
 				<button
 					type="button"
 					id="annual-btn"
+					data-tina-field={tinaField(copy, 'annually')}
 					aria-pressed="false"
 					class="pricing-toggle toggle-inactive relative min-h-11 rounded-full px-4 text-xs font-semibold"
-					>Annually <span
+					>{copy.annually} <span
 						class="annual-discount absolute -top-3 right-0 whitespace-nowrap rounded-full px-2 py-1 text-xs leading-none font-bold text-white"
-						>Save ~17%</span
+						data-tina-field={tinaField(copy, 'savings')}
+						>{copy.savings}</span
 						></button
 				>
 			</div>
@@ -75,7 +86,7 @@ const mobileAlignment = {
 
 		<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 			{
-				PLANS.map((plan) => (
+				plans.map((plan) => (
 					<article
 						class:list={[
 							'plan-card glass glass-fill glass-regular flex min-w-0 flex-col rounded-3xl p-5 lg:p-6',
@@ -83,50 +94,53 @@ const mobileAlignment = {
 						]}
 					>
 						<div class="flex min-h-7 items-center justify-between gap-2">
-							<h3 class="font-sans text-lg font-semibold text-fg-1">
+							<h3 class="font-sans text-lg font-semibold text-fg-1" data-tina-field={tinaField(site.pricing.plans[plan.id], 'name')}>
 								{plan.name}
 							</h3>
 							{plan.recommended && (
 								<span class="rounded-full bg-brand/15 px-2.5 py-1 text-xs font-semibold text-brand-text">
-									Most Popular
+									<span data-tina-field={tinaField(copy, 'mostPopular')}>{copy.mostPopular}</span>
 								</span>
 							)}
 						</div>
-						<p class="mt-1 text-xs text-fg-3">{plan.description}</p>
+						<p class="mt-1 text-xs text-fg-3" data-tina-field={tinaField(site.pricing.plans[plan.id], 'description')}>{plan.description}</p>
 						<div class="mt-6" data-pricing-display>
 							<p class="flex items-baseline gap-1 whitespace-nowrap">
 								<span
 									class="pricing-tilde hidden text-lg text-fg-3"
 									aria-hidden="true"
 								>
-									~
+									{copy.approximate}
 								</span>
 								<span
 									class="pricing-amount text-4xl font-semibold tracking-tighter text-fg-1"
 									data-monthly-display={formatPrice(plan.monthly)}
+									data-tina-field={tinaField(site.pricing.plans[plan.id], 'monthly')}
 									data-annual-monthly-display={formatPrice(plan.annualMonthly)}
-									data-annual-billing-display={`Billed ${formatPrice(plan.annualTotal)} annually`}
+									data-annual-billing-display={formatCopy(copy.billedAnnually, { price: formatPrice(plan.annualTotal) })}
+									data-monthly-billing-display={copy.billedMonthly}
 								>
 									{formatPrice(plan.monthly)}
 								</span>
-								<span class="text-xs text-fg-3">/ mo</span>
+								<span class="text-xs text-fg-3" data-tina-field={tinaField(copy, 'perMonth')}>{copy.perMonth}</span>
 							</p>
 							<p
 								class="pricing-billing mt-2 text-xs text-fg-3"
 								aria-live="polite"
+								data-tina-field={tinaField(copy, 'billedMonthly')}
 							>
-								Billed monthly
+								{copy.billedMonthly}
 							</p>
-							<p class="mt-2 text-xs leading-relaxed text-fg-3">
-								+ {formatPrice(plan.setupFee)} one-time Service Setup Fee
+							<p class="mt-2 text-xs leading-relaxed text-fg-3" data-tina-field={tinaField(copy, 'setupFee')}>
+								{formatCopy(copy.setupFee, { price: formatPrice(plan.setupFee) })}
 							</p>
-							<p class="mt-1 text-xs text-fg-3">
-								${plan.overagePerMinute.toFixed(2)} / min overage
+							<p class="mt-1 text-xs text-fg-3" data-tina-field={tinaField(copy, 'overage')}>
+								{formatCopy(copy.overage, { rate: plan.overagePerMinute.toFixed(2) })}
 							</p>
 						</div>
 						<ul class="my-6 space-y-3 border-t border-line pt-5">
-							{plan.benefits.map((benefit) => (
-								<li class="flex items-start gap-2 text-sm leading-relaxed text-fg-2">
+							{plan.benefits.map((benefit, index) => (
+								<li class="flex items-start gap-2 text-sm leading-relaxed text-fg-2" data-tina-field={tinaField(site.pricing.plans[plan.id].benefits as Record<string, unknown>, `item${index + 1}`)}>
 									<svg
 										width="14"
 										height="18"
@@ -144,14 +158,15 @@ const mobileAlignment = {
 							))}
 						</ul>
 						<a
-							href="/book-demo"
-							data-plan={plan.name.toLowerCase()}
+							href={site.links.freeDemo}
+							data-plan={plan.id}
+							data-tina-field={tinaField(site.links, 'freeDemo')}
 							class:list={[
 								'btn mt-auto w-full px-3 text-sm',
 								plan.recommended ? 'btn-primary' : 'btn-secondary',
 							]}
 						>
-							Get Your Free Demo
+							<span data-tina-field={tinaField(site.shared, 'getFreeDemo')}>{site.shared.getFreeDemo}</span>
 						</a>
 					</article>
 				))
@@ -170,32 +185,36 @@ const mobileAlignment = {
 						<p
 							class="mb-3 max-w-xl text-sm leading-relaxed text-fg-2"
 							data-setup-summary
+							data-tina-field={tinaField(copy, 'setupIntro')}
 						>
-							We handle setup and testing, with launch timing agreed after review.{' '}
+							{copy.setupIntro}{' '}
 							<a
 								href="/terms#setup-time"
 								class="underline underline-offset-4 hover:text-fg-1"
+								data-tina-field={tinaField(copy, 'setupDetails')}
 							>
-								Setup details
-							</a>.
+								{copy.setupDetails}
+							</a>{copy.end}
 						</p>
 					)
 				}
-				<p class="text-xs leading-relaxed text-fg-3">
-					Cancel anytime. Minutes reset monthly.
+				<p class="text-xs leading-relaxed text-fg-3" data-tina-field={tinaField(copy, 'cancelNotice')}>
+					{copy.cancelNotice}
 				</p>
 				<p class="mt-2 text-xs leading-relaxed text-fg-3">
 					<a
 						href="/terms#setup-fee-upgrades"
+						data-tina-field={tinaField(copy, 'upgradeNotice')}
 						class="underline underline-offset-4 hover:text-fg-1"
-						>Upgrading? Pay only the setup-fee difference.</a
+						>{copy.upgradeNotice}</a
 					>
 				</p>
 			</div>
 			<a
 				href={detailsLink.href}
+				data-tina-field={tinaField(site.links, detailed ? 'planComparison' : 'pricing')}
 				class="inline-flex min-h-11 items-center gap-3 text-sm font-semibold text-fg-1 underline underline-offset-8 hover:text-brand-text"
-				>{detailsLink.label}<span aria-hidden="true">&rarr;</span></a
+				><span data-tina-field={tinaField(copy, detailed ? 'compareFeatures' : 'explorePricing')}>{detailsLink.label}</span><span aria-hidden="true">&rarr;</span></a
 			>
 		</div>
 	</div>
@@ -224,36 +243,6 @@ const mobileAlignment = {
 </style>
 
 <script>
-	const monthlyBtn = document.getElementById('monthly-btn')
-	const annualBtn = document.getElementById('annual-btn')
-
-	monthlyBtn?.addEventListener('click', () => setBillingPeriod(false))
-	annualBtn?.addEventListener('click', () => setBillingPeriod(true))
-
-	function setBillingPeriod(annual: boolean) {
-		monthlyBtn?.classList.toggle('toggle-active', !annual)
-		monthlyBtn?.classList.toggle('toggle-inactive', annual)
-		monthlyBtn?.setAttribute('aria-pressed', String(!annual))
-		annualBtn?.classList.toggle('toggle-active', annual)
-		annualBtn?.classList.toggle('toggle-inactive', !annual)
-		annualBtn?.setAttribute('aria-pressed', String(annual))
-
-		document
-			.querySelectorAll<HTMLElement>('.pricing-amount')
-			.forEach((amount) => {
-				amount.textContent = annual
-					? (amount.dataset.annualMonthlyDisplay ?? '')
-					: (amount.dataset.monthlyDisplay ?? '')
-				const billing = amount
-					.closest('[data-pricing-display]')
-					?.querySelector('.pricing-billing')
-				if (billing)
-					billing.textContent = annual
-						? (amount.dataset.annualBillingDisplay ?? '')
-						: 'Billed monthly'
-			})
-		document
-			.querySelectorAll('.pricing-tilde')
-			.forEach((tilde) => tilde.classList.toggle('hidden', !annual))
-	}
+	import { initPricing } from "../scripts/pricing"
+	document.querySelectorAll<HTMLElement>("[data-pricing-section]").forEach(initPricing)
 </script>

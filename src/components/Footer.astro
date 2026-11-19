@@ -1,12 +1,16 @@
 ---
+import { tinaField } from '@tinacms/astro'
+import { fillTokens } from '../lib/tina/site-model'
+const copy = Astro.locals.site.shared
+const destinations = Astro.locals.site.links
 const currentYear = new Date().getFullYear()
 
 const footerLinks = [
-  { label: 'Free Demo', href: '/book-demo' },
-  { label: 'Terms', href: '/terms' },
-  { label: 'Privacy', href: '/privacy' },
-  { label: 'Contact', href: '/contact' },
-]
+  { key: 'freeDemo', label: copy.footer.freeDemo, href: destinations.freeDemo },
+  { key: 'terms', label: copy.footer.terms, href: destinations.terms },
+  { key: 'privacy', label: copy.footer.privacy, href: destinations.privacy },
+  { key: 'contact', label: copy.footer.contact, href: destinations.contact },
+] as const
 ---
 
 <footer class="scrim relative border-t border-line">
@@ -22,7 +26,7 @@ const footerLinks = [
           <source srcset="/images/logo-320-trimmed.webp" type="image/webp" />
           <img
             src="/images/logo-320-trimmed.png"
-            alt="Ringlume"
+            alt={copy.logoAlt}
             width="292"
             height="128"
             class="mx-auto h-14 w-auto md:mx-0"
@@ -32,20 +36,21 @@ const footerLinks = [
         </picture>
       </div>
 
-      <nav aria-label="Footer" class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-8">
+      <nav aria-label={copy.footer.label} class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-8">
         {footerLinks.map((link) => (
           <a
             href={link.href}
+            data-tina-field={tinaField(destinations, link.key)}
             class="text-sm text-fg-3 transition-colors hover:text-fg-1"
           >
-            {link.label}
+            <span data-tina-field={tinaField(copy.footer, link.key)}>{link.label}</span>
           </a>
         ))}
       </nav>
     </div>
 
     <p class="mt-8 text-center text-xs text-fg-3">
-      &copy; {currentYear} Ringlume. All rights reserved.
+      <span data-tina-field={tinaField(copy.footer, 'copyright')}>{fillTokens(copy.footer.copyright, { year: currentYear })}</span>
     </p>
   </div>
 </footer>

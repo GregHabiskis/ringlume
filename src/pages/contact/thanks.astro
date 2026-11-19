@@ -1,38 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
+import CopyRegion from '../../components/tina/CopyRegion.astro'
+import ContactThanksBody from '../../components/cms-regions/forms/ContactThanksBody.astro'
+const copy = Astro.locals.site.forms.contactThanks
 ---
 
-<BaseLayout
-  title="Message Received | Ringlume"
-  description="Thanks for contacting Ringlume."
-  noindex
->
-  <main class="scrim min-h-screen flex items-center justify-center px-4 py-20">
-    <div
-      class="glass glass-fill glass-regular glass-card rounded-2xl p-8 sm:p-10 max-w-md w-full text-center"
-    >
-      <a href="/" class="inline-block mb-6">
-        <picture>
-          <source srcset="/images/logo-240.webp" type="image/webp" />
-          <img
-            src="/images/logo-240.png"
-            alt="Ringlume"
-            width="240"
-            height="96"
-            class="h-9 w-auto mx-auto"
-            decoding="async"
-            fetchpriority="high"
-          />
-        </picture>
-      </a>
-
-      <p class="text-fg-1 text-lg font-semibold">
-        Message received. We'll reply by email.
-      </p>
-
-      <a href="/book-demo" class="btn btn-primary mt-6">
-        Get your free demo
-      </a>
-    </div>
-  </main>
+<BaseLayout title={copy.metaTitle} description={copy.metaDescription} noindex>
+  <CopyRegion region="contactThanks" page="contactThanks" primary><ContactThanksBody /></CopyRegion>
 </BaseLayout>

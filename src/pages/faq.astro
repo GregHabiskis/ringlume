@@ -1,19 +1,21 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
 import Header from '../components/Header.astro'
-import FAQ from '../components/FAQ.astro'
+import FaqBody from '../components/cms-regions/marketing/FaqBody.astro'
 import Footer from '../components/Footer.astro'
+import CopyRegion from '../components/tina/CopyRegion.astro'
+const site = Astro.locals.site
 ---
 
 <BaseLayout
-  title="Frequently Asked Questions | Ringlume"
-  description="Find answers about Ringlume call answering, appointment booking, customer questions, call transfers, setup, pricing, and subscription management."
+  title={site.pages.faq.title}
+  description={site.pages.faq.description}
 >
-  <Header />
+  <CopyRegion region="header" page="faq"><Header /></CopyRegion>
 
   <main class="min-h-screen pt-16 lg:pt-20">
-    <FAQ headingLevel="h1" />
+    <CopyRegion region="faq" page="faq" primary><FaqBody /></CopyRegion>
   </main>
 
-  <Footer />
+  <CopyRegion region="footer" page="faq"><Footer /></CopyRegion>
 </BaseLayout>

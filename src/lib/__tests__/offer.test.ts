@@ -1,36 +1,24 @@
 import { describe, expect, it } from 'vitest'
-import {
-	CAL_BOOKING_URL,
-	DEMO_DELIVERY_MAX,
-	DEMO_FREE_MINUTES,
-	formatList,
-	SUPPORTED_STACK,
-} from '../offer'
+import seed from '../../../content/site/site.json'
+import { getOffer, formatList } from '../offer'
 
-describe('offer facts', () => {
-	it('keeps the demo delivery and free allowance unchanged', () => {
-		expect(DEMO_DELIVERY_MAX).toBe('1 hour')
-		expect(DEMO_FREE_MINUTES).toBe(10)
+describe('shared offer settings', () => {
+	it('derives duration, delivery and preferred labels from the catalog', () => {
+		const offer = getOffer(seed.offer)
+		expect(offer.demoFreeMinutes).toBe(seed.offer.demoFreeMinutes)
+		expect(offer.demoDeliveryMax).not.toMatch(/\{[^}]+\}/)
+		expect(offer.supportedStack.phone).toEqual(Object.values(seed.offer.supportedStack.phone))
 	})
-
-	it('keeps one booking URL', () => {
-		expect(CAL_BOOKING_URL).toBe('https://cal.com/ringlume/meeting')
+	it('supports changed delivery hours without stale wording', () => {
+		const offer = structuredClone(seed.offer)
+		offer.demoDeliveryHours = 2
+		offer.deliveryTemplate = '{hours} {hourUnit}'
+		offer.hourPlural = 'hours'
+		expect(getOffer(offer).demoDeliveryMax).toBe('2 hours')
 	})
-
-	it('lists the preferred tools in the agreed groups', () => {
-		expect(SUPPORTED_STACK).toEqual({
-			phone: ['a VoIP number from Ringlume', 'Twilio', 'Telnyx'],
-			calendar: ['Google Calendar'],
-			booking: ['Cal.com', 'Calendly'],
-			crm: ['HubSpot', 'Salesforce', 'Zoho CRM', 'GoHighLevel'],
-		})
-	})
-
-	it('joins lists the way the copy reads', () => {
-		expect(formatList(['Google Calendar'])).toBe('Google Calendar')
-		expect(formatList(['Cal.com', 'Calendly'])).toBe('Cal.com or Calendly')
-		expect(formatList(['Twilio', 'Telnyx', 'Ringlume'])).toBe(
-			'Twilio, Telnyx, or Ringlume',
-		)
+	it('joins fixed tool slots', () => {
+		expect(formatList(['A'])).toBe('A')
+		expect(formatList(['A', 'B'], 'and')).toBe('A and B')
+		expect(formatList(['A', 'B', 'C'], 'and')).toBe('A, B, and C')
 	})
 })

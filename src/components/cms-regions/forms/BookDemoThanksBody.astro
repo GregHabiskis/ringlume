@@ -1,0 +1,48 @@
+---
+import { tinaField } from '@tinacms/astro'
+import { getOffer } from '../../../lib/offer'
+import { formatCopy } from '../../../lib/tina/site-model'
+const site = Astro.locals.site
+const copy = site.forms.bookDemoThanks
+const offer = getOffer(Astro.locals.site.offer)
+---
+
+  <main class="scrim min-h-screen flex items-center justify-center px-4 py-20">
+    <div
+      class="glass glass-fill glass-regular glass-card rounded-2xl p-8 sm:p-10 max-w-md w-full text-center"
+    >
+      <a href={site.links.home} data-tina-field={tinaField(site.links, 'home')} class="inline-block mb-6">
+        <picture>
+          <source srcset="/images/logo-240.webp" type="image/webp" />
+          <img
+            src="/images/logo-240.png"
+            alt={copy.logoAlt}
+            data-tina-field={tinaField(copy, 'logoAlt')}
+            width="240"
+            height="96"
+            class="h-9 w-auto mx-auto"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </picture>
+      </a>
+
+      <p class="text-fg-1 text-lg font-semibold">
+        <span data-tina-field={tinaField(copy, 'message')}>{formatCopy(copy.message, { deliveryMax: offer.demoDeliveryMax })}</span>
+      </p>
+
+      <a href={site.links.liveDemo} data-tina-field={tinaField(site.links, 'liveDemo')} class="btn btn-primary mt-6">
+        <span data-tina-field={tinaField(copy, 'tryLabel')}>{copy.tryLabel}</span>
+      </a>
+
+      <div class="mt-4">
+        <a
+          href={site.links.setupMeeting}
+          data-tina-field={tinaField(site.links, 'setupMeeting')}
+          class="text-sm text-brand-text underline underline-offset-2 transition-colors hover:text-fg-1"
+        >
+          <span data-tina-field={tinaField(copy, 'bookingLabel')}>{copy.bookingLabel}</span>
+        </a>
+      </div>
+    </div>
+  </main>

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { storyboard as defaultCopy } from '../../../content/site/site.json';
 import {
 	VISUAL_CONVERSATION,
 	VISUAL_DURATION,
@@ -10,6 +11,8 @@ import {
 	getVisualMessageParts,
 	createVisualPlayback,
 	getVisualTransferOrigin,
+	visualCopy,
+	VISUAL_MESSAGE_KEYS,
 } from '../receptionist-visual';
 
 describe('receptionist visual storyboard', () => {
@@ -22,9 +25,7 @@ describe('receptionist visual storyboard', () => {
 
 	it('uses one consistent request that ends in an agreed booking', () => {
 		const transcript = VISUAL_CONVERSATION.map(({ text }) => text).join(' ');
-		expect(VISUAL_CONVERSATION[0].text).toBe(
-			'Thank you for reaching out to Ringlume. How can I help you?',
-		);
+		expect(VISUAL_CONVERSATION[0].text).toBe(visualCopy(defaultCopy, 'messages.one'));
 		expect(VISUAL_CONVERSATION).toHaveLength(8);
 		expect(VISUAL_CONVERSATION.map(({ speaker }) => speaker)).toEqual([
 			'receptionist',
@@ -37,16 +38,16 @@ describe('receptionist visual storyboard', () => {
 			'caller',
 		]);
 		for (const detail of [
-			'oak',
-			'Alex Morgan',
-			'24 Maple Lane',
-			'202-555-0148',
-			'Tuesday at 10:30',
+			defaultCopy.sample.company,
+			defaultCopy.sample.request,
+			defaultCopy.sample.name,
+			defaultCopy.sample.address,
+			defaultCopy.sample.phone,
+			defaultCopy.sample.day,
 		]) {
 			expect(transcript).toContain(detail);
 		}
-		expect(VISUAL_CONVERSATION[6].text).toContain('You’re booked.');
-		expect(transcript).not.toContain('have someone call me');
+		expect(VISUAL_CONVERSATION[6].text).toBe(defaultCopy.messages.seven);
 	});
 
 	it('starts with an incoming call and no completed outcomes', () => {
@@ -84,7 +85,7 @@ describe('receptionist visual storyboard', () => {
 	});
 
 	it('books only after the caller agrees, then prepares the team summary', () => {
-		expect(VISUAL_CONVERSATION[5].text).toContain('Tuesday at 10:30 works');
+		expect(VISUAL_CONVERSATION[5].text).toBe(visualCopy(defaultCopy, 'messages.six'));
 		expect(getVisualFrame(VISUAL_CONVERSATION[5].at).booked).toBe(false);
 		expect(getVisualFrame(4699).booked).toBe(false);
 		expect(getVisualFrame(4700)).toMatchObject({
@@ -222,12 +223,42 @@ describe('receptionist visual storyboard', () => {
 			getVisualMessageParts(3)
 				.filter((part) => part.detail)
 				.map((part) => part.text),
-		).toEqual(['Alex Morgan', '24 Maple Lane', '202-555-0148']);
+		).toEqual([defaultCopy.sample.name, defaultCopy.sample.address, defaultCopy.sample.phone]);
 		expect(
 			getVisualMessageParts(5)
 				.filter((part) => part.detail)
 				.map((part) => part.text),
-		).toEqual(['Tuesday at 10:30']);
+		).toEqual([`${defaultCopy.sample.day} at ${defaultCopy.sample.time}`]);
+	});
+
+	it('refreshes copy without changing the paused selected segment or timeline state', () => {
+		let copy = structuredClone(defaultCopy);
+		const clock = createVisualPlayback(() => copy);
+		clock.playSegment(1);
+		clock.advance(2700);
+		clock.press();
+		const before = clock.state;
+		const frame = getVisualFrame(before.elapsed, before.segmentIndex!, copy);
+		copy = {
+			...copy,
+			sample: {...copy.sample, name: 'Sam Green', address: '<new address>', phone: '555-0100', request: 'tree pruning'},
+			controls: {...copy.controls, resume: 'Continue the example'},
+			statuses: {...copy.statuses, onCall: 'Updated call status'},
+		};
+		expect(clock.state).toEqual({...before, label: copy.controls.resume});
+		expect(getVisualFrame(before.elapsed, before.segmentIndex!, copy)).toEqual({
+			...frame, status: copy.statuses.onCall,
+		});
+		const transcript = VISUAL_MESSAGE_KEYS.map((key) => visualCopy(copy, `messages.${key}`)).join(' ');
+		for (const value of [copy.sample.name, copy.sample.address, copy.sample.phone, copy.sample.request])
+			expect(transcript).toContain(value);
+		expect(visualCopy(copy, 'calendar.details')).toContain(copy.sample.name);
+		expect(visualCopy(copy, 'summary.callback')).toContain(copy.sample.phone);
+		expect(visualCopy(copy, 'summary.details')).toContain(copy.sample.request);
+		expect(getVisualMessageParts(3, copy).filter(part => part.detail).map(part => part.text))
+			.toEqual([copy.sample.name, copy.sample.address, copy.sample.phone]);
+		copy.messages.four = 'A wholly rewritten message.';
+		expect(getVisualMessageParts(3, copy)).toEqual([{text: copy.messages.four, detail: false}]);
 	});
 
 	it('moves each border monotonically around its card only once, synchronized with the transfers', () => {
@@ -254,12 +285,12 @@ describe('receptionist visual storyboard', () => {
 describe('one-shot visual playback', () => {
 	it('finishes once and exposes Replay without advancing or restarting itself', () => {
 		const clock = createVisualPlayback();
-		expect(clock.state.label).toBe('Pause animation');
+		expect(clock.state.label).toBe(defaultCopy.controls.pause);
 		clock.advance(VISUAL_DURATION + 1000);
 		expect(clock.state).toMatchObject({
 			elapsed: VISUAL_DURATION,
 			complete: true,
-			label: 'Replay',
+			label: defaultCopy.controls.replay,
 		});
 		clock.advance(999999);
 		expect(clock.state.elapsed).toBe(VISUAL_DURATION);
@@ -268,13 +299,13 @@ describe('one-shot visual playback', () => {
 		const clock = createVisualPlayback();
 		clock.advance(2700);
 		clock.press();
-		expect(clock.state.label).toBe('Resume animation');
+		expect(clock.state.label).toBe(defaultCopy.controls.resume);
 		const frame = getVisualFrame(clock.state.elapsed);
 		clock.advance(100000);
 		expect(getVisualFrame(clock.state.elapsed)).toEqual(frame);
 		clock.press();
 		clock.advance(50);
-		expect(clock.state.label).toBe('Pause animation');
+		expect(clock.state.label).toBe(defaultCopy.controls.pause);
 		expect(getVisualFrame(clock.state.elapsed).highlights[3]).toBe(true);
 	});
 	it('resets every event only when Replay is explicitly pressed', () => {
@@ -285,7 +316,7 @@ describe('one-shot visual playback', () => {
 			elapsed: 0,
 			paused: false,
 			complete: false,
-			label: 'Pause animation',
+			label: defaultCopy.controls.pause,
 		});
 		expect(getVisualFrame(clock.state.elapsed)).toMatchObject({
 			messages: 0,

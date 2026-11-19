@@ -14,8 +14,8 @@ describe('homepage receptionist comparison', () => {
 			/basic.setupFee|basic.minutes|basic.overagePerMinute|24\/7 answering/,
 		)
 		expect(source.match(/formatPrice\(basic.monthly\)/g)).toHaveLength(1)
-		expect(source).toContain('href="/book-demo"')
-		expect(source).toContain('Get Your Free Demo')
+		expect(source).toContain('href={site.links.freeDemo}')
+		expect(source).toContain('site.shared.getFreeDemo')
 	})
 
 	it('keeps the heading and CTA beside a single comparison on desktop and stacked on mobile', async () => {
@@ -25,7 +25,7 @@ describe('homepage receptionist comparison', () => {
 		expect(source).toContain(
 			"grid-template-areas: 'intro benchmark' 'notes notes'",
 		)
-		expect(source.indexOf('href="/book-demo"')).toBeLessThan(
+		expect(source.indexOf('href={site.links.freeDemo}')).toBeLessThan(
 			source.indexOf('</header>'),
 		)
 	})
@@ -46,10 +46,9 @@ describe('homepage receptionist comparison', () => {
 		expect(source).toContain('basic.monthly / monthlyMedianWage')
 		expect(source).toContain('--offer-share: ${basicMonthlyShare}%')
 		expect(source).toContain('width: var(--offer-share)')
-		expect(source).toContain('Receptionist wages alone')
+		expect(source).toContain('copy.wageLabel')
 		expect(source).toContain('formatPrice(monthlyMedianWage)')
-		expect(source).toContain('Not guaranteed savings.')
-		expect(source).toContain('Wages exclude benefits and payroll taxes.')
+		expect(source).toContain('copy.qualification')
 		expect(source).toContain('href="/terms#estimates"')
 	})
 
@@ -60,7 +59,7 @@ describe('homepage receptionist comparison', () => {
 		)
 		expect(source).toContain('aria-describedby="comparison-wage-label"')
 		expect(source).toContain('id="comparison-wage-label"')
-		expect(source).toContain('Receptionist wages alone')
+		expect(source).toContain('copy.wageLabel')
 		expect(source).toContain('.wage-price-tag::after')
 		expect(source).toContain('border-top: 5px solid var(--danger)')
 		expect(source).toContain('transform: rotate(-9deg)')

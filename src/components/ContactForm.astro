@@ -1,4 +1,6 @@
 ---
+import { tinaField } from '@tinacms/astro'
+const copy = Astro.locals.site.forms.contact
 const labelClass = 'block text-sm font-medium text-fg-2 mb-2'
 const fieldClass =
   'w-full min-h-11 rounded-xl border border-line bg-surface-2 px-4 py-2.5 text-base text-fg-1 transition-colors hover:border-line-strong focus-visible:border-brand'
@@ -7,16 +9,15 @@ const fieldClass =
 <form
   name="contact-message"
   method="POST"
-  action="/contact/thanks"
-  data-netlify="true"
-  netlify-honeypot="bot-field"
-  aria-label="Contact form"
+  action="/api/contact"
+  aria-label={copy.ariaLabel}
+  data-tina-field={tinaField(copy, 'ariaLabel')}
   class="glass glass-fill glass-regular glass-card rounded-2xl p-6 sm:p-8 min-w-0"
 >
   <input type="hidden" name="form-name" value="contact-message" />
 
   <div class="hidden" aria-hidden="true">
-    <label for="bot-field">Don't fill this out if you're human</label>
+    <label for="bot-field" data-tina-field={tinaField(copy, 'honeypot')}>{copy.honeypot}</label>
     <input
       id="bot-field"
       name="bot-field"
@@ -29,7 +30,7 @@ const fieldClass =
   <div class="space-y-5">
     <div class="min-w-0">
       <label for="email" class={labelClass}>
-        Email <span class="text-brand-text" aria-hidden="true">*</span>
+        <span data-tina-field={tinaField(copy, 'emailLabel')}>{copy.emailLabel}</span> <span class="text-brand-text" aria-hidden="true">*</span>
       </label>
       <input
         id="email"
@@ -43,7 +44,7 @@ const fieldClass =
 
     <div class="min-w-0">
       <label for="message" class={labelClass}>
-        Message <span class="text-brand-text" aria-hidden="true">*</span>
+        <span data-tina-field={tinaField(copy, 'messageLabel')}>{copy.messageLabel}</span> <span class="text-brand-text" aria-hidden="true">*</span>
       </label>
       <textarea
         id="message"
@@ -56,17 +57,17 @@ const fieldClass =
     </div>
   </div>
 
-  <button type="submit" class="btn btn-primary mt-6 w-full sm:w-auto">
-    Send message
+  <button data-tina-field={tinaField(copy, 'submitLabel')} type="submit" class="btn btn-primary mt-6 w-full sm:w-auto">
+    {copy.submitLabel}
   </button>
 
   <p class="mt-4 text-xs text-fg-3">
-    By submitting you agree to our
+    <span data-tina-field={tinaField(copy, 'consentBefore')}>{copy.consentBefore}</span>
     <a
-      href="/privacy"
+      data-tina-field={tinaField(copy, 'privacyLabel')} href="/privacy"
       class="text-brand-text underline underline-offset-2 transition-colors hover:text-fg-1"
     >
-      Privacy Policy
-    </a>.
+      {copy.privacyLabel}
+    </a><span data-tina-field={tinaField(copy, 'consentAfter')}>{copy.consentAfter}</span>
   </p>
 </form>

@@ -18,9 +18,10 @@ const sourceFiles = async () => {
 describe('demo-first CTAs', () => {
 	it('keeps only the personalized-demo CTA beside the hero demo card', async () => {
 		const source = await component('Hero')
+		const copy = await read('components/tina/HeroCopy.astro')
 
-		expect(source).toContain('href="/book-demo"')
-		expect(source).toContain('Get Your Free Demo')
+		expect(copy).toContain('href={site.links.freeDemo}')
+		expect(copy).toContain('site.shared.getFreeDemo')
 		expect(source).toContain('<DemoSection />')
 		expect(source).not.toContain('#demo')
 		expect(source).not.toContain('btn-secondary')
@@ -30,47 +31,41 @@ describe('demo-first CTAs', () => {
 	})
 
 	it('builds the hero stat from the shared free-minute fact', async () => {
-		const source = await component('Hero')
+		const source = await read('components/tina/HeroCopy.astro')
 
-		expect(source).toContain('{DEMO_FREE_MINUTES} Min')
-		expect(source).toMatch(/>\s*Free Demo\s*</)
-		expect(source).toMatch(/>\s*24\/7\s*</)
-		expect(source).toContain('Always Working')
+		expect(source).toContain('offer.demoFreeMinutes')
+		expect(source).toContain('copy.freeDemo')
+		expect(source).toContain('copy.alwaysValue')
+		expect(source).toContain('copy.alwaysWorking')
 		expect(source).not.toContain('>10 Min<')
 	})
 
-	it('renames the header demo anchor and points its CTA at /book-demo', async () => {
+	it('binds header demo, pricing, and CTA destinations to shared links', async () => {
 		const source = await component('Header')
 
-		expect(source).toContain("{ label: 'Try it now', href: '/#demo' }")
-		expect(source).toContain("{ label: 'Pricing', href: '/pricing' }")
+		expect(source).toContain('label: copy.nav.demo, href: destinations.liveDemo')
+		expect(source).toContain('label: copy.nav.pricing, href: destinations.pricing')
 		expect(source).not.toContain('/#pricing')
-		expect(source).toContain('href="/book-demo"')
-		expect(source).toContain('Free Demo')
+		expect(source).toContain('href={destinations.freeDemo}')
+		expect(source).toContain('copy.nav.freeDemo')
 		expect(source).not.toContain('Try a Demo')
 		expect(source).not.toContain('Get Started')
 	})
 
 	it('uses Try it now for the inline demo button and reset label', async () => {
 		const source = await component('DemoSection')
-		expect(source).toContain('<span data-demo-label>Try it now</span>')
-		expect(source).toContain("connecting ? 'Connecting…' : 'Try it now'")
+		expect(source).toContain('data-demo-label')
 		expect(source).not.toContain('retell-widget')
 	})
 
 	it('points every pricing CTA at the demo request', async () => {
 		const source = await component('Pricing')
 
-		expect(PLANS.map((plan) => plan.name)).toEqual([
-			'Basic',
-			'Pro',
-			'Plus',
-			'Max',
-		])
-		expect(source).toContain('PLANS.map((plan) => (')
-		expect(source).toContain('Get Your Free Demo')
+		expect(PLANS).toHaveLength(4)
+		expect(source).toContain('plans.map((plan) => (')
+		expect(source).toContain('site.shared.getFreeDemo')
 		// One href inside the shared plan loop, rendered on all four cards.
-		expect(source.match(/href="\/book-demo"/g)).toHaveLength(1)
+		expect(source.match(/href=\{site.links.freeDemo\}/g)).toHaveLength(1)
 		expect(source).not.toContain('cal.com')
 		expect(source).not.toContain('Contact Sales')
 	})
@@ -78,10 +73,10 @@ describe('demo-first CTAs', () => {
 	it('keeps the pre-footer CTA demo-first and sends talkers to /contact', async () => {
 		const source = await component('CtaSection')
 
-		expect(source).toContain('href="/book-demo"')
-		expect(source).toContain('Get Your Free Demo')
-		expect(source).toContain('href="/contact"')
-		expect(source).toContain('Contact Us')
+		expect(source).toContain('href={site.links.freeDemo}')
+		expect(source).toContain('site.shared.getFreeDemo')
+		expect(source).toContain('href={site.links.contact}')
+		expect(source).toContain('copy.contact')
 		expect(source).not.toContain('wa.me')
 		expect(source).not.toContain('mailto:')
 		expect(source).not.toContain('Contact Us on WhatsApp')
@@ -91,19 +86,19 @@ describe('demo-first CTAs', () => {
 	it('adds the personalized demo link inside the Retell section', async () => {
 		const source = await component('DemoSection')
 		const guard = source.indexOf('retell && (')
-		const link = source.indexOf('href="/book-demo"')
+		const link = source.indexOf('href={site.links.freeDemo}')
 		const style = source.indexOf('<style>')
 
 		expect(guard).toBeGreaterThan(-1)
 		expect(link).toBeGreaterThan(guard)
 		expect(link).toBeLessThan(style)
-		expect(source).toContain('Get your free personalized demo')
+		expect(source).toContain('href={site.links.freeDemo}')
 	})
 
 	it('adds the footer demo link without contact channels', async () => {
 		const source = await component('Footer')
 
-		expect(source).toContain("label: 'Free Demo', href: '/book-demo'")
+		expect(source).toContain('label: copy.footer.freeDemo, href: destinations.freeDemo')
 		expect(source).not.toContain('wa.me')
 		expect(source).not.toContain('mailto:')
 	})
@@ -120,10 +115,7 @@ describe('demo-first CTAs', () => {
 			expect(source, file).not.toContain('Contact Us on WhatsApp')
 			expect(source, file).not.toContain('Send an Email')
 
-			// The booking URL lives once, in src/lib/offer.ts.
-			if (file !== 'lib/offer.ts') {
-				expect(source, file).not.toContain('https://cal.com')
-			}
+			expect(source, file).not.toContain('https://cal.com')
 		}
 	})
 })

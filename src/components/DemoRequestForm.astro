@@ -1,6 +1,11 @@
 ---
-import { REFERRAL_OPTIONS, WEBSITE_PATTERN } from '../lib/demo-form'
-import { DEMO_DELIVERY_MAX } from '../lib/offer'
+import { getReferralOptions, WEBSITE_PATTERN } from '../lib/demo-form'
+import { getOffer } from '../lib/offer'
+import { formatCopy } from '../lib/tina/site-model'
+import { tinaField } from '@tinacms/astro'
+const copy = Astro.locals.site.forms.demo
+const { demoDeliveryMax } = getOffer(Astro.locals.site.offer)
+const referralOptions = getReferralOptions(copy)
 
 const labelClass = 'block text-sm font-medium text-fg-2 mb-2'
 const optionalClass = 'ml-1 font-normal text-fg-3'
@@ -11,16 +16,15 @@ const fieldClass =
 <form
   name="demo-request"
   method="POST"
-  action="/book-demo/thanks"
-  data-netlify="true"
-  netlify-honeypot="bot-field"
-  aria-label="Demo request form"
+  action="/api/book-demo"
+  aria-label={copy.ariaLabel}
+  data-tina-field={tinaField(copy, 'ariaLabel')}
   class="glass glass-fill glass-regular glass-card rounded-2xl p-6 sm:p-8 min-w-0"
 >
   <input type="hidden" name="form-name" value="demo-request" />
 
   <div class="hidden" aria-hidden="true">
-    <label for="bot-field">Don't fill this out if you're human</label>
+    <label for="bot-field" data-tina-field={tinaField(copy, 'honeypot')}>{copy.honeypot}</label>
     <input
       id="bot-field"
       name="bot-field"
@@ -33,7 +37,7 @@ const fieldClass =
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
     <div class="min-w-0">
       <label for="first_name" class={labelClass}>
-        First name <span class="text-brand-text" aria-hidden="true">*</span>
+        <span data-tina-field={tinaField(copy, 'firstNameLabel')}>{copy.firstNameLabel}</span> <span class="text-brand-text" aria-hidden="true">*</span>
       </label>
       <input
         id="first_name"
@@ -47,7 +51,7 @@ const fieldClass =
 
     <div class="min-w-0">
       <label for="last_name" class={labelClass}>
-        Last name <span class="text-brand-text" aria-hidden="true">*</span>
+        <span data-tina-field={tinaField(copy, 'lastNameLabel')}>{copy.lastNameLabel}</span> <span class="text-brand-text" aria-hidden="true">*</span>
       </label>
       <input
         id="last_name"
@@ -61,7 +65,7 @@ const fieldClass =
 
     <div class="sm:col-span-2 min-w-0">
       <label for="email" class={labelClass}>
-        Business email <span class="text-brand-text" aria-hidden="true">*</span>
+        <span data-tina-field={tinaField(copy, 'emailLabel')}>{copy.emailLabel}</span> <span class="text-brand-text" aria-hidden="true">*</span>
       </label>
       <input
         id="email"
@@ -75,7 +79,7 @@ const fieldClass =
 
     <div class="sm:col-span-2 min-w-0">
       <label for="company_website" class={labelClass}>
-        Company website
+        <span data-tina-field={tinaField(copy, 'websiteLabel')}>{copy.websiteLabel}</span>
         <span class="text-brand-text" aria-hidden="true">*</span>
       </label>
       <input
@@ -86,14 +90,15 @@ const fieldClass =
         autocomplete="url"
         required
         pattern={WEBSITE_PATTERN}
-        title="Enter your company website, like example.com"
+        title={copy.websiteTitle}
+        data-tina-field={tinaField(copy, 'websiteTitle')}
         class={fieldClass}
       />
     </div>
 
     <div class="min-w-0">
       <label for="phone" class={labelClass}>
-        Phone number <span class={optionalClass}>(optional)</span>
+        <span data-tina-field={tinaField(copy, 'phoneLabel')}>{copy.phoneLabel}</span> <span class={optionalClass} data-tina-field={tinaField(copy, 'optionalLabel')}>{copy.optionalLabel}</span>
       </label>
       <input
         id="phone"
@@ -106,39 +111,26 @@ const fieldClass =
 
     <div class="min-w-0">
       <label for="referral_source" class={labelClass}>
-        How did you hear about us?
-        <span class={optionalClass}>(optional)</span>
+        <span data-tina-field={tinaField(copy, 'referralLabel')}>{copy.referralLabel}</span>
+        <span class={optionalClass} data-tina-field={tinaField(copy, 'optionalLabel')}>{copy.optionalLabel}</span>
       </label>
       <select
         id="referral_source"
         name="referral_source"
         class={fieldClass}
       >
-        <option value="">Select one</option>
-        {REFERRAL_OPTIONS.map((option) => <option value={option}>{option}</option>)}
+        <option value="" data-tina-field={tinaField(copy, 'referralPlaceholder')}>{copy.referralPlaceholder}</option>
+        {referralOptions.map((option) => <option value={option.value} data-tina-field={tinaField(copy, option.key)}>{option.label}</option>)}
       </select>
     </div>
   </div>
 
-  <button type="submit" class="btn btn-primary mt-6 w-full sm:w-auto">
-    Get my free demo
+  <button data-tina-field={tinaField(copy, 'submitLabel')} type="submit" class="btn btn-primary mt-6 w-full sm:w-auto">
+    {copy.submitLabel}
   </button>
 
   <p class="mt-4 text-xs text-fg-3">
-    Your demo link arrives by email within {DEMO_DELIVERY_MAX}, any time of day.
-    By submitting you agree to our
-    <a
-      href="/terms"
-      class="text-brand-text underline underline-offset-2 transition-colors hover:text-fg-1"
-    >
-      Terms of Service
-    </a> and
-    <a
-      href="/privacy"
-      class="text-brand-text underline underline-offset-2 transition-colors hover:text-fg-1"
-    >
-      Privacy Policy
-    </a>.
+    <span data-tina-field={tinaField(copy, 'delivery')}>{formatCopy(copy.delivery, { deliveryMax: demoDeliveryMax })}</span><span data-tina-field={tinaField(copy, 'consentBefore')}>{copy.consentBefore}</span><a href="/terms" class="text-brand-text underline underline-offset-2 transition-colors hover:text-fg-1" data-tina-field={tinaField(copy, 'termsLabel')}>{copy.termsLabel}</a><span data-tina-field={tinaField(copy, 'consentBetween')}>{copy.consentBetween}</span><a href="/privacy" class="text-brand-text underline underline-offset-2 transition-colors hover:text-fg-1" data-tina-field={tinaField(copy, 'privacyLabel')}>{copy.privacyLabel}</a><span data-tina-field={tinaField(copy, 'consentAfter')}>{copy.consentAfter}</span>
   </p>
 </form>
 

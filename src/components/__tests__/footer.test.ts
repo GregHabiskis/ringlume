@@ -7,10 +7,10 @@ describe('footer', () => {
 	it('links to Free Demo, Terms, Privacy, and Contact', async () => {
 		const source = await readFile(footerSourceUrl, 'utf8')
 
-		expect(source).toContain("label: 'Free Demo', href: '/book-demo'")
-		expect(source).toContain("label: 'Terms', href: '/terms'")
-		expect(source).toContain("label: 'Privacy', href: '/privacy'")
-		expect(source).toContain("label: 'Contact', href: '/contact'")
+		expect(source).toContain('label: copy.footer.freeDemo, href: destinations.freeDemo')
+		expect(source).toContain('label: copy.footer.terms, href: destinations.terms')
+		expect(source).toContain('label: copy.footer.privacy, href: destinations.privacy')
+		expect(source).toContain('label: copy.footer.contact, href: destinations.contact')
 		expect(source).not.toContain('/refund')
 		expect(source).not.toContain('Navigation')
 		expect(source).not.toMatch(/telegram|t\.me|fshahariar/i)
@@ -23,7 +23,7 @@ describe('footer', () => {
 		expect(source).not.toContain(
 			'Managed virtual receptionist and call handling for service businesses.',
 		)
-		expect(source).toContain('All rights reserved.')
+		expect(source).toContain('copy.footer.copyright')
 	})
 
 	it('drops the old third-party tech disclaimer', async () => {

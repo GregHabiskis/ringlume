@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css'
+import CopyRegion from '../components/tina/CopyRegion.astro'
+import RuntimeCopy from '../components/tina/RuntimeCopy.astro'
 
 interface Props {
   title?: string
@@ -8,11 +10,16 @@ interface Props {
 }
 
 const {
-  title = 'Ringlume',
-  description =
-    'A virtual receptionist for service businesses that answers calls, qualifies leads, and books appointments 24/7.',
+  title = Astro.locals.site.shared.defaultTitle,
+  description = Astro.locals.site.shared.defaultDescription,
   noindex = false,
 } = Astro.props
+const previewPage: Record<string, string> = {
+  '/': 'home', '/faq': 'faq', '/pricing': 'pricing', '/contact': 'contact',
+  '/book-demo': 'bookDemo', '/contact/thanks': 'contactThanks',
+  '/book-demo/thanks': 'bookDemoThanks', '/terms': 'terms', '/privacy': 'privacy',
+}
+const currentPage = previewPage[Astro.url.pathname.replace(/\/+$/, '') || '/']
 ---
 
 <!doctype html>
@@ -103,6 +110,11 @@ const {
     </svg>
 
     <slot />
+    {currentPage && <CopyRegion region="runtime" page={currentPage}><RuntimeCopy page={currentPage} /></CopyRegion>}
+
+    <script>
+      if (window.parent !== window) void import('../scripts/tina-preview')
+    </script>
 
     <script>
       // One shared scroll-reveal observer. Hidden state only exists after

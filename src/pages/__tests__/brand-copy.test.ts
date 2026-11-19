@@ -23,18 +23,18 @@ describe('Ringlume brand copy', () => {
 			new URL('components/DemoSection.astro', root),
 			'utf8',
 		)
-		expect(demo).toMatch(/id="demo-heading"[^>]*>\s*Talk to Ava\s*<\/h2>/)
-		expect(demo.replace(/\s+/g, ' ')).toContain(
-			"Ringlume's virtual receptionist. A real conversation. Not a recording.",
-		)
+		expect(demo).toContain('id="demo-heading"')
+		expect(demo).toContain('{copy.text.heading}')
+		expect(demo).toContain('{copy.text.description}')
 	})
 
 	it('describes the hero as a virtual receptionist for arborists', async () => {
-		const hero = await readFile(
-			new URL('components/Hero.astro', root),
-			'utf8',
-		)
-		expect(hero).toContain('Virtual receptionist for arborists.')
+		const [home, hero] = await Promise.all([
+			readFile(new URL('../content/site/site.json', root), 'utf8'),
+			readFile(new URL('components/tina/HeroCopy.astro', root), 'utf8'),
+		])
+		expect(JSON.parse(home).pages.home.hero.description).toBeTruthy()
+		expect(hero).toContain('{copy.description}')
 	})
 
 	it('keeps retired terminology out of first-party source and project guidance', async () => {

@@ -1,0 +1,30 @@
+---
+import { tinaField } from '@tinacms/astro'
+import { formatCopy } from '../../lib/tina/model'
+import { getOffer } from '../../lib/offer'
+const site = Astro.locals.site
+const copy = site.pages.home.hero
+const offer = getOffer(site.offer)
+---
+
+<h1 id="hero-heading" class="hero-heading font-bold text-fg-1">
+	<span data-tina-field={tinaField(copy, 'heading')}>{copy.heading}</span><br />
+	<span class="text-brand-text" data-tina-field={tinaField(copy, 'accent')}>{copy.accent}</span>
+</h1>
+<p class="mt-6 max-w-lg text-lead text-fg-3" data-tina-field={tinaField(copy, 'description')}>
+	{copy.description}
+</p>
+<div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+	<a href={site.links.freeDemo} class="btn btn-primary" data-tina-field={tinaField(site.links, 'freeDemo')}><span data-tina-field={tinaField(site.shared, 'getFreeDemo')}>{site.shared.getFreeDemo}</span></a>
+</div>
+<p class="mt-3 text-sm text-fg-3" data-demo-reassurance data-tina-field={tinaField(copy, 'reassurance')}>{copy.reassurance}</p>
+<dl class="hero-facts mt-9 flex items-center gap-7 border-t border-line pt-6 max-sm:gap-0 max-sm:text-center sm:gap-10">
+	<div class="max-sm:flex-1">
+		<dt class="text-xs text-fg-3" data-tina-field={tinaField(copy, 'freeDemo')}>{copy.freeDemo}</dt>
+		<dd class="mt-1 text-xl font-semibold text-fg-1" data-tina-field={tinaField(copy, 'minutes')}>{formatCopy(copy.minutes, { minutes: offer.demoFreeMinutes })}</dd>
+	</div>
+	<div class="border-l border-line pl-7 max-sm:flex-1 max-sm:pl-0 sm:pl-10">
+		<dt class="text-xs text-fg-3" data-tina-field={tinaField(copy, 'alwaysWorking')}>{copy.alwaysWorking}</dt>
+		<dd class="mt-1 text-xl font-semibold text-fg-1" data-tina-field={tinaField(copy, 'alwaysValue')}>{copy.alwaysValue}</dd>
+	</div>
+</dl>

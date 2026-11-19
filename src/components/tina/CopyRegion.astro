@@ -1,0 +1,8 @@
+---
+import TinaIsland from '@tinacms/astro/TinaIsland.astro'
+interface Props { region: string; page: string; primary?: boolean }
+const { region, page, primary = false } = Astro.props
+---
+<TinaIsland name="site" wrapper={{ tag: 'div' }} params={{ region, page }} primary={primary}>
+	<slot />
+</TinaIsland>

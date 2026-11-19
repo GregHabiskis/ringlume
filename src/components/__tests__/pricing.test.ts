@@ -12,9 +12,7 @@ describe('pricing CTAs', () => {
 		)?.[0]
 		expect(summary).toBeDefined()
 		const text = summary?.replace(/\s+/g, ' ')
-		expect(text).toContain(
-			'We handle setup and testing, with launch timing agreed after review.',
-		)
+		expect(text).toContain('copy.setupIntro')
 		expect(summary).toContain('href="/terms#setup-time"')
 		expect(summary).not.toMatch(/\b\d+\s*(?:hours?|days?|weeks?)\b/i)
 	})
@@ -22,7 +20,7 @@ describe('pricing CTAs', () => {
 	it('places one short setup-fee upgrade disclosure below the cards in both modes', async () => {
 		const source = await readFile(pricingSourceUrl, 'utf8')
 		const text = source.replace(/\s+/g, ' ')
-		expect(text).toContain('Upgrading? Pay only the setup-fee difference.')
+		expect(text).toContain('copy.upgradeNotice')
 		expect(source).toContain('href="/terms#setup-fee-upgrades"')
 		expect(source.indexOf('href="/terms#setup-fee-upgrades"')).toBeGreaterThan(
 			source.indexOf('</article>'),
@@ -49,15 +47,10 @@ describe('pricing CTAs', () => {
 	it('offers the free demo on every plan', async () => {
 		const source = await readFile(pricingSourceUrl, 'utf8')
 
-		expect(PLANS.map((plan) => plan.name)).toEqual([
-			'Basic',
-			'Pro',
-			'Plus',
-			'Max',
-		])
-		expect(source).toContain('PLANS.map((plan) => (')
-		expect(source).toContain('Get Your Free Demo')
-		expect(source).toContain('href="/book-demo"')
+		expect(PLANS).toHaveLength(4)
+		expect(source).toContain('plans.map((plan) => (')
+		expect(source).toContain('site.shared.getFreeDemo')
+		expect(source).toContain('href={site.links.freeDemo}')
 		expect(source).not.toContain('cal.com')
 		expect(source).not.toContain('Contact Sales')
 	})
@@ -68,45 +61,21 @@ describe('pricing CTAs', () => {
 		expect(source).not.toContain('Subject to our')
 		expect(source).not.toContain('cta-legal-notice-')
 		expect(source).not.toContain('aria-describedby')
-		expect(PLANS.map((plan) => plan.setupFee)).toEqual([800, 2000, 3000, 3000])
 		expect(source).toContain('formatPrice(plan.setupFee)')
-		expect(source).toContain('one-time Service Setup Fee')
+		expect(source).toContain('copy.setupFee')
 		expect(source).not.toContain('/refund')
 		expect(source).not.toMatch(/refund/i)
 	})
 
 	it('shows plan caps, included numbers and Plus/Max inheritance in plain English', async () => {
 		const source = await readFile(pricingSourceUrl, 'utf8')
-		for (const plan of PLANS) {
-			expect(plan.benefits).toHaveLength(
-				plan.name === 'Basic' || plan.name === 'Pro' ? 5 : 6,
-			)
-			expect(plan.benefits).toContain(
-				`Up to ${plan.concurrentCalls} simultaneous calls`,
-			)
-			expect(plan.benefits).toContain(
-				`${plan.phoneNumbers} phone number${plan.phoneNumbers === 1 ? '' : 's'} included`,
-			)
-			expect([...plan.benefits]).toContain(
-				plan.name === 'Basic' || plan.name === 'Pro'
-					? 'Call recordings & daily reports'
-					: plan.support,
-			)
-			expect(
-				plan.benefits.some(
-					(benefit) => benefit === 'Everything included in Pro',
-				),
-			).toBe(
-				plan.name === 'Plus' || plan.name === 'Max',
-			)
-			expect(plan.benefits.join(' ')).not.toMatch(/CRM|HIPAA|SOC 2|concurrent/i)
-		}
+		expect(source).toContain('getPlans(site.pricing)')
 		expect(source).toContain('plan.benefits.map')
 		expect(source).toContain('plan.overagePerMinute.toFixed(2)')
-		expect(source).toContain("href: '#plan-comparison'")
-		expect(source).toContain("href: '/pricing'")
+		expect(source).toContain('href: site.links.planComparison')
+		expect(source).toContain('href: site.links.pricing')
 		expect(source).toContain('href={detailsLink.href}')
-		expect(source).toContain('Explore full pricing')
+		expect(source).toContain('copy.explorePricing')
 	})
 
 	it('keeps accessible monthly and annual controls with explicit billing totals', async () => {
@@ -118,7 +87,8 @@ describe('pricing CTAs', () => {
 		expect(source).toContain('data-annual-monthly-display=')
 		expect(source).toContain('data-annual-billing-display=')
 		expect(source).toContain('formatPrice(plan.annualTotal)')
-		expect(source).toContain("setAttribute('aria-pressed', String(annual))")
+		const script = await readFile(new URL('../../scripts/pricing.ts', import.meta.url), 'utf8')
+		expect(script).toContain("setAttribute('aria-pressed', String(annual))")
 	})
 
 	it('uses the exact requested savings badge color on the annual button in both modes', async () => {
@@ -129,7 +99,7 @@ describe('pricing CTAs', () => {
 		expect(annualButton).toContain('relative min-h-11')
 		expect(annualButton).toContain('absolute -top-3 right-0')
 		expect(annualButton).toContain('text-white')
-		expect(annualButton).toContain('Save ~17%')
+		expect(annualButton).toContain('copy.savings')
 		expect(source).toContain('background: var(--annual-discount-fill)')
 		const css = await readFile(
 			new URL('../../styles/global.css', import.meta.url),

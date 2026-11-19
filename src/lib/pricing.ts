@@ -1,126 +1,38 @@
-// Ringlume's existing offer, not the upstream agency-wide platform fees.
-// Annual monthly equivalents are approximate; the annual total is authoritative.
-export const PLANS = [
-	{
-		name: 'Basic',
-		monthly: 299,
-		annualTotal: 2990,
-		annualMonthly: 249,
-		setupFee: 800,
-		minutes: 600,
-		overagePerMinute: 0.2,
-		smsPerMessage: 0.04,
-		liveTransferPerMinute: 0.1,
-		telephonyFromPerMinute: 0.028,
-		concurrentCalls: 50,
-		phoneNumbers: 1,
-		agents: 'Receptionist agent',
-		integrations: '1 calendar & CRM integration',
-		support: 'Email support',
-		multilingual: false,
-		description: 'For independent arborists',
-		benefits: [
-			'600 call minutes / month',
-			'Answers calls around the clock',
-			'Up to 50 simultaneous calls',
-			'1 phone number included',
-			'Call recordings & daily reports',
-		],
-		recommended: false,
-	},
-	{
-		name: 'Pro',
-		monthly: 599,
-		annualTotal: 5990,
-		annualMonthly: 499,
-		setupFee: 2000,
-		minutes: 1200,
-		overagePerMinute: 0.18,
-		smsPerMessage: 0.04,
-		liveTransferPerMinute: 0.1,
-		telephonyFromPerMinute: 0.028,
-		concurrentCalls: 100,
-		phoneNumbers: 3,
-		agents: 'Receptionist agent & Lead follow-up agent',
-		integrations: 'Custom integrations',
-		support: 'Email support',
-		multilingual: true,
-		description: 'For growing crews',
-		benefits: [
-			'1,200 call minutes / month',
-			'Answers & follows up with leads',
-			'Up to 100 simultaneous calls',
-			'3 phone numbers included',
-			'Call recordings & daily reports',
-		],
-		recommended: true,
-	},
-	{
-		name: 'Plus',
-		monthly: 999,
-		annualTotal: 9990,
-		annualMonthly: 832,
-		setupFee: 3000,
-		minutes: 2400,
-		overagePerMinute: 0.18,
-		smsPerMessage: 0.03,
-		liveTransferPerMinute: 0.08,
-		telephonyFromPerMinute: 0.02,
-		concurrentCalls: 200,
-		phoneNumbers: 5,
-		agents: 'Receptionist, lead follow-up & customer support agents',
-		integrations: 'Custom integrations',
-		support: 'Priority email & chat support',
-		multilingual: true,
-		description: 'For busy tree-care offices',
-		benefits: [
-			'2,400 call minutes / month',
-			'Answering, follow-up & qualify',
-			'Up to 200 simultaneous calls',
-			'5 phone numbers included',
-			'Priority email & chat support',
-			'Everything included in Pro',
-		],
-		recommended: false,
-	},
-	{
-		name: 'Max',
-		monthly: 1599,
-		annualTotal: 15990,
-		annualMonthly: 1332,
-		setupFee: 3000,
-		minutes: 5000,
-		overagePerMinute: 0.16,
-		smsPerMessage: 0.03,
-		liveTransferPerMinute: 0.08,
-		telephonyFromPerMinute: 0.02,
-		concurrentCalls: 300,
-		phoneNumbers: 5,
-		agents: 'Receptionist, lead follow-up & customer support agents',
-		integrations: 'Custom integrations',
-		support: 'Dedicated priority support',
-		multilingual: true,
-		description: 'For high-volume operations',
-		benefits: [
-			'5,000 call minutes / month',
-			'Answering, follow-up & qualify',
-			'Up to 300 simultaneous calls',
-			'5 phone numbers included',
-			'Dedicated priority support',
-			'Everything included in Pro',
-		],
-		recommended: false,
-	},
-] as const
+import seed from '../../content/site/site.json'
+import { fillTokens, planIds, type SiteContent } from './tina/site-model'
 
-export const USAGE_RATES = {
-	additionalPhoneNumberMonthly: 5,
-} as const
+export function getPlans(pricing: SiteContent['pricing']) {
+	return planIds.map(id => {
+		const plan = pricing.plans[id]
+		const values = {
+			minutes: plan.minutes.toLocaleString('en-US'),
+			concurrentCalls: plan.concurrentCalls.toLocaleString('en-US'),
+			phoneNumbers: plan.phoneNumbers.toLocaleString('en-US'),
+			proName: pricing.plans.pro.name,
+		}
+		return {
+			...plan, id,
+			// Monthly displays are approximate; the annual charge is authoritative.
+			annualMonthly: Math.floor(plan.annualTotal / 12),
+			benefits: Object.keys(seed.pricing.plans[id].benefits).map(key =>
+				fillTokens((plan.benefits as Record<string, string>)[key], values)),
+		}
+	})
+}
+
+export function getUsageRates(pricing: SiteContent['pricing']) {
+	return { additionalPhoneNumberMonthly: pricing.additionalPhoneNumberMonthly }
+}
+
+// Compatibility defaults for pure tests. Public renderers use request-specific selectors.
+export const PLANS = getPlans(seed.pricing)
+export const USAGE_RATES = getUsageRates(seed.pricing)
 
 export function formatPrice(value: number): string {
 	return new Intl.NumberFormat('en-US', {
 		style: 'currency',
 		currency: 'USD',
-		maximumFractionDigits: 0,
+		minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+		maximumFractionDigits: Number.isInteger(value) ? 0 : 2,
 	}).format(value)
 }

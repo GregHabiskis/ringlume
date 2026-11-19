@@ -1,38 +1,51 @@
 ---
 import {
 	VISUAL_CONVERSATION,
+	VISUAL_MESSAGE_KEYS,
 	VISUAL_DURATION,
 	getVisualFrame,
 	getVisualMessageParts,
+	visualCopy,
 } from '../lib/receptionist-visual';
+import { formatCopy } from '../lib/tina/site-model';
+import { tinaField } from '@tinacms/astro';
 
-const finalFrame = getVisualFrame(VISUAL_DURATION);
+const site = Astro.locals.site;
+const copy = site.storyboard;
+const text = (key: string) => visualCopy(copy, key);
+const field = (path: string) => {
+	const keys = path.split('.');
+	const key = keys.pop()!;
+	const object = keys.reduce<any>((value, key) => value[key], copy);
+	return tinaField(object, key);
+};
+const finalFrame = getVisualFrame(VISUAL_DURATION, undefined, copy);
 ---
 
 <section
 	id="visual"
 	class="scrim content-auto scroll-mt-24 py-16 lg:py-24"
 	aria-labelledby="visual-heading"
+	data-storyboard-copy={JSON.stringify(copy)}
 >
 	<!-- Preserve existing Features bookmarks without a second demonstration. -->
 	<span id="capabilities" class="block scroll-mt-24" aria-hidden="true"></span>
 	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 		<header class="mb-8 text-center lg:mb-10">
 			<h2 id="visual-heading" class="reveal-text text-h2 font-bold text-fg-1">
-				A call comes in.
+				<span data-storyboard-text="heading" data-tina-field={field('heading')}>{text('heading')}</span>
 				<br class="sm:hidden" />{' '}
-				<span class="text-brand-text">Ringlume takes it from here.</span>
+				<span class="text-brand-text" data-storyboard-text="headingAccent" data-tina-field={field('headingAccent')}>{text('headingAccent')}</span>
 			</h2>
-			<p class="mt-4 text-fg-3">
-				Watch a tree-care request become a booked estimate.
+			<p class="mt-4 text-fg-3" data-storyboard-text="subtitle" data-tina-field={field('subtitle')}>
+				{text('subtitle')}
 			</p>
 		</header>
 
 		<figure class="visual-shell glass glass-fill glass-regular glass-card">
 			<figcaption class="visual-toolbar">
 				<span class="visual-example">
-					<span class="visual-dot" aria-hidden="true"></span>Illustrative
-					example
+					<span class="visual-dot" aria-hidden="true"></span><span data-storyboard-text="example" data-tina-field={field('example')}>{text('example')}</span>
 				</span>
 				<button
 					type="button"
@@ -52,14 +65,10 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 					>
 						<path d="M5 3v10M11 3v10"></path>
 					</svg>
-					<span>Pause animation</span>
+					<span>{copy.controls.pause}</span>
 				</button>
-				<span class="sr-only">
-					A fictional after-hours call to Ringlume. It captures Alex Morgan’s
-					request for oak removal at 24 Maple Lane, books an agreed Tuesday
-					estimate, and prepares a summary for the team. Booking follows the
-					business’s availability and rules. This is a silent, condensed
-					illustration, not a live dashboard or a timing claim.
+				<span class="sr-only" data-storyboard-text="transcript" data-tina-field={field('transcript')}>
+					{text('transcript')}
 				</span>
 			</figcaption>
 
@@ -70,7 +79,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 						<span data-visual-status>{finalFrame.status}</span>
 					</div>
 					<span class="visual-afterhours">
-						9:47 PM <span>· After hours</span>
+						<span data-storyboard-text="sample.callTime" data-tina-field={field('sample.callTime')} style="display: inline">{text('sample.callTime')}</span> <span data-storyboard-text="call.afterHours" data-tina-field={field('call.afterHours')}>{text('call.afterHours')}</span>
 					</span>
 				</div>
 
@@ -92,11 +101,11 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 								</svg>
 							</div>
 							<div>
-								<p class="visual-company-name">Ringlume</p>
-								<p class="visual-call-title">One less call to miss.</p>
+								<p class="visual-company-name" data-storyboard-text="sample.company" data-tina-field={field('sample.company')}>{text('sample.company')}</p>
+								<p class="visual-call-title" data-storyboard-text="call.subtitle" data-tina-field={field('call.subtitle')}>{text('call.subtitle')}</p>
 							</div>
 							<span class="visual-timer" data-visual-count aria-hidden="true">
-								08 / 08
+								{formatCopy(copy.call.counter, {current: '08', total: '08'})}
 							</span>
 						</div>
 
@@ -120,17 +129,18 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 										<path d="M4 15v-4a8 8 0 0 1 16 0v4M4 12H2v6h4v-6H4Zm16 0h2v6h-4v-6h2ZM18 19c0 2-3 2-6 2"></path>
 									</svg>
 								</div>
-								<p class="text-lg font-semibold text-fg-1">
-									Your crew’s off the clock.
+								<p class="text-lg font-semibold text-fg-1" data-storyboard-text="call.incoming" data-tina-field={field('call.incoming')}>
+									{text('call.incoming')}
 								</p>
-								<p class="mt-2 text-sm text-fg-3">Your receptionist isn’t.</p>
+								<p class="mt-2 text-sm text-fg-3" data-storyboard-text="call.incomingSubtitle" data-tina-field={field('call.incomingSubtitle')}>{text('call.incomingSubtitle')}</p>
 							</div>
 							<div
 								class="visual-conversation"
 								data-visual-inbox
 								tabindex="0"
 								role="region"
-								aria-label="Illustrative tree-care conversation"
+								aria-label={text('call.region')}
+								data-storyboard-aria="call.region"
 							>
 								<ol class="visual-messages" role="list" aria-live="off">
 									{VISUAL_CONVERSATION.map(({ speaker }, index) => (
@@ -143,18 +153,18 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 											]}
 											data-visual-message
 										>
-											<span class="sr-only">
-												{speaker === 'caller' ? 'Caller' : 'Ringlume'}:{' '}
+											<span class="sr-only" data-storyboard-speaker={speaker}>
+												{formatCopy(copy.speakers.prefix, {speaker: text(speaker === 'caller' ? 'speakers.caller' : 'speakers.transcriptReceptionist')})}
 											</span>
-											“
-											{getVisualMessageParts(index).map((part) =>
+											<span data-storyboard-text="speakers.openingQuote" data-tina-field={field('speakers.openingQuote')}>{copy.speakers.openingQuote}</span>
+											<span data-storyboard-message={index} data-tina-field={field(`messages.${VISUAL_MESSAGE_KEYS[index]}`)}>{getVisualMessageParts(index, copy).map((part) =>
 												part.detail ? (
 													<mark class="visual-detail">{part.text}</mark>
 												) : (
 													part.text
 												),
-											)}
-											”
+											)}</span>
+											<span data-storyboard-text="speakers.closingQuote" data-tina-field={field('speakers.closingQuote')}>{copy.speakers.closingQuote}</span>
 										</li>
 									))}
 								</ol>
@@ -167,7 +177,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 								<i></i>
 								<i></i>
 							</span>
-							<span data-visual-caption>Example conversation</span>
+							<span data-visual-caption>{copy.call.example}</span>
 							<span class="visual-call-clock" data-visual-timer>
 								{finalFrame.timer}
 							</span>
@@ -178,8 +188,8 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 						<div class="visual-calendar">
 							<div class="visual-calendar-heading">
 								<div>
-									<p class="visual-label visual-ui-label">Your calendar</p>
-									<p class="visual-day">Tuesday</p>
+									<p class="visual-label visual-ui-label" data-storyboard-text="calendar.label" data-tina-field={field('calendar.label')}>{text('calendar.label')}</p>
+									<p class="visual-day" data-storyboard-text="sample.day" data-tina-field={field('sample.day')}>{text('sample.day')}</p>
 								</div>
 								<span class="visual-calendar-icon">
 									<svg
@@ -198,27 +208,27 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 							</div>
 							<div class="visual-schedule">
 								<div class="visual-slot">
-									<span>9:00</span>
-									<div class="visual-existing">Crew check-in</div>
+									<span data-storyboard-text="calendar.earlyTime" data-tina-field={field('calendar.earlyTime')}>{text('calendar.earlyTime')}</span>
+									<div class="visual-existing" data-storyboard-text="calendar.earlyEvent" data-tina-field={field('calendar.earlyEvent')}>{text('calendar.earlyEvent')}</div>
 								</div>
 								<div class="visual-slot visual-slot-booking">
-									<span>10:30</span>
-									<div class="visual-available">Available for an estimate</div>
+									<span data-storyboard-text="sample.time" data-tina-field={field('sample.time')}>{text('sample.time')}</span>
+									<div class="visual-available" data-storyboard-text="calendar.available" data-tina-field={field('calendar.available')}>{text('calendar.available')}</div>
 									<div class="visual-booking-mount" data-visual-booking-mount>
 										<div
 											class="visual-booking visual-transfer"
 											data-visual-booking
 										>
 											<div>
-												<span class="visual-label">Estimate visit</span>
-												<p>Oak removal</p>
-												<span class="text-xs">Alex Morgan · 24 Maple Lane</span>
+												<span class="visual-label" data-storyboard-text="calendar.visit" data-tina-field={field('calendar.visit')}>{text('calendar.visit')}</span>
+												<p data-storyboard-text="calendar.request" data-tina-field={field('calendar.request')}>{text('calendar.request')}</p>
+												<span class="text-xs" data-storyboard-text="calendar.details" data-tina-field={field('calendar.details')}>{text('calendar.details')}</span>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div class="visual-slot">
-									<span>12:00</span>
+									<span data-storyboard-text="calendar.lateTime" data-tina-field={field('calendar.lateTime')}>{text('calendar.lateTime')}</span>
 									<div class="visual-empty-slot"></div>
 								</div>
 							</div>
@@ -243,23 +253,23 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 									</svg>
 								</div>
 								<div>
-									<p class="visual-label visual-ui-label">
-										Ready for your team
+									<p class="visual-label visual-ui-label" data-storyboard-text="summary.label" data-tina-field={field('summary.label')}>
+										{text('summary.label')}
 									</p>
 									<div class="visual-summary-content">
-										<p class="text-sm font-semibold text-fg-1">
-											Alex Morgan · Estimate booked
+										<p class="text-sm font-semibold text-fg-1" data-storyboard-text="summary.title" data-tina-field={field('summary.title')}>
+											{text('summary.title')}
 										</p>
 										<p class="mt-1 text-xs leading-relaxed text-fg-3">
-											Front-yard oak removal. Tuesday, 10:30.
+											<span data-storyboard-text="summary.details" data-tina-field={field('summary.details')}>{text('summary.details')}</span>
 											<br />
-											Callback: 202-555-0148
+											<span data-storyboard-text="summary.callback" data-tina-field={field('summary.callback')}>{text('summary.callback')}</span>
 										</p>
 									</div>
 								</div>
 							</div>
-							<p class="visual-summary-waiting" data-visual-waiting hidden>
-								Call details will appear here.
+							<p class="visual-summary-waiting" data-visual-waiting data-storyboard-text="summary.waiting" data-tina-field={field('summary.waiting')} hidden>
+								{text('summary.waiting')}
 							</p>
 						</div>
 					</div>
@@ -268,20 +278,21 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 				<ol
 					class="visual-progress"
 					role="list"
-					aria-label="Replay a storyboard event"
+					aria-label={text('controls.progress')}
+					data-storyboard-aria="controls.progress"
 				>
-					{['Call answered', 'Estimate booked', 'Team updated'].map(
-						(label, index) => (
+					{(['answered', 'booked', 'updated'] as const).map(
+						(key, index) => (
 							<li>
 								<button
 									type="button"
 									class="visual-step-button visual-step-done"
 									data-visual-step={index}
-									aria-label={`Replay from ${label.toLowerCase()}`}
+									aria-label={formatCopy(copy.controls.from, {label: copy.stages[key].toLowerCase()})}
 									disabled
 								>
-									<span class="visual-step-number">0{index + 1}</span>
-									<span>{label}</span>
+									<span class="visual-step-number" data-storyboard-number={index + 1}>{formatCopy(copy.controls.stepNumber, {number: index + 1})}</span>
+									<span data-storyboard-text={`stages.${key}`} data-tina-field={field(`stages.${key}`)}>{copy.stages[key]}</span>
 									<svg
 										class="visual-step-border"
 										width="100%"
@@ -317,14 +328,13 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 
 			<div class="visual-footnote">
 				<p>
-					<strong class="font-medium text-fg-2">
-						Booking is one possible outcome.
+					<strong class="font-medium text-fg-2" data-storyboard-text="footnote.lead" data-tina-field={field('footnote.lead')}>
+						{text('footnote.lead')}
 					</strong>
-					Ringlume can instead transfer the call or take a message, following
-					your rules and availability.
+					{' '}<span data-storyboard-text="footnote.body" data-tina-field={field('footnote.body')}>{text('footnote.body')}</span>
 				</p>
-				<a href="/#demo" class="visual-try">
-					Try it now <span aria-hidden="true">↗</span>
+				<a href={site.links.liveDemo} data-site-link="liveDemo" data-tina-field={tinaField(site.links, 'liveDemo')} class="visual-try">
+					<span data-storyboard-text="footnote.try" data-tina-field={field('footnote.try')}>{text('footnote.try')}</span> <span aria-hidden="true" data-storyboard-text="footnote.arrow" data-tina-field={field('footnote.arrow')}>{text('footnote.arrow')}</span>
 				</a>
 			</div>
 		</figure>
@@ -337,12 +347,17 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 		createVisualPlayback,
 		getVisualFrame,
 		getVisualTransferOrigin,
+		getVisualMessageParts,
+		visualCopy,
+		type StoryboardCopy,
 	} from '../lib/receptionist-visual';
+	import { formatCopy } from '../lib/tina/site-model';
 
 	const root = document.querySelector<HTMLElement>('#visual');
 	if (root) initializeVisual(root);
 
 	function initializeVisual(root: HTMLElement) {
+		let copy: StoryboardCopy = JSON.parse(root.dataset.storyboardCopy!);
 		const scene = root.querySelector<HTMLElement>('[data-visual-scene]')!;
 		const button = root.querySelector<HTMLButtonElement>(
 			'[data-visual-playback]',
@@ -371,7 +386,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 		);
 		const checkPaths = checks.map((check) => check.querySelector('path')!);
 		const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-		const clock = createVisualPlayback();
+		const clock = createVisualPlayback(() => copy);
 		const flights = (['booking', 'summary'] as const).map((kind) => ({
 			kind,
 			element: root.querySelector<HTMLElement>(`[data-visual-${kind}]`)!,
@@ -417,6 +432,7 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 			const frame = getVisualFrame(
 				state.elapsed,
 				state.segmentIndex ?? undefined,
+				copy,
 			);
 			const wasComplete = scene.classList.contains('visual-complete');
 			scene.dataset.phase = String(frame.phase);
@@ -425,15 +441,15 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 			if (timer.textContent !== frame.timer) timer.textContent = frame.timer;
 			if (label.textContent !== state.label) {
 				label.textContent = state.label;
-				controlIcon.setAttribute(
-					'd',
-					state.complete
-						? 'M3 5a5 5 0 1 1-1 5M3 1v4h4'
-						: state.paused
-							? 'm5 3 7 5-7 5Z'
-							: 'M5 3v10M11 3v10',
-				);
 			}
+			controlIcon.setAttribute(
+				'd',
+				state.complete
+					? 'M3 5a5 5 0 1 1-1 5M3 1v4h4'
+					: state.paused
+						? 'm5 3 7 5-7 5Z'
+						: 'M5 3v10M11 3v10',
+			);
 			if (state.complete) button.removeAttribute('aria-pressed');
 			else button.setAttribute('aria-pressed', String(state.paused));
 			scene.classList.toggle('visual-complete', frame.complete);
@@ -459,14 +475,17 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 				positionConversation();
 			}
 			if (frame.complete && !wasComplete) inbox.scrollTop = conversationOffset;
-			const count = `${String(frame.messages).padStart(2, '0')} / 08`;
+			const count = formatCopy(copy.call.counter, {
+				current: String(frame.messages).padStart(2, '0'),
+				total: String(messages.length).padStart(2, '0'),
+			});
 			if (counter.textContent !== count) counter.textContent = count;
 			const captionText =
 				frame.typing && !reducedMotion.matches
-					? `${frame.callerTyping ? 'Caller' : 'Receptionist'} is speaking`
+					? formatCopy(copy.call.speaking, {speaker: frame.callerTyping ? copy.speakers.caller : copy.speakers.receptionist})
 					: frame.messages === messages.length
-						? 'Conversation captured'
-						: 'Example conversation';
+						? copy.call.captured
+						: copy.call.example;
 			if (caption.textContent !== captionText)
 				caption.textContent = captionText;
 			flights.forEach((flight) => {
@@ -512,6 +531,42 @@ const finalFrame = getVisualFrame(VISUAL_DURATION);
 				);
 			});
 		}
+
+		function refreshCopy(next: StoryboardCopy) {
+			copy = next;
+			root.querySelectorAll<HTMLElement>('[data-storyboard-text]').forEach((element) => {
+				element.textContent = visualCopy(copy, element.dataset.storyboardText!);
+			});
+			root.querySelectorAll<HTMLElement>('[data-storyboard-aria]').forEach((element) => {
+				element.setAttribute('aria-label', visualCopy(copy, element.dataset.storyboardAria!));
+			});
+			root.querySelectorAll<HTMLElement>('[data-storyboard-speaker]').forEach((element) => {
+				const key = element.dataset.storyboardSpeaker === 'caller' ? 'speakers.caller' : 'speakers.transcriptReceptionist';
+				element.textContent = formatCopy(copy.speakers.prefix, {speaker: visualCopy(copy, key)});
+			});
+			root.querySelectorAll<HTMLElement>('[data-storyboard-message]').forEach((element) => {
+				const parts = getVisualMessageParts(Number(element.dataset.storyboardMessage), copy);
+				element.replaceChildren(...parts.map((part) => {
+					if (!part.detail) return document.createTextNode(part.text);
+					const mark = document.createElement('mark');
+					mark.className = 'visual-detail';
+					mark.textContent = part.text;
+					return mark;
+				}));
+			});
+			steps.forEach((step, index) => {
+				const key = (['answered', 'booked', 'updated'] as const)[index];
+				step.setAttribute('aria-label', formatCopy(copy.controls.from, {label: copy.stages[key].toLowerCase()}));
+				step.querySelector<HTMLElement>('[data-storyboard-number]')!.textContent = formatCopy(copy.controls.stepNumber, {number: index + 1});
+			});
+			// Update only copy; the existing clock, selection and motion stay alive.
+			render();
+			positionConversation();
+		}
+		window.addEventListener('ringlume:copy-change', (event) => {
+			const next = (event as CustomEvent<{storyboard?: StoryboardCopy}>).detail?.storyboard;
+			if (next) refreshCopy(next);
+		});
 
 		function stop() {
 			if (request !== undefined) {
